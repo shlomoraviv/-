@@ -163,17 +163,9 @@ body.dark .ap-field { background: #0f0f15; border-color: #3a3a55; color: #fff; }
       <div class="hdr-desc">כל עדכוני מזג האוויר בישראל</div>
     </div>
     <div class="hdr-user">
-      <!-- כפתור פאנל ניהול ישיר למנהלים -->
-      <button id="adminHeaderBtn" onclick="openAdminModal()" style="display:none; background:none; border:none; cursor:pointer; color:#888; font-size:20px; padding:10px;" title="פאנל ניהול">
-        <i class="fas fa-cog"></i>
-      </button>
-      <button onclick="openMail()" style="background:none; border:none; cursor:pointer; color:#888; font-size:20px; padding:10px;" title="צור קשר">
-        <i class="fas fa-envelope"></i>
-      </button>
-      <button onclick="toggleDark()" style="background:none; border:none; cursor:pointer; color:#888; font-size:20px; padding:10px;" title="מצב כהה">
-        <i class="fas fa-moon"></i>
-      </button>
-      <div id="userAvatar" style="position:relative; cursor:pointer;" title="תפריט משתמש"></div>
+      <button onclick="openMail()" style="background:none; border:none; cursor:pointer; color:#888; font-size:20px; padding:10px;"><i class="fas fa-envelope"></i></button>
+      <button onclick="toggleDark()" style="background:none; border:none; cursor:pointer; color:#888; font-size:20px; padding:10px;"><i class="fas fa-moon"></i></button>
+      <div id="userAvatar" style="position:relative; cursor:pointer;"></div>
     </div>
   </header>
 
@@ -209,22 +201,21 @@ body.dark .ap-field { background: #0f0f15; border-color: #3a3a55; color: #fff; }
       <input id="siteTitleInp" class="ap-field" placeholder="שם האתר">
       <button class="ap-btn ap-btn-primary" onclick="updateSiteSettings()">שמור שם</button>
       <hr style="margin:15px 0;">
-      <input id="newUserEmail" class="ap-field" placeholder="אימייל גוגל להוספה">
+      <input id="newUserEmail" class="ap-field" placeholder="אימייל גוגל">
       <select id="newUserRole" class="ap-field">
         <option value="admin">מנהל</option>
         <option value="uploader">מעלה תוכן</option>
       </select>
       <div id="uploaderPermsBox" style="display:none; margin-bottom:10px;">
-        <p style="font-size:12px; margin-bottom:5px;">בחר קטגוריות מורשות:</p>
         <div id="catPermList" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
       </div>
       <button class="ap-btn ap-btn-primary" onclick="addNewUser()">הוסף משתמש</button>
-      <div id="userList" style="margin-top:15px; border-top:1px solid #eee; padding-top:10px;"></div>
+      <div id="userList" style="margin-top:10px;"></div>
     </div>
     <div id="adminSection" style="display:none; margin-top:20px;">
       <h3 style="font-size:15px; margin-bottom:10px;">ניהול קטגוריות</h3>
       <div style="display:flex; gap:8px;"><input id="newCatInp" class="ap-field" placeholder="שם קטגוריה"><button class="ap-btn ap-btn-primary" onclick="addCategory()">הוסף</button></div>
-      <div id="categoryMgmtList" style="margin-top:10px;"></div>
+      <div id="categoryMgmtList"></div>
     </div>
   </div>
 </div>
@@ -252,7 +243,7 @@ function initGoogle() {
 
 async function handleGoogle(resp) {
   const payload = JSON.parse(atob(resp.credential.split('.')[1]));
-  me = { email: payload.email.toLowerCase(), name: payload.name, picture: payload.picture };
+  me = { email: payload.email, name: payload.name, picture: payload.picture };
   localStorage.setItem('bina_user', JSON.stringify(me));
   applyLogin();
 }
@@ -266,9 +257,12 @@ async function applyLogin() {
   document.getElementById('userAvatar').onclick = (e) => { e.stopPropagation(); const m = document.getElementById('userMenu'); m.style.display = m.style.display === 'none' ? 'block' : 'none'; };
   document.getElementById('userMenuInfo').innerHTML = `<strong>${me.name}</strong><br><small>${me.email}</small>`;
 
+  // טעינה מהירה מה-Cache
   renderCategories();
   renderFeed();
   checkPermissions();
+
+  // עדכון נתונים מהשרת במקביל
   refreshAllData();
 }
 
@@ -285,6 +279,7 @@ async function api(action, params = {}) {
 }
 
 async function refreshAllData() {
+  // טעינה מקבילית לשיפור מהירות
   const [dataRes, postsRes] = await Promise.all([
     api("get_site_data"),
     api("get_posts")
@@ -294,7 +289,6 @@ async function refreshAllData() {
     siteData = dataRes.data;
     localStorage.setItem('site_cache', JSON.stringify(siteData));
     document.getElementById('hdrChannelName').innerText = siteData.title;
-    document.getElementById('pageTitle').innerText = siteData.title;
   }
   if (postsRes.status === "ok") {
     posts = postsRes.posts;
@@ -307,20 +301,15 @@ async function refreshAllData() {
 }
 
 function getMyRole() {
-  if (!me) return "viewer";
-  if (me.email === PRINCIPAL_ADMIN_EMAIL.toLowerCase()) return "principal";
-  const u = siteData.users.find(u => u.email.toLowerCase() === me.email);
+  if (me.email === PRINCIPAL_ADMIN_EMAIL) return "principal";
+  const u = siteData.users.find(u => u.email === me.email);
   return u ? u.role : "viewer";
 }
 
 function checkPermissions() {
   const role = getMyRole();
-  const isAdmin = (role === "admin" || role === "principal");
-  
   document.getElementById('adminComposeBar').style.display = (role !== "viewer") ? 'flex' : 'none';
-  document.getElementById('adminPanelBtn').style.display = isAdmin ? 'block' : 'none';
-  document.getElementById('adminHeaderBtn').style.display = isAdmin ? 'block' : 'none';
-  
+  document.getElementById('adminPanelBtn').style.display = (role === "admin" || role === "principal") ? 'block' : 'none';
   if (role !== "viewer") {
     document.getElementById('composerNameBadge').innerText = role === "principal" ? "ראשי" : (role === "admin" ? "מנהל" : "מעלה");
     setupComposeCats(role);
@@ -329,7 +318,7 @@ function checkPermissions() {
 
 function setupComposeCats(role) {
   const s = document.getElementById('composeCategorySelect');
-  let allowed = (role === "uploader") ? (siteData.users.find(u => u.email.toLowerCase() === me.email)?.allowedCats || []) : siteData.categories;
+  let allowed = (role === "uploader") ? (siteData.users.find(u => u.email === me.email)?.allowedCats || []) : siteData.categories;
   s.innerHTML = allowed.map(c => `<option value="${c}">${c}</option>`).join('');
 }
 
@@ -355,6 +344,7 @@ function renderFeed() {
   if (!filtered.length) { document.getElementById('empty').style.display = 'block'; inner.innerHTML = ""; return; }
   document.getElementById('empty').style.display = 'none';
 
+  // יצירת כל ה-HTML בבת אחת לשיפור ביצועים
   inner.innerHTML = filtered.map(p => `
     <div class="msg-row">
       <img class="msg-av" src="https://cdn-icons-png.flaticon.com/128/6476/6476785.png">
@@ -374,10 +364,8 @@ function renderFeed() {
 
 function renderVid(url) {
   if (url.includes('drive.google.com')) {
-    let id = "";
-    if (url.includes('id=')) id = url.split('id=')[1].split('&')[0];
-    else if (url.includes('/file/d/')) id = url.split('/d/')[1].split('/')[0];
-    return `<div class="bubble-vid"><iframe src="https://drive.google.com/file/d/${id}/preview" allow="autoplay"></iframe></div>`;
+    let id = url.includes('id=') ? url.split('id=')[1].split('&')[0] : url.split('/d/')[1].split('/')[0];
+    return `<div class="bubble-vid"><iframe src="https://drive.google.com/file/d/${id}/preview"></iframe></div>`;
   }
   return `<div class="bubble-vid"><video src="${url}" controls loading="lazy"></video></div>`;
 }
@@ -415,12 +403,12 @@ function openAdminModal() {
 document.getElementById('newUserRole').onchange = (e) => {
   const box = document.getElementById('uploaderPermsBox');
   box.style.display = (e.target.value === 'uploader') ? 'block' : 'none';
-  document.getElementById('catPermList').innerHTML = siteData.categories.map(c => `<label style="margin-left:10px;"><input type="checkbox" value="${c}" class="cat-perm-chk"> ${c}</label>`).join('');
+  document.getElementById('catPermList').innerHTML = siteData.categories.map(c => `<label><input type="checkbox" value="${c}" class="cat-perm-chk"> ${c}</label>`).join(' ');
 };
 
 async function updateSiteSettings() { await api("update_site_title", { title: document.getElementById('siteTitleInp').value }); location.reload(); }
 async function addNewUser() {
-  const email = document.getElementById('newUserEmail').value.trim().toLowerCase();
+  const email = document.getElementById('newUserEmail').value;
   const role = document.getElementById('newUserRole').value;
   let allowed = [];
   if (role === 'uploader') document.querySelectorAll('.cat-perm-chk:checked').forEach(c => allowed.push(c.value));
@@ -428,10 +416,10 @@ async function addNewUser() {
   refreshAllData();
 }
 
-function renderUserList() { document.getElementById('userList').innerHTML = siteData.users.map(u => `<div style="font-size:12px; display:flex; justify-content:space-between; margin-bottom:5px;"><span>${u.email} (${u.role})</span> <button onclick="removeUser('${u.email}')" style="color:red;border:none;background:none;cursor:pointer;">מחק</button></div>`).join(''); }
+function renderUserList() { document.getElementById('userList').innerHTML = siteData.users.map(u => `<div style="font-size:12px;">${u.email} (${u.role}) <button onclick="removeUser('${u.email}')" style="color:red;border:none;background:none;cursor:pointer;">X</button></div>`).join(''); }
 async function removeUser(email) { await api("manage_user", { action: "remove", email }); refreshAllData(); }
 async function addCategory() { await api("manage_category", { action: "add", name: document.getElementById('newCatInp').value }); refreshAllData(); }
-function renderCatMgmt() { document.getElementById('categoryMgmtList').innerHTML = siteData.categories.map(c => `<div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span>${c}</span> <button onclick="deleteCat('${c}')" style="color:red;border:none;background:none;cursor:pointer;">מחק</button></div>`).join(''); }
+function renderCatMgmt() { document.getElementById('categoryMgmtList').innerHTML = siteData.categories.map(c => `<div>${c} <button onclick="deleteCat('${c}')" style="color:red;border:none;background:none;cursor:pointer;">X</button></div>`).join(''); }
 async function deleteCat(name) { if (confirm("למחוק?")) { await api("manage_category", { action: "remove", name }); refreshAllData(); } }
 
 function toggleDark() { document.body.classList.toggle('dark'); localStorage.setItem('shaagat_dark', document.body.classList.contains('dark') ? '1' : '0'); }
