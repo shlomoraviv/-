@@ -80,20 +80,6 @@ body.dark .channel-item.active { background: #2a2a45; color: #a5b4fc; border-rig
 /* APP */
 #app{flex:1;min-width:0;height:100%;display:none;flex-direction:column;}
 
-/* AD SIDEBAR */
-#rightSidebar{
-  width:320px;min-width:320px;
-  background:#fff;
-  border-left:1px solid rgba(0,0,0,.08);
-  flex-shrink:0;
-  position:sticky;top:64px;height:calc(100vh - 64px);
-  flex-direction:column;
-  overflow:hidden;
-  display:none;
-}
-#rightSidebar.show{display:flex;}
-@media(max-width:900px){#rightSidebar{display:none!important;}}
-
 /* HEADER */
 header{ background:#fff;border-bottom:1px solid rgba(0,0,0,.08); height:64px;padding:0 14px; display:flex;align-items:center;gap:12px; flex-shrink:0;position:fixed;top:0;left:0;right:0;z-index:100; overflow:visible;}
 #app{padding-top:64px;}
@@ -101,7 +87,6 @@ header{ background:#fff;border-bottom:1px solid rgba(0,0,0,.08); height:64px;pad
 .hdr-info{flex:1;min-width:0;}
 .hdr-name{font-size:15px;font-weight:800;color:#111827;line-height:1.2;}
 .hdr-desc{font-size:12px;color:#4b5563;font-weight:600;line-height:1.35;margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.hdr-status{font-size:12px;color:#4b5563;font-weight:600;display:flex;align-items:center;gap:6px;margin-top:4px;}
 .hdr-user{display:flex;align-items:center;gap:4px;}
 
 /* FEED */
@@ -122,70 +107,52 @@ header{ background:#fff;border-bottom:1px solid rgba(0,0,0,.08); height:64px;pad
 .bubble-img{margin-top:9px;border-radius:12px;overflow:hidden;display:block;}
 .bubble-img img{width:100%;display:block;max-height:310px;height:auto;object-fit:contain;}
 .bubble-vid{margin-top:9px;}
-.bubble-vid iframe, .bubble-vid video{width:100%;border-radius:12px;background:#000;aspect-ratio: 16/9;}
-
-/* TOP ACTIONS */
-.bubble-wrap-outer{position:relative;display:inline-block;max-width:100%;margin-top:4px;}
-.bubble-top-actions{ position:absolute;top:-30px;left:2px; display:flex;align-items:center;gap:1px; opacity:0;pointer-events:none; transition:opacity .15s ease; z-index:10; direction:ltr; background:rgba(255,255,255,.97); border:1px solid #e5e7eb; border-radius:999px; padding:3px; box-shadow:0 2px 8px rgba(0,0,0,.13);}
-.msg-row:hover .bubble-top-actions{ opacity:1;pointer-events:all; }
-@media (hover:none){ .bubble-top-actions{ opacity:1;pointer-events:all; } }
-.bubble-top-actions button{ background:none; border:none; width:24px;height:24px;padding:0; font-size:11px; color:#888; display:inline-flex;align-items:center;justify-content:center; cursor:pointer; transition:background .12s;}
+.bubble-vid iframe, .bubble-vid video{width:100%;border-radius:12px;background:#000;aspect-ratio: 16/9; border:none;}
 
 /* ADMIN COMPOSE BAR */
 #adminComposeBar{ display:none;position:fixed;bottom:0;right:0;left:240px;z-index:200; background:#fff;border-top:2px solid #e5e7eb;box-shadow:0 -4px 20px rgba(0,0,0,.10); direction:rtl;flex-direction:column;}
 @media(max-width:900px){#adminComposeBar{right:0;left:0;}}
 #adminComposeBar.show{display:flex;}
 .compose-toolbar{display:flex;align-items:center;gap:4px;padding:6px 12px 4px;border-bottom:1px solid #f0f0f0;flex-wrap:wrap;}
-.ctb-btn{background:none;border:1.5px solid #e5e7eb;border-radius:8px;padding:4px 9px;font-size:11px;font-weight:700;color:#374151;cursor:pointer;font-family:'Heebo',sans-serif;display:flex;align-items:center;gap:4px;}
+.ctb-btn{background:none;border:1.5px solid #e5e7eb;border-radius:8px;padding:4px 9px;font-size:11px;font-weight:700;color:#374151;cursor:pointer;font-family:'Heebo',sans-serif;}
+
 .compose-main{display:flex;align-items:flex-end;gap:8px;padding:8px 12px;}
-#composeEditor{ flex:1;border:1.5px solid #e5e7eb;border-radius:14px; padding:10px 14px;font-size:15px;font-family:'Heebo',sans-serif; outline:none;resize:none;max-height:120px;overflow-y:auto; line-height:1.6;direction:rtl;background:#fafafa;}
-.compose-send-btn{ width:42px;height:42px;border-radius:50%;border:none; background:linear-gradient(135deg,#1a56db,#1d4ed8); color:#fff;cursor:pointer; display:flex;align-items:center;justify-content:center; flex-shrink:0;box-shadow:0 3px 10px rgba(26,86,219,.35);}
+#composeEditor{ flex:1;border:1.5px solid #e5e7eb;border-radius:14px; padding:10px 14px;font-size:15px;outline:none;max-height:120px;overflow-y:auto; line-height:1.6;direction:rtl;background:#fafafa;}
+.compose-send-btn{ width:42px;height:42px;border-radius:50%;border:none; background:linear-gradient(135deg,#1a56db,#1d4ed8); color:#fff;cursor:pointer; display:flex;align-items:center;justify-content:center; flex-shrink:0;}
 
 /* MODALS */
 .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:900; display:none; align-items:center; justify-content:center; padding:20px; }
-.modal-box { background:#fff; border-radius:20px; width:100%; max-width:500px; max-height:90vh; overflow-y:auto; padding:24px; position:relative; box-shadow:0 24px 60px rgba(0,0,0,0.25); direction:rtl; }
-.modal-title { font-size:18px; font-weight:900; margin-bottom:16px; color:#111; }
-.ap-field { width:100%; border:1.5px solid #eef0f5; background:#fbfbfd; border-radius:11px; padding:10px 13px; font-size:14px; outline:none; font-family:'Heebo'; margin-bottom:12px; }
-.ap-btn { border:none; border-radius:11px; padding:10px 20px; font-size:14px; font-weight:800; cursor:pointer; transition:filter 0.15s; }
+.modal-box { background:#fff; border-radius:20px; width:100%; max-width:500px; max-height:90vh; overflow-y:auto; padding:24px; position:relative; direction:rtl; }
+.ap-field { width:100%; border:1.5px solid #eef0f5; background:#fbfbfd; border-radius:11px; padding:10px 13px; font-size:14px; outline:none; margin-bottom:12px; font-family:'Heebo';}
+.ap-btn { border:none; border-radius:11px; padding:10px 20px; font-size:14px; font-weight:800; cursor:pointer;}
 .ap-btn-primary { background:#4a55c7; color:#fff; }
 
-/* LIGHTBOX */
 #lightbox{position:fixed;inset:0;z-index:900;background:rgba(0,0,0,.88);display:none;align-items:center;justify-content:center;cursor:zoom-out;}
 #lightbox img{max-width:94vw;max-height:90vh;border-radius:10px;object-fit:contain;}
 
-/* DARK MODE */
 body.dark { background: #0f0f15 !important; color: #e5e7eb; }
 body.dark header, body.dark #adminComposeBar, body.dark .modal-box { background: #1a1a2e !important; border-color: #2a2a40 !important; color: #fff; }
 body.dark .bubble { background: #1e1e30 !important; }
-body.dark .bubble-text { color: #d1d5db !important; }
 body.dark .ap-field { background: #0f0f15; border-color: #3a3a55; color: #fff; }
 
 </style>
 </head>
 <body>
 
-<div id="prog" style="position:fixed; top:0; left:0; right:0; height:3px; background:#1a56db; z-index:1000; transform:scaleX(0); transition:transform 0.2s;"></div>
-
-<div id="bannedScreen" style="display:none;">
-  <i class="fas fa-ban" style="font-size:80px;color:#dc2626;margin-bottom:20px;"></i>
-  <h1 style="font-size:32px;font-weight:900;margin-bottom:10px;">הגישה נחסמה</h1>
-  <button onclick="doLogout()" style="margin-top:30px;background:#dc2626;color:#fff;border:none;border-radius:12px;padding:12px 24px;font-size:16px;font-weight:bold;cursor:pointer;">התנתק מהמערכת</button>
-</div>
+<div id="prog" style="position:fixed; top:0; left:0; right:0; height:3px; background:#1a56db; z-index:1000; transform:scaleX(0); transition:transform 0.1s;"></div>
 
 <div id="loginScreen">
  <div class="login-card">
     <img class="login-logo-img" src="https://cdn-icons-png.flaticon.com/128/6476/6476785.png">
     <div class="login-title" id="loginSiteTitle">מזג האוויר</div>
-    <div class="login-sub">התחברות באמצעות גוגל</div>
+    <div class="login-sub">התחברות מהירה באמצעות גוגל</div>
     <div id="googleBtn" style="display:flex; justify-content:center;"></div>
   </div>
 </div>
 
 <div id="leftSidebar">
   <div class="channels-hdr">קטגוריות</div>
-  <div id="channelsList">
-    <!-- יתמלא דינמית -->
-  </div>
+  <div id="channelsList"></div>
 </div>
 
 <div id="app">
@@ -196,51 +163,51 @@ body.dark .ap-field { background: #0f0f15; border-color: #3a3a55; color: #fff; }
       <div class="hdr-desc">כל עדכוני מזג האוויר בישראל</div>
     </div>
     <div class="hdr-user">
+      <!-- כפתור פאנל ניהול ישיר למנהלים -->
+      <button id="adminHeaderBtn" onclick="openAdminModal()" style="display:none; background:none; border:none; cursor:pointer; color:#888; font-size:20px; padding:10px;" title="פאנל ניהול">
+        <i class="fas fa-cog"></i>
+      </button>
       <button onclick="openMail()" style="background:none; border:none; cursor:pointer; color:#888; font-size:20px; padding:10px;" title="צור קשר">
         <i class="fas fa-envelope"></i>
       </button>
       <button onclick="toggleDark()" style="background:none; border:none; cursor:pointer; color:#888; font-size:20px; padding:10px;" title="מצב כהה">
         <i class="fas fa-moon"></i>
       </button>
-      <div id="userAvatar" style="position:relative; cursor:pointer;"></div>
+      <div id="userAvatar" style="position:relative; cursor:pointer;" title="תפריט משתמש"></div>
     </div>
   </header>
 
   <div id="feedWrap">
     <div id="feedInner"></div>
-    <div id="empty" style="display:none; text-align:center; padding:60px; color:#aaa;">ממתין לעדכונים...</div>
+    <div id="empty" style="display:none; text-align:center; padding:60px; color:#aaa;">אין פוסטים להצגה...</div>
   </div>
 </div>
 
 <div id="adminComposeBar">
   <div class="compose-toolbar">
-    <span id="composerNameBadge" style="background:#eff6ff; color:#1a56db; padding:4px 10px; border-radius:8px; font-size:12px; font-weight:800; margin-left:10px;"></span>
-    <select id="composeCategorySelect" style="padding:4px; border-radius:8px; border:1px solid #e5e7eb; font-family:'Heebo'; font-size:12px;"></select>
+    <span id="composerNameBadge" style="background:#eff6ff; color:#1a56db; padding:4px 10px; border-radius:8px; font-size:11px; font-weight:800; margin-left:10px;"></span>
+    <select id="composeCategorySelect" style="padding:4px; border-radius:8px; border:1px solid #e5e7eb; font-family:'Heebo'; font-size:11px;"></select>
     <button class="ctb-btn" onclick="triggerImgUpload()"><i class="fas fa-image"></i> תמונה</button>
-    <button class="ctb-btn" onclick="openVideoPrompt()"><i class="fas fa-video"></i> וידאו (דרייב)</button>
+    <button class="ctb-btn" onclick="openVideoPrompt()"><i class="fas fa-video"></i> וידאו</button>
   </div>
   <div class="compose-main">
     <div id="composeEditor" contenteditable="true" placeholder="כתוב משהו..."></div>
-    <button class="compose-send-btn" onclick="sendPost()"><i class="fas fa-paper-plane"></i></button>
+    <button class="compose-send-btn" id="sendBtn" onclick="sendPost()"><i class="fas fa-paper-plane"></i></button>
   </div>
 </div>
 
-<!-- תפריט משתמש -->
-<div id="userMenu" style="display:none; position:fixed; top:64px; left:14px; background:#fff; border:1px solid #e5e7eb; border-radius:12px; box-shadow:0 10px 25px rgba(0,0,0,0.1); z-index:1001; min-width:180px; overflow:hidden; direction:rtl;">
+<div id="userMenu" style="display:none; position:fixed; top:64px; left:14px; background:#fff; border:1px solid #e5e7eb; border-radius:12px; box-shadow:0 10px 25px rgba(0,0,0,0.1); z-index:1001; min-width:180px; direction:rtl;">
   <div id="userMenuInfo" style="padding:15px; border-bottom:1px solid #f0f0f0;"></div>
   <button id="adminPanelBtn" onclick="openAdminModal()" style="display:none; width:100%; padding:12px; text-align:right; border:none; background:none; cursor:pointer; font-weight:700; color:#1a56db;"><i class="fas fa-cog"></i> פאנל ניהול</button>
   <button onclick="doLogout()" style="width:100%; padding:12px; text-align:right; border:none; background:none; cursor:pointer; color:#dc2626;"><i class="fas fa-sign-out-alt"></i> התנתק</button>
 </div>
 
-<!-- פאנל ניהול (משולב) -->
 <div id="adminModal" class="modal-overlay" onclick="if(event.target===this)this.style.display='none'">
   <div class="modal-box">
-    <div class="modal-title">ניהול מערכת</div>
-    
-    <div id="principalAdminSection" style="display:none; border-bottom:2px solid #f0f0f0; padding-bottom:15px; margin-bottom:15px;">
-      <h3 style="font-size:14px; margin-bottom:10px;">הגדרות מנהל ראשי</h3>
+    <div id="principalAdminSection" style="display:none;">
+      <h3 style="font-size:15px; margin-bottom:10px;">ניהול מערכת (ראשי)</h3>
       <input id="siteTitleInp" class="ap-field" placeholder="שם האתר">
-      <button class="ap-btn ap-btn-primary" onclick="updateSiteSettings()">שמור שם אתר</button>
+      <button class="ap-btn ap-btn-primary" onclick="updateSiteSettings()">שמור שם</button>
       <hr style="margin:15px 0;">
       <input id="newUserEmail" class="ap-field" placeholder="אימייל גוגל להוספה">
       <select id="newUserRole" class="ap-field">
@@ -248,19 +215,15 @@ body.dark .ap-field { background: #0f0f15; border-color: #3a3a55; color: #fff; }
         <option value="uploader">מעלה תוכן</option>
       </select>
       <div id="uploaderPermsBox" style="display:none; margin-bottom:10px;">
-        <p style="font-size:12px; font-weight:700;">הרשאות קטגוריה (למעלה תוכן):</p>
-        <div id="catPermList" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:5px;"></div>
+        <p style="font-size:12px; margin-bottom:5px;">בחר קטגוריות מורשות:</p>
+        <div id="catPermList" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
       </div>
       <button class="ap-btn ap-btn-primary" onclick="addNewUser()">הוסף משתמש</button>
-      <div id="userList" style="margin-top:15px; max-height:150px; overflow-y:auto;"></div>
+      <div id="userList" style="margin-top:15px; border-top:1px solid #eee; padding-top:10px;"></div>
     </div>
-
-    <div id="adminSection" style="display:none;">
-      <h3 style="font-size:14px; margin-bottom:10px;">ניהול קטגוריות</h3>
-      <div style="display:flex; gap:8px;">
-        <input id="newCatInp" class="ap-field" placeholder="שם קטגוריה חדשה">
-        <button class="ap-btn ap-btn-primary" style="height:42px;" onclick="addCategory()">הוסף</button>
-      </div>
+    <div id="adminSection" style="display:none; margin-top:20px;">
+      <h3 style="font-size:15px; margin-bottom:10px;">ניהול קטגוריות</h3>
+      <div style="display:flex; gap:8px;"><input id="newCatInp" class="ap-field" placeholder="שם קטגוריה"><button class="ap-btn ap-btn-primary" onclick="addCategory()">הוסף</button></div>
       <div id="categoryMgmtList" style="margin-top:10px;"></div>
     </div>
   </div>
@@ -270,22 +233,16 @@ body.dark .ap-field { background: #0f0f15; border-color: #3a3a55; color: #fff; }
 
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script>
-/* --- CONFIG --- */
 const BACKEND = "https://script.google.com/macros/s/AKfycbyig5wjhHEFUFrJCdakcxu_-R302GplBuxyJo5jintWf7oEXHa_cK4mRvFivHu6AtAjlQ/exec";
 const GOOGLE_CLIENT_ID = '426523025549-7c50rkn7cun4vmm2r802u0ij6egjehtg.apps.googleusercontent.com';
 const PRINCIPAL_ADMIN_EMAIL = "0556798858b@gmail.com";
 
 let me = null;
-let siteData = {
-  title: "מזג האוויר",
-  categories: ["כללי", "הודעות אחרונות"],
-  users: [] // {email, role, allowedCats: []}
-};
-let posts = [];
-let activeCat = "כללי";
+let siteData = JSON.parse(localStorage.getItem('site_cache')) || { title: "מזג האוויר", categories: ["כללי"], users: [] };
+let posts = JSON.parse(localStorage.getItem('posts_cache')) || [];
+let activeCat = siteData.categories[0];
 let unreadMap = {};
 
-/* --- AUTH --- */
 function initGoogle() {
   google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: handleGoogle });
   const saved = localStorage.getItem('bina_user');
@@ -295,121 +252,94 @@ function initGoogle() {
 
 async function handleGoogle(resp) {
   const payload = JSON.parse(atob(resp.credential.split('.')[1]));
-  me = { email: payload.email, name: payload.name, picture: payload.picture };
+  me = { email: payload.email.toLowerCase(), name: payload.name, picture: payload.picture };
   localStorage.setItem('bina_user', JSON.stringify(me));
   applyLogin();
 }
 
-function doLogout() {
-  localStorage.removeItem('bina_user');
-  location.reload();
-}
+function doLogout() { localStorage.removeItem('bina_user'); location.reload(); }
 
 async function applyLogin() {
   document.getElementById('loginScreen').style.display = 'none';
   document.getElementById('app').style.display = 'flex';
-  
-  // Setup Avatar
-  const av = document.getElementById('userAvatar');
-  av.innerHTML = `<img src="${me.picture}" style="width:34px;height:34px;border-radius:50%; border:2px solid #1a56db;">`;
-  av.onclick = (e) => {
-    e.stopPropagation();
-    const menu = document.getElementById('userMenu');
-    menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
-  };
-  
+  document.getElementById('userAvatar').innerHTML = `<img src="${me.picture}" style="width:34px;height:34px;border-radius:50%;border:2px solid #1a56db;">`;
+  document.getElementById('userAvatar').onclick = (e) => { e.stopPropagation(); const m = document.getElementById('userMenu'); m.style.display = m.style.display === 'none' ? 'block' : 'none'; };
   document.getElementById('userMenuInfo').innerHTML = `<strong>${me.name}</strong><br><small>${me.email}</small>`;
 
-  await refreshSiteData();
+  renderCategories();
+  renderFeed();
+  checkPermissions();
+  refreshAllData();
+}
+
+async function api(action, params = {}) {
+  const p = document.getElementById('prog');
+  p.style.transform = 'scaleX(0.4)';
+  try {
+    const r = await fetch(BACKEND, { method: 'POST', body: JSON.stringify({ action, ...params, user: me.email }) });
+    const j = await r.json();
+    p.style.transform = 'scaleX(1)';
+    setTimeout(() => p.style.transform = 'scaleX(0)', 200);
+    return j;
+  } catch (e) { p.style.transform = 'scaleX(0)'; return { status: "error" }; }
+}
+
+async function refreshAllData() {
+  const [dataRes, postsRes] = await Promise.all([
+    api("get_site_data"),
+    api("get_posts")
+  ]);
+
+  if (dataRes.status === "ok") {
+    siteData = dataRes.data;
+    localStorage.setItem('site_cache', JSON.stringify(siteData));
+    document.getElementById('hdrChannelName').innerText = siteData.title;
+    document.getElementById('pageTitle').innerText = siteData.title;
+  }
+  if (postsRes.status === "ok") {
+    posts = postsRes.posts;
+    localStorage.setItem('posts_cache', JSON.stringify(posts));
+  }
+
   renderCategories();
   renderFeed();
   checkPermissions();
 }
 
-/* --- PERMISSIONS --- */
 function getMyRole() {
-  if (me.email === PRINCIPAL_ADMIN_EMAIL) return "principal";
-  const user = siteData.users.find(u => u.email === me.email);
-  return user ? user.role : "viewer";
+  if (!me) return "viewer";
+  if (me.email === PRINCIPAL_ADMIN_EMAIL.toLowerCase()) return "principal";
+  const u = siteData.users.find(u => u.email.toLowerCase() === me.email);
+  return u ? u.role : "viewer";
 }
 
 function checkPermissions() {
   const role = getMyRole();
-  const composeBar = document.getElementById('adminComposeBar');
-  const adminBtn = document.getElementById('adminPanelBtn');
+  const isAdmin = (role === "admin" || role === "principal");
   
-  if (role === "principal" || role === "admin" || role === "uploader") {
-    composeBar.classList.add('show');
-    document.getElementById('composerNameBadge').innerText = role === "principal" ? "מנהל ראשי" : (role === "admin" ? "מנהל" : "מעלה תוכן");
-    setupComposeCategories(role);
-  } else {
-    composeBar.classList.remove('show');
-  }
-
-  if (role === "principal" || role === "admin") {
-    adminBtn.style.display = 'block';
-  }
-}
-
-function setupComposeCategories(role) {
-  const select = document.getElementById('composeCategorySelect');
-  select.innerHTML = "";
-  let allowed = siteData.categories;
+  document.getElementById('adminComposeBar').style.display = (role !== "viewer") ? 'flex' : 'none';
+  document.getElementById('adminPanelBtn').style.display = isAdmin ? 'block' : 'none';
+  document.getElementById('adminHeaderBtn').style.display = isAdmin ? 'block' : 'none';
   
-  if (role === "uploader") {
-    const user = siteData.users.find(u => u.email === me.email);
-    allowed = user.allowedCats || [];
-  }
-
-  allowed.forEach(cat => {
-    select.innerHTML += `<option value="${cat}">${cat}</option>`;
-  });
-}
-
-/* --- DATA & API --- */
-async function api(action, params = {}) {
-  document.getElementById('prog').style.transform = 'scaleX(0.5)';
-  try {
-    const resp = await fetch(BACKEND, {
-      method: 'POST',
-      body: JSON.stringify({ action, ...params, user: me.email })
-    });
-    const json = await resp.json();
-    document.getElementById('prog').style.transform = 'scaleX(1)';
-    setTimeout(() => document.getElementById('prog').style.transform = 'scaleX(0)', 500);
-    return json;
-  } catch (e) {
-    console.error(e);
-    return { status: "error" };
+  if (role !== "viewer") {
+    document.getElementById('composerNameBadge').innerText = role === "principal" ? "ראשי" : (role === "admin" ? "מנהל" : "מעלה");
+    setupComposeCats(role);
   }
 }
 
-async function refreshSiteData() {
-  const res = await api("get_site_data");
-  if (res.status === "ok") {
-    siteData = res.data;
-    document.getElementById('hdrChannelName').innerText = siteData.title;
-    document.getElementById('pageTitle').innerText = siteData.title;
-    document.getElementById('loginSiteTitle').innerText = siteData.title;
-  }
-  const postsRes = await api("get_posts");
-  posts = postsRes.posts || [];
+function setupComposeCats(role) {
+  const s = document.getElementById('composeCategorySelect');
+  let allowed = (role === "uploader") ? (siteData.users.find(u => u.email.toLowerCase() === me.email)?.allowedCats || []) : siteData.categories;
+  s.innerHTML = allowed.map(c => `<option value="${c}">${c}</option>`).join('');
 }
 
-/* --- UI RENDERING --- */
 function renderCategories() {
   const list = document.getElementById('channelsList');
-  list.innerHTML = "";
-  siteData.categories.forEach(cat => {
-    const isActive = activeCat === cat ? "active" : "";
-    const isUnread = unreadMap[cat] ? "has-unread" : "";
-    list.innerHTML += `
-      <div class="channel-item ${isActive} ${isUnread}" onclick="setActiveCat('${cat}')">
-        <i class="fas fa-hashtag"></i>
-        ${cat}
-        <div class="unread-badge-cat"></div>
-      </div>`;
-  });
+  list.innerHTML = siteData.categories.map(cat => `
+    <div class="channel-item ${activeCat === cat ? 'active' : ''} ${unreadMap[cat] ? 'has-unread' : ''}" onclick="setActiveCat('${cat}')">
+      <i class="fas fa-hashtag"></i> ${cat}
+      <div class="unread-badge-cat"></div>
+    </div>`).join('');
 }
 
 function setActiveCat(cat) {
@@ -417,231 +347,98 @@ function setActiveCat(cat) {
   unreadMap[cat] = false;
   renderCategories();
   renderFeed();
-  if (window.innerWidth < 900) document.getElementById('leftSidebar').classList.remove('open');
 }
 
 function renderFeed() {
   const inner = document.getElementById('feedInner');
   const filtered = posts.filter(p => p.category === activeCat);
-  inner.innerHTML = "";
-  
-  if (filtered.length === 0) {
-    document.getElementById('empty').style.display = 'block';
-    return;
-  }
+  if (!filtered.length) { document.getElementById('empty').style.display = 'block'; inner.innerHTML = ""; return; }
   document.getElementById('empty').style.display = 'none';
 
-  filtered.forEach(p => {
-    inner.innerHTML += `
-      <div class="msg-row" data-id="${p.id}">
-        <img class="msg-av" src="https://cdn-icons-png.flaticon.com/128/6476/6476785.png">
-        <div class="msg-col">
-          <div class="msg-meta">
-            <span class="msg-meta-name">${p.senderName}</span>
-            <span class="msg-meta-time">${new Date(p.ts).toLocaleTimeString('he-IL', {hour:'2-digit', minute:'2-digit'})}</span>
-          </div>
-          <div class="bubble-wrap-outer">
-             ${(getMyRole() === 'admin' || getMyRole() === 'principal') ? `
-             <div class="bubble-top-actions">
-                <button onclick="deletePost('${p.id}')"><i class="fas fa-trash"></i></button>
-             </div>` : ''}
-             <div class="bubble">
-                ${p.text ? `<div class="bubble-text">${p.text}</div>` : ''}
-                ${p.img ? `<div class="bubble-img"><img src="${p.img}" onclick="openLightbox('${p.img}')"></div>` : ''}
-                ${p.video ? renderVideo(p.video) : ''}
-             </div>
+  inner.innerHTML = filtered.map(p => `
+    <div class="msg-row">
+      <img class="msg-av" src="https://cdn-icons-png.flaticon.com/128/6476/6476785.png">
+      <div class="msg-col">
+        <div class="msg-meta"><span class="msg-meta-name">${p.senderName}</span><span class="msg-meta-time">${new Date(p.ts).toLocaleTimeString('he-IL', {hour:'2-digit', minute:'2-digit'})}</span></div>
+        <div class="bubble-wrap-outer">
+          ${(getMyRole()==='admin'||getMyRole()==='principal') ? `<div class="bubble-top-actions"><button onclick="deletePost('${p.id}')"><i class="fas fa-trash"></i></button></div>` : ''}
+          <div class="bubble">
+            ${p.text ? `<div class="bubble-text">${p.text}</div>` : ''}
+            ${p.img ? `<div class="bubble-img"><img src="${p.img}" loading="lazy" onclick="openLightbox('${p.img}')"></div>` : ''}
+            ${p.video ? renderVid(p.video) : ''}
           </div>
         </div>
-      </div>`;
-  });
+      </div>
+    </div>`).join('');
 }
 
-function renderVideo(url) {
-  let videoHtml = "";
+function renderVid(url) {
   if (url.includes('drive.google.com')) {
-    // הפיכת קישור דרייב לקישור הטמעה
-    let driveId = "";
-    if (url.includes('id=')) driveId = url.split('id=')[1].split('&')[0];
-    else driveId = url.split('/d/')[1].split('/')[0];
-    const embedUrl = `https://drive.google.com/file/d/${driveId}/preview`;
-    videoHtml = `<div class="bubble-vid"><iframe src="${embedUrl}" allow="autoplay"></iframe></div>`;
-  } else {
-    videoHtml = `<div class="bubble-vid"><video src="${url}" controls></video></div>`;
+    let id = "";
+    if (url.includes('id=')) id = url.split('id=')[1].split('&')[0];
+    else if (url.includes('/file/d/')) id = url.split('/d/')[1].split('/')[0];
+    return `<div class="bubble-vid"><iframe src="https://drive.google.com/file/d/${id}/preview" allow="autoplay"></iframe></div>`;
   }
-  return videoHtml;
+  return `<div class="bubble-vid"><video src="${url}" controls loading="lazy"></video></div>`;
 }
 
-/* --- ACTIONS --- */
 async function sendPost() {
   const ed = document.getElementById('composeEditor');
   const text = ed.innerText.trim();
   const cat = document.getElementById('composeCategorySelect').value;
-  const img = window._pendingImg || "";
-  const video = window._pendingVid || "";
-
-  if (!text && !img && !video) return;
-
-  const res = await api("add_post", {
-    text, category: cat, img, video, senderName: me.name
-  });
-
-  if (res.status === "ok") {
-    ed.innerText = "";
-    window._pendingImg = "";
-    window._pendingVid = "";
-    await refreshSiteData();
-    renderFeed();
-  }
+  if (!text && !window._pendingImg && !window._pendingVid) return;
+  const btn = document.getElementById('sendBtn'); btn.disabled = true;
+  const res = await api("add_post", { text, category: cat, img: window._pendingImg || "", video: window._pendingVid || "", senderName: me.name });
+  if (res.status === "ok") { ed.innerText = ""; window._pendingImg = ""; window._pendingVid = ""; await refreshAllData(); }
+  btn.disabled = false;
 }
 
-function openVideoPrompt() {
-  const url = prompt("הדבק קישור לסרטון (Google Drive או ישיר):");
-  if (url) {
-    window._pendingVid = url;
-    alert("סרטון צורף להודעה");
-  }
-}
+function openVideoPrompt() { const u = prompt("קישור לסרטון (דרייב או ישיר):"); if (u) window._pendingVid = u; }
+function triggerImgUpload() { const u = prompt("קישור לתמונה:"); if (u) window._pendingImg = u; }
+async function deletePost(id) { if (confirm("למחוק?")) { await api("delete_post", { id }); refreshAllData(); } }
+function openMail() { window.location.href = "mailto:0556798858b@gmail.com"; }
 
-function triggerImgUpload() {
-  const url = prompt("הדבק קישור לתמונה:");
-  if (url) {
-    window._pendingImg = url;
-    alert("תמונה צורפה");
-  }
-}
-
-async function deletePost(id) {
-  if (!confirm("למחוק פוסט זה?")) return;
-  const res = await api("delete_post", { id });
-  if (res.status === "ok") {
-    await refreshSiteData();
-    renderFeed();
-  }
-}
-
-function openMail() {
-  window.location.href = "mailto:0556798858b@gmail.com";
-}
-
-/* --- ADMIN PANEL FUNCTIONS --- */
 function openAdminModal() {
+  document.getElementById('adminModal').style.display = 'flex';
   const role = getMyRole();
-  const modal = document.getElementById('adminModal');
-  modal.style.display = 'flex';
-  
   if (role === "principal") {
     document.getElementById('principalAdminSection').style.display = 'block';
     document.getElementById('siteTitleInp').value = siteData.title;
     renderUserList();
   }
-  
   if (role === "principal" || role === "admin") {
     document.getElementById('adminSection').style.display = 'block';
-    renderCategoryMgmt();
+    renderCatMgmt();
   }
-
-  // Uploader Role logic
-  document.getElementById('newUserRole').onchange = (e) => {
-    const box = document.getElementById('uploaderPermsBox');
-    if (e.target.value === 'uploader') {
-       box.style.display = 'block';
-       const list = document.getElementById('catPermList');
-       list.innerHTML = siteData.categories.map(c => `
-         <label style="font-size:12px;"><input type="checkbox" value="${c}" class="cat-perm-chk"> ${c}</label>
-       `).join('');
-    } else {
-       box.style.display = 'none';
-    }
-  };
 }
 
-async function updateSiteSettings() {
-  const title = document.getElementById('siteTitleInp').value;
-  await api("update_site_title", { title });
-  location.reload();
-}
-
-async function addNewUser() {
-  const email = document.getElementById('newUserEmail').value.trim();
-  const role = document.getElementById('newUserRole').value;
-  let allowed = [];
-  if (role === 'uploader') {
-    document.querySelectorAll('.cat-perm-chk:checked').forEach(chk => allowed.push(chk.value));
-  }
-  
-  await api("manage_user", { action: "add", email, role, allowedCats: allowed });
-  await refreshSiteData();
-  renderUserList();
-}
-
-function renderUserList() {
-  const list = document.getElementById('userList');
-  list.innerHTML = siteData.users.map(u => `
-    <div style="display:flex; justify-content:space-between; padding:8px; border-bottom:1px solid #eee; font-size:12px;">
-      <span>${u.email} (${u.role})</span>
-      <button onclick="removeUser('${u.email}')" style="color:red; border:none; background:none; cursor:pointer;">מחק</button>
-    </div>
-  `).join('');
-}
-
-async function removeUser(email) {
-  await api("manage_user", { action: "remove", email });
-  await refreshSiteData();
-  renderUserList();
-}
-
-async function addCategory() {
-  const name = document.getElementById('newCatInp').value.trim();
-  if (!name) return;
-  await api("manage_category", { action: "add", name });
-  document.getElementById('newCatInp').value = "";
-  await refreshSiteData();
-  renderCategoryMgmt();
-  renderCategories();
-}
-
-function renderCategoryMgmt() {
-  const list = document.getElementById('categoryMgmtList');
-  list.innerHTML = siteData.categories.map(c => `
-    <div style="display:flex; justify-content:space-between; padding:8px; background:#f9f9f9; border-radius:8px; margin-bottom:5px;">
-      <span>${c}</span>
-      <button onclick="deleteCategory('${c}')" style="color:red; border:none; background:none; cursor:pointer;"><i class="fas fa-trash"></i></button>
-    </div>
-  `).join('');
-}
-
-async function deleteCategory(name) {
-  if (!confirm("למחוק קטגוריה זו? כל הפוסטים בה יימחקו.")) return;
-  await api("manage_category", { action: "remove", name });
-  await refreshSiteData();
-  renderCategoryMgmt();
-  renderCategories();
-}
-
-/* --- HELPERS --- */
-function toggleDark() {
-  document.body.classList.toggle('dark');
-  localStorage.setItem('shaagat_dark', document.body.classList.contains('dark') ? '1' : '0');
-}
-
-function openLightbox(src) {
-  const lb = document.getElementById('lightbox');
-  document.getElementById('lbImg').src = src;
-  lb.style.display = 'flex';
-}
-
-window.onclick = function(event) {
-  if (!event.target.closest('#userAvatar')) {
-    document.getElementById('userMenu').style.display = 'none';
-  }
+document.getElementById('newUserRole').onchange = (e) => {
+  const box = document.getElementById('uploaderPermsBox');
+  box.style.display = (e.target.value === 'uploader') ? 'block' : 'none';
+  document.getElementById('catPermList').innerHTML = siteData.categories.map(c => `<label style="margin-left:10px;"><input type="checkbox" value="${c}" class="cat-perm-chk"> ${c}</label>`).join('');
 };
 
-// Start
-window.addEventListener('load', () => {
-  initGoogle();
-  if (localStorage.getItem('shaagat_dark') === '1') document.body.classList.add('dark');
-});
+async function updateSiteSettings() { await api("update_site_title", { title: document.getElementById('siteTitleInp').value }); location.reload(); }
+async function addNewUser() {
+  const email = document.getElementById('newUserEmail').value.trim().toLowerCase();
+  const role = document.getElementById('newUserRole').value;
+  let allowed = [];
+  if (role === 'uploader') document.querySelectorAll('.cat-perm-chk:checked').forEach(c => allowed.push(c.value));
+  await api("manage_user", { action: "add", email, role, allowedCats: allowed });
+  refreshAllData();
+}
 
+function renderUserList() { document.getElementById('userList').innerHTML = siteData.users.map(u => `<div style="font-size:12px; display:flex; justify-content:space-between; margin-bottom:5px;"><span>${u.email} (${u.role})</span> <button onclick="removeUser('${u.email}')" style="color:red;border:none;background:none;cursor:pointer;">מחק</button></div>`).join(''); }
+async function removeUser(email) { await api("manage_user", { action: "remove", email }); refreshAllData(); }
+async function addCategory() { await api("manage_category", { action: "add", name: document.getElementById('newCatInp').value }); refreshAllData(); }
+function renderCatMgmt() { document.getElementById('categoryMgmtList').innerHTML = siteData.categories.map(c => `<div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span>${c}</span> <button onclick="deleteCat('${c}')" style="color:red;border:none;background:none;cursor:pointer;">מחק</button></div>`).join(''); }
+async function deleteCat(name) { if (confirm("למחוק?")) { await api("manage_category", { action: "remove", name }); refreshAllData(); } }
+
+function toggleDark() { document.body.classList.toggle('dark'); localStorage.setItem('shaagat_dark', document.body.classList.contains('dark') ? '1' : '0'); }
+function openLightbox(src) { document.getElementById('lbImg').src = src; document.getElementById('lightbox').style.display = 'flex'; }
+
+window.onclick = (e) => { if (!e.target.closest('#userAvatar')) document.getElementById('userMenu').style.display = 'none'; };
+window.addEventListener('load', () => { initGoogle(); if (localStorage.getItem('shaagat_dark') === '1') document.body.classList.add('dark'); });
 </script>
 </body>
 </html>
