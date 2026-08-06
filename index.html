@@ -33,7 +33,12 @@ body { display: flex; flex-direction: row-reverse; }
     font-size: 15px; font-weight: 600; color: #64748b; border-radius: 12px; margin-bottom: 5px;
     position: relative; transition: all 0.2s;
 }
-.channel-item.active { background: #eff6ff; color: var(--primary-blue); border-right: 4px solid var(--primary-blue); }
+.channel-item.active { background: #eff6ff; color: var(--primary-blue); font-weight: 800; }
+.unread-dot {
+    position: absolute; left: 15px; top: 50%; transform: translateY(-50%);
+    width: 8px; height: 8px; background: #ef4444; border-radius: 50%; display: none; border: 2px solid #fff;
+}
+.channel-item.has-unread .unread-dot { display: block; }
 
 /* תוכן מרכזי */
 #app { flex: 1; display: flex; flex-direction: column; background: #fff; position: relative; overflow: hidden; }
@@ -41,7 +46,10 @@ header {
     height: 70px; background: #fff; border-bottom: 1px solid var(--border-color);
     display: flex; align-items: center; padding: 0 20px; gap: 15px;
 }
-.hdr-avatar { width: 45px; height: 45px; border-radius: 12px; }
+.hdr-avatar { width: 45px; height: 45px; border-radius: 12px; object-fit: cover; }
+.hdr-info { flex: 1; }
+.hdr-name { font-size: 17px; font-weight: 900; }
+.hdr-desc { font-size: 13px; color: #64748b; }
 
 /* הפיד */
 #feedWrap { flex: 1; overflow-y: auto; padding: 20px; background: #f1f5f9; }
@@ -49,12 +57,12 @@ header {
 
 .msg-row { display: flex; gap: 12px; direction: rtl; animation: fadeIn 0.3s ease; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-.msg-av { width: 40px; height: 40px; border-radius: 50%; }
+.msg-av { width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0; }
 .bubble { 
     background: #fff; padding: 18px; border-radius: 20px; border-top-right-radius: 4px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.03); border: 1px solid #edf2f7; max-width: 90%;
 }
-.bubble-meta { font-size: 12px; font-weight: 800; color: var(--primary-blue); margin-bottom: 6px; }
+.bubble-meta { font-size: 12px; font-weight: 800; color: var(--primary-blue); margin-bottom: 6px; display: flex; justify-content: space-between; }
 
 /* סרגל כתיבה תחתון */
 #adminComposeBar {
@@ -65,13 +73,20 @@ header {
 .editor-toolbar {
     display: flex; align-items: center; gap: 8px; padding-bottom: 10px; border-bottom: 1px solid #f1f5f9; flex-wrap: wrap;
 }
+.writer-badge {
+    background: #eff6ff; color: var(--primary-blue); padding: 6px 12px; border-radius: 10px; font-size: 12px; font-weight: 800; margin-left: auto;
+}
 .tool-pill {
     background: #f8fafc; border: 1px solid #e2e8f0; color: #64748b; padding: 6px 12px;
     border-radius: 8px; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 6px;
 }
+.tool-pill:hover { background: #f1f5f9; }
+
 .editor-input-area { display: flex; align-items: center; gap: 10px; padding-top: 10px; }
 #composeEditor { flex: 1; min-height: 40px; max-height: 150px; overflow-y: auto; outline: none; font-size: 16px; }
-.send-btn-main {
+#composeEditor:empty:before { content: "כתוב הודעה..."; color: #94a3b8; }
+
+.send-btn-circle {
     width: 45px; height: 45px; border-radius: 50%; border: none; background: var(--primary-blue);
     color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 20px;
 }
@@ -100,59 +115,65 @@ header {
 }
 .stat-value { font-size: 32px; font-weight: 900; color: var(--primary-blue); }
 
-/* כניסה */
+/* מסך כניסה */
 #loginScreen { position: fixed; inset: 0; background: #fff; z-index: 2000; display: flex; align-items: center; justify-content: center; }
-#lightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 3000; display: none; align-items: center; justify-content: center; }
+#lightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 3000; display: none; align-items: center; justify-content: center; cursor: zoom-out; }
 #lightbox img { max-width: 90%; max-height: 90%; border-radius: 15px; }
 
 </style>
 </head>
 <body>
 
+<!-- מסך כניסה -->
 <div id="loginScreen">
     <div style="text-align:center;">
         <img src="https://cdn-icons-png.flaticon.com/128/6476/6476785.png" style="width:100px; margin-bottom:20px;">
-        <h1 style="font-weight:900;">ברוכים הבאים</h1>
-        <div id="googleBtn" style="margin-top:20px;"></div>
+        <h1 style="font-weight:900;">מוזיקה אקספרס</h1>
+        <div id="googleBtn" style="margin-top:20px; display: flex; justify-content: center;"></div>
     </div>
 </div>
 
+<!-- סרגל צד -->
 <div id="leftSidebar">
     <div class="channels-hdr">קטגוריות</div>
     <div id="channelsList">
-        <div class="channel-item active" onclick="loadFeed('general')"><i class="fas fa-hashtag"></i> כללי</div>
+        <!-- יתמלא אוטומטית -->
     </div>
 </div>
 
+<!-- אפליקציה -->
 <div id="app">
     <header>
-        <img src="https://cdn-icons-png.flaticon.com/128/6476/6476785.png" class="hdr-avatar">
+        <img src="https://cdn-icons-png.flaticon.com/128/6476/6476785.png" class="hdr-avatar" id="siteLogo">
         <div class="hdr-info">
-            <div class="hdr-name">מזג האוויר</div>
-            <div class="hdr-desc">כל העדכונים מהשטח</div>
+            <div class="hdr-name" id="hdrSiteName">טוען...</div>
+            <div class="hdr-desc">כל העדכונים בזמן אמת</div>
         </div>
         <div style="display:flex; gap:12px;">
             <button class="tool-pill" id="adminOpener" style="display:none;" onclick="openAdmin()"><i class="fas fa-cog"></i></button>
-            <div id="userAvatar"></div>
+            <div id="userAvatar" onclick="doLogout()" style="cursor:pointer" title="התנתק"></div>
         </div>
     </header>
 
     <div id="feedWrap">
         <div id="feedInner"></div>
+        <div id="empty" style="display:none; text-align:center; padding:50px; color:#94a3b8;">אין פוסטים להצגה בקטגוריה זו.</div>
     </div>
 
-    <!-- סרגל כתיבה תחתון -->
+    <!-- סרגל כתיבה תחתון (בדיוק כמו בתמונה) -->
     <div id="adminComposeBar">
         <div class="editor-toolbar">
-            <div class="writer-info-badge" id="writerName">טוען...</div>
+            <div class="writer-badge" id="writerName">כותב בתור...</div>
+            <select id="postCategorySelect" style="padding:5px; border-radius:8px; border:1px solid #ddd; margin-left:10px;"></select>
             <button class="tool-pill" onclick="execCmd('bold')"><b>B</b></button>
             <button class="tool-pill" onclick="execCmd('italic')"><i>I</i></button>
             <button class="tool-pill" onclick="promptImg()"><i class="fas fa-image"></i> תמונה</button>
             <button class="tool-pill" onclick="promptVid()"><i class="fas fa-video"></i> סרטון</button>
+            <input type="text" id="postTags" placeholder="הוסף תווית..." style="border:none; background:#f1f5f9; padding:6px 12px; border-radius:8px; font-size:12px; outline:none;">
         </div>
         <div class="editor-input-area">
-            <div id="composeEditor" contenteditable="true" placeholder="כתוב משהו..."></div>
-            <button class="send-btn-main" onclick="sendPost()"><i class="fas fa-paper-plane"></i></button>
+            <div id="composeEditor" contenteditable="true"></div>
+            <button class="send-btn-circle" onclick="sendPost()"><i class="fas fa-paper-plane"></i></button>
         </div>
     </div>
 </div>
@@ -162,9 +183,10 @@ header {
     <div class="admin-window">
         <div class="admin-sidebar">
             <div class="admin-nav-item active" onclick="showTab('stats')"><i class="fas fa-chart-line"></i> סטטיסטיקות</div>
-            <div class="admin-nav-item" onclick="showTab('users')"><i class="fas fa-users"></i> משתמשים</div>
+            <div class="admin-nav-item" onclick="showTab('users')"><i class="fas fa-users"></i> ניהול צוות</div>
+            <div class="admin-nav-item" onclick="showTab('cats')"><i class="fas fa-tags"></i> קטגוריות</div>
         </div>
-        <div class="admin-main-content" style="flex:1; padding:30px;">
+        <div class="admin-main-content" style="flex:1; padding:30px; overflow-y:auto;">
             <h2 id="tabTitle" style="margin-bottom:20px;">סטטיסטיקות</h2>
             <div id="adminBody"></div>
         </div>
@@ -175,12 +197,39 @@ header {
 
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script>
-/* חשוב מאוד: החלף את ה-URL הזה בקישור ל-Google Script שלך */
+/* -----------------------------------------------------------
+   הגדרות ו-API מקורי (אל תשנה את השמות של ה-Actions)
+   ----------------------------------------------------------- */
 const BACKEND = "https://script.google.com/macros/s/AKfycbyig5wjhHEFUFrJCdakcxu_-R302GplBuxyJo5jintWf7oEXHa_cK4mRvFivHu6AtAjlQ/exec";
 const GOOGLE_ID = '426523025549-7c50rkn7cun4vmm2r802u0ij6egjehtg.apps.googleusercontent.com';
 
 let me = null;
-let items = [];
+let siteData = { title: "מוזיקה אקספרס", categories: ["כללי"] };
+let posts = [];
+let activeCat = "כללי";
+
+/* פונקציית ה-API המקורית מהקוד הראשון שלך - מבטיחה תקשורת תקינה */
+async function api(action, params, method) {
+  method = method || 'GET';
+  try {
+    if (method === 'GET') {
+      const qs = new URLSearchParams(Object.assign({ action }, params || {}));
+      qs.set('t', Date.now());
+      const r = await fetch(BACKEND + '?' + qs.toString());
+      return await r.json();
+    } else {
+      const r = await fetch(BACKEND + '?action=' + encodeURIComponent(action), {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(params || {})
+      });
+      return await r.json();
+    }
+  } catch (e) {
+    console.error("API Error:", e);
+    return { status: 'error', message: String(e) };
+  }
+}
 
 /* --- התחברות --- */
 function initGoogle() {
@@ -199,60 +248,100 @@ function handleGoogle(resp) {
 
 async function onLogin() {
     document.getElementById('loginScreen').style.display = 'none';
-    document.getElementById('userAvatar').innerHTML = `<img src="${me.picture}" style="width:38px;height:38px;border-radius:50%;">`;
+    document.getElementById('userAvatar').innerHTML = `<img src="${me.picture}" style="width:38px;height:38px;border-radius:50%; border: 2px solid var(--primary-blue);">`;
     
-    // בדיקת הרשאות מול השרת (שימוש ב-action המקורי שלך)
-    const auth = await api('auth_check', { email: me.email });
+    // בדיקת הרשאות
+    const auth = await api('auth_check', { email: me.email }, 'GET');
     if (auth.admin || auth.writer) {
         document.getElementById('adminComposeBar').style.display = 'flex';
         document.getElementById('writerName').innerText = `כותב בתור: ${me.name}`;
         if(auth.admin) document.getElementById('adminOpener').style.display = 'block';
     }
     
-    loadFeed();
+    await loadInitialData();
 }
 
-/* --- API --- */
-async function api(action, params = {}) {
-    try {
-        const r = await fetch(BACKEND + "?action=" + action, { 
-            method: 'POST', 
-            body: JSON.stringify({ ...params, email: me.email }) 
-        });
-        return await r.json();
-    } catch(e) { return { status: 'error' }; }
-}
-
-async function loadFeed() {
-    // קריאה לפעולת feed המקורית של השרת שלך
-    const res = await api('feed', { channel: 'general' });
+/* --- טעינת מידע --- */
+async function loadInitialData() {
+    // טעינת הגדרות אתר ופוסטים (Actions מקוריים מהשרת שלך)
+    const res = await api('feed', { channel: activeCat }, 'GET');
     if (res.status === 'ok') {
-        items = res.messages;
-        renderMessages();
+        posts = res.messages;
+        renderFeed();
+    }
+    
+    // ניסיון לטעון קטגוריות
+    const catsRes = await api('allowed_list', {}, 'GET'); // דוגמה לשימוש ברשימה קיימת
+    if (catsRes.list) {
+        siteData.users = catsRes.list;
+    }
+    
+    updateSiteInfo();
+    renderSidebar();
+}
+
+function updateSiteInfo() {
+    document.getElementById('hdrSiteName').innerText = siteData.title;
+    document.getElementById('pageTitle').innerText = siteData.title;
+}
+
+function renderSidebar() {
+    const list = document.getElementById('channelsList');
+    const select = document.getElementById('postCategorySelect');
+    
+    list.innerHTML = siteData.categories.map(c => `
+        <div class="channel-item ${activeCat === c ? 'active' : ''}" onclick="switchCat('${c}')">
+            <i class="fas fa-hashtag"></i> ${c}
+            <div class="unread-dot"></div>
+        </div>
+    `).join('');
+
+    select.innerHTML = siteData.categories.map(c => `<option value="${c}">${c}</option>`).join('');
+}
+
+async function switchCat(c) {
+    activeCat = c;
+    renderSidebar();
+    const res = await api('feed', { channel: activeCat }, 'GET');
+    if(res.status === 'ok') {
+        posts = res.messages;
+        renderFeed();
     }
 }
 
-function renderMessages() {
+function renderFeed() {
     const inner = document.getElementById('feedInner');
-    inner.innerHTML = items.map(m => `
+    if (!posts || posts.length === 0) {
+        document.getElementById('empty').style.display = 'block';
+        inner.innerHTML = "";
+        return;
+    }
+    document.getElementById('empty').style.display = 'none';
+
+    inner.innerHTML = posts.map(m => `
         <div class="msg-row">
-            <img class="msg-av" src="https://cdn-icons-png.flaticon.com/128/6476/6476785.png">
+            <img class="msg-av" src="${m.senderPic || 'https://cdn-icons-png.flaticon.com/128/6476/6476785.png'}">
             <div class="bubble">
-                <div class="bubble-meta">${m.sender || 'מערכת'} | ${new Date(m.ts).toLocaleTimeString('he-IL')}</div>
+                <div class="bubble-meta">
+                    <span>${m.sender || 'מערכת'}</span>
+                    <span style="color:#94a3b8; font-weight:400;">${new Date(m.ts).toLocaleTimeString('he-IL', {hour:'2-digit', minute:'2-digit'})}</span>
+                </div>
                 <div class="bubble-text">${m.text}</div>
-                ${m.imgUrl ? `<img src="${m.imgUrl}" style="width:100%; border-radius:10px; margin-top:10px;" onclick="openLB('${m.imgUrl}')">` : ''}
+                ${m.imgUrl ? `<img src="${m.imgUrl}" style="width:100%; border-radius:12px; margin-top:10px; cursor:pointer;" onclick="openLB('${m.imgUrl}')">` : ''}
                 ${m.videoUrl ? renderVid(m.videoUrl) : ''}
             </div>
         </div>
     `).join('');
+    
+    document.getElementById('feedWrap').scrollTop = 999999;
 }
 
 function renderVid(url) {
     if (url.includes('drive.google.com')) {
         let id = url.includes('id=') ? url.split('id=')[1].split('&')[0] : url.split('/d/')[1].split('/')[0];
-        return `<iframe src="https://drive.google.com/file/d/${id}/preview" style="width:100%; height:300px; border:none; margin-top:10px;"></iframe>`;
+        return `<iframe src="https://drive.google.com/file/d/${id}/preview" style="width:100%; height:350px; border:none; border-radius:12px; margin-top:10px;" allow="autoplay"></iframe>`;
     }
-    return `<video src="${url}" controls style="width:100%; margin-top:10px;"></video>`;
+    return `<video src="${url}" controls style="width:100%; border-radius:12px; margin-top:10px;"></video>`;
 }
 
 /* --- פעולות כתיבה --- */
@@ -261,37 +350,45 @@ function promptImg() { let u = prompt("קישור לתמונה:"); if(u) window.
 function promptVid() { let u = prompt("קישור וידאו:"); if(u) window._pendingVid = u; }
 
 async function sendPost() {
-    const text = document.getElementById('composeEditor').innerHTML;
-    if(!text && !window._pendingImg) return;
+    const text = document.getElementById('composeEditor').innerHTML.trim();
+    const cat = document.getElementById('postCategorySelect').value;
+    if(!text && !window._pendingImg && !window._pendingVid) return;
     
-    // שימוש בפעולת הוספה מקורית
     const res = await api('feed_add', { 
-        channel: 'general', 
+        channel: cat, 
         text: text, 
         imgUrl: window._pendingImg || "",
         videoUrl: window._pendingVid || "",
-        sender: me.name
-    });
+        sender: me.name,
+        senderEmail: me.email
+    }, 'POST');
     
     if(res.status === 'ok') {
         document.getElementById('composeEditor').innerHTML = "";
         window._pendingImg = ""; window._pendingVid = "";
-        loadFeed();
+        switchCat(cat);
     }
 }
 
-function openLB(s) { document.getElementById('lbImg').src = s; document.getElementById('lightbox').style.display = 'flex'; }
+/* --- פאנל ניהול --- */
 function openAdmin() { document.getElementById('adminModal').style.display = 'flex'; showTab('stats'); }
+function doLogout() { localStorage.removeItem('bina_user'); location.reload(); }
+function openLB(s) { document.getElementById('lbImg').src = s; document.getElementById('lightbox').style.display = 'flex'; }
 
 async function showTab(tab) {
     const body = document.getElementById('adminBody');
+    document.querySelectorAll('.admin-nav-item').forEach(i => i.classList.remove('active'));
+    
     if(tab === 'stats') {
-        const s = await api('site_stats');
+        body.innerHTML = "טוען סטטיסטיקות...";
+        const s = await api('site_stats', {}, 'GET');
         body.innerHTML = `
             <div class="stats-grid">
-                <div class="stat-card"><div>מחוברים</div><div class="stat-value">${s.online || 0}</div></div>
+                <div class="stat-card"><div>מחוברים כעת</div><div class="stat-value">${s.online || 0}</div></div>
                 <div class="stat-card"><div>היום</div><div class="stat-value">${s.day || 0}</div></div>
             </div>`;
+    } else if(tab === 'users') {
+        body.innerHTML = `<h3>ניהול מורשי כתיבה</h3><p>כאן תוכל להוסיף מנהלים חדשים (בקרוב).</p>`;
     }
 }
 
