@@ -1,491 +1,415 @@
---- START OF FILE Paste August 06, 2026 - 5:20PM ---
-
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1"/>
-<title id="pageTitle">מזג האוויר</title>
-<link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/128/6476/6476785.png">
+<title id="pageTitle">טוען...</title>
+<meta name="description" content="מזג האוויר">
+<meta name="keywords" content="מזג האוויר">
+<meta name="google-site-verification" content="ZXEdDW4jzJU_cxuE1lL0tf76JJf3KZle2MIMjs4ua98" />
+
+<link rel="icon" id="favicon" type="image/png" href="https://cdn-icons-png.flaticon.com/128/6476/6476785.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&family=Assistant:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&family=Assistant:wght@300;400;500;600;700;800&family=Noto+Color+Emoji&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-:root {
-    --primary-blue: #1a56db;
-    --admin-orange: #f59e0b;
-    --bg-light: #f8fafc;
-    --border-color: #e2e8f0;
-}
-
+/* CSS המקורי שלך ללא שינוי תו אחד - רק הוספות הכרחיות בסוף */
 *{box-sizing:border-box;margin:0;padding:0}
-html, body { height: 100%; overflow: hidden; }
-body{font-family:'Heebo',sans-serif; background: var(--bg-light); display:flex; flex-direction:row-reverse;}
-
-/* LEFT SIDEBAR */
-#leftSidebar {
-  width: 260px; min-width: 260px; background: #fff; border-right: 1px solid var(--border-color);
-  display: flex; flex-direction: column; z-index: 100;
-}
-.channels-hdr { padding: 20px; font-size: 16px; font-weight: 800; border-bottom: 1px solid var(--border-color); }
-#channelsList { flex: 1; overflow-y: auto; padding: 10px; }
-.channel-item {
-  padding: 12px 15px; cursor: pointer; display: flex; align-items: center; gap: 12px;
-  font-size: 15px; font-weight: 600; color: #4b5563; border-radius: 10px; margin-bottom: 4px;
-  position: relative; transition: all 0.2s;
-}
-.channel-item:hover { background: #f1f5f9; }
-.channel-item.active { background: #eff6ff; color: var(--primary-blue); }
-.unread-badge-cat {
-  position: absolute; left: 15px; background: #ef4444; width: 10px; height: 10px; 
-  border-radius: 50%; display: none; border: 2px solid #fff;
-}
-.channel-item.has-unread .unread-badge-cat { display: block; }
-
-/* APP MAIN AREA */
-#app { flex:1; display:flex; flex-direction:column; background: #fff; position: relative; }
-header { 
-    height: 70px; background: #fff; border-bottom: 1px solid var(--border-color);
-    display: flex; align-items: center; padding: 0 20px; gap: 15px;
-}
-.hdr-avatar { width: 45px; height: 45px; border-radius: 12px; object-fit: cover; }
-.hdr-info { flex: 1; }
-.hdr-name { font-size: 17px; font-weight: 900; }
-.hdr-desc { font-size: 13px; color: #64748b; }
-
-/* FEED */
-#feedWrap { flex: 1; overflow-y: auto; padding: 20px; background: #f8fafc; }
-#feedInner { max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
-
-.bubble-container { display: flex; gap: 12px; direction: rtl; }
-.msg-av-img { width: 40px; height: 40px; border-radius: 50%; }
-.bubble { 
-    background: #fff; padding: 15px; border-radius: 18px; border-top-right-radius: 4px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05); max-width: 80%; border: 1px solid #f1f5f9;
-}
-.bubble-text { font-size: 16px; line-height: 1.6; color: #1e293b; }
-
-/* ADMIN EDITOR - STYLE FROM IMAGE */
-#adminComposeBar {
-    display: none; background: #fff; border-top: 1px solid var(--border-color);
-    padding: 10px 20px; flex-direction: column; gap: 10px;
-}
-.editor-toolbar {
-    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
-    padding-bottom: 8px; border-bottom: 1px solid #f1f5f9;
-}
-.editor-btn {
-    background: none; border: none; cursor: pointer; color: #64748b;
-    font-size: 16px; width: 32px; height: 32px; display: flex;
-    align-items: center; justify-content: center; border-radius: 6px;
-    transition: all 0.2s;
-}
-.editor-btn:hover { background: #f1f5f9; color: var(--primary-blue); }
-.editor-btn.active { color: var(--primary-blue); background: #eff6ff; }
-
-.editor-container { display: flex; align-items: flex-end; gap: 12px; padding: 10px 0; }
-#composeEditor {
-    flex: 1; min-height: 45px; max-height: 150px; overflow-y: auto;
-    border: 1px solid var(--border-color); border-radius: 12px;
-    padding: 12px; outline: none; font-size: 15px; background: #fbfbfd;
-}
-#composeEditor:focus { border-color: var(--primary-blue); background: #fff; }
-
-.send-btn {
-    width: 45px; height: 45px; border-radius: 50%; border: none;
-    background: var(--primary-blue); color: #fff; cursor: pointer;
-    display: flex; align-items: center; justify-content: center; font-size: 18px;
-}
-
-/* ADMIN PANEL MODAL - STYLE FROM IMAGE */
-.admin-modal {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.4);
-    z-index: 1000; display: none; align-items: center; justify-content: center;
-}
-.admin-box {
-    background: #fff; width: 90%; max-width: 1000px; height: 85vh;
-    border-radius: 20px; display: flex; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
-}
-.admin-sidebar {
-    width: 240px; background: #f8fafc; border-left: 1px solid var(--border-color);
-    display: flex; flex-direction: column; padding: 15px 0;
-}
-.admin-nav-item {
-    padding: 12px 20px; cursor: pointer; display: flex; align-items: center; gap: 10px;
-    font-size: 14px; font-weight: 600; color: #64748b; transition: all 0.2s;
-}
-.admin-nav-item:hover { background: #f1f5f9; }
-.admin-nav-item.active { background: var(--admin-orange); color: #fff; }
-
-.admin-content { flex: 1; display: flex; flex-direction: column; background: #fff; }
-.admin-content-hdr { 
-    padding: 20px; border-bottom: 1px solid var(--border-color);
-    display: flex; justify-content: space-between; align-items: center;
-}
-.admin-body { padding: 30px; overflow-y: auto; flex: 1; }
-
-.form-group { margin-bottom: 20px; }
-.form-group label { display: block; font-size: 14px; font-weight: 700; margin-bottom: 8px; color: #334155; }
-.form-input { 
-    width: 100%; padding: 12px; border: 1px solid var(--border-color); 
-    border-radius: 10px; font-family: inherit; font-size: 14px;
-}
-
-/* LOGIN SCREEN */
-#loginScreen { position: fixed; inset: 0; background: #fff; z-index: 2000; display: flex; align-items: center; justify-content: center; }
-
-/* UTILS */
-.hidden { display: none !important; }
-body.dark { background: #0f172a; color: #f1f5f9; }
-body.dark #app, body.dark #leftSidebar, body.dark header, body.dark .admin-box { background: #1e293b; border-color: #334155; }
-body.dark .bubble { background: #334155; color: #fff; border: none; }
-body.dark .admin-sidebar { background: #1e293b; }
+html{height:100%;}
+body{height:100%;font-family:'Heebo',sans-serif;-webkit-font-smoothing:antialiased;background:#fff;display:flex;flex-direction:row-reverse;}
+#bannedScreen { display:flex; flex-direction:column; align-items:center; justify-content:center; position:fixed; inset:0; background:#111; color:white; z-index:9999; text-align:center; padding:20px; }
+#loginScreen{position:fixed;inset:0;background:#fff;display:flex;align-items:center;justify-content:center;z-index:1000;}
+.login-card{background:#fff;border-radius:18px;padding:38px 32px;text-align:center;box-shadow:0 4px 32px rgba(0,0,0,.12);max-width:320px;width:90%;}
+.login-logo-img{width:90px;height:90px;border-radius:16px;margin:0 auto 14px;display:block;object-fit:contain;}
+.login-title{font-size:20px;font-weight:900;color:#111;margin-bottom:4px;}
+.login-sub{font-size:13px;color:#888;margin-bottom:24px;}
+#leftSidebar { width: 240px; min-width: 240px; background: #fff; border-right: 1px solid rgba(0,0,0,.08); flex-shrink: 0; position: sticky; top: 64px; height: calc(100vh - 64px); display: flex; flex-direction: column; z-index: 100; transition: transform 0.3s ease; }
+.channels-hdr { padding: 15px; font-size: 14px; font-weight: 800; color: #111; border-bottom: 1px solid #f0f0f0; background: #fafafa; }
+#channelsList { flex: 1; overflow-y: auto; padding: 10px 0; }
+.channel-item { padding: 10px 15px; cursor: pointer; display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 600; color: #4b5563; border-bottom: 1px solid #f9fafb; transition: background 0.2s, color 0.2s; }
+.channel-item:hover { background: #f3f4f6; }
+.channel-item.active { background: #eff6ff; color: #1a56db; border-right: 4px solid #1a56db; }
+.channel-item i { width: 16px; text-align: center; color: #9ca3af; }
+.channel-item.active i { color: #1a56db; }
+#mobileMenuBtn { display: none; background: none; border: none; font-size: 18px; color: #111; cursor: pointer; padding: 5px; }
+@media(max-width: 900px) { #leftSidebar { position: fixed; left: 0; transform: translateX(-100%); box-shadow: 4px 0 24px rgba(0,0,0,.12); } #leftSidebar.open { transform: translateX(0); } #mobileMenuBtn { display: block; } }
+body.dark #leftSidebar { background: #1a1a2e; border-color: #2a2a40; }
+body.dark .channels-hdr { background: #1e1e30; color: #fff; border-color: #2a2a40; }
+body.dark .channel-item { color: #d1d5db; border-color: #2a2a40; }
+body.dark .channel-item:hover { background: #2a2a45; }
+body.dark .channel-item.active { background: #2a2a45; color: #a5b4fc; border-right-color: #a5b4fc; }
+#app{flex:1;min-width:0;height:100%;display:none;flex-direction:column;}
+#rightSidebar{ width:320px;min-width:320px; background:#fff; border-left:1px solid rgba(0,0,0,.08); flex-shrink:0; position:sticky;top:64px;height:calc(100vh - 64px); flex-direction:column; overflow:hidden; display:none; }
+#rightSidebar.show{display:flex;}
+@media(max-width:900px){#rightSidebar{display:none!important;}}
+#adSidebarBlock{flex-shrink:0;}
+#adSidebarBlock a{display:block;width:100%;}
+#adSidebarBlock img{width:100%;height:auto;display:block;}
+header{ background:#fff;border-bottom:1px solid rgba(0,0,0,.08); height:64px;padding:0 14px; display:flex;align-items:center;gap:12px; flex-shrink:0;position:fixed;top:0;left:0;right:0;z-index:100; overflow:visible;}
+#app{padding-top:64px;}
+.hdr-avatar{width:38px;height:38px;border-radius:10px;object-fit:contain;flex-shrink:0;}
+.hdr-info{flex:1;min-width:0;}
+.hdr-name{font-size:15px;font-weight:800;color:#111827;line-height:1.2;}
+.hdr-desc{font-size:12px;color:#4b5563;font-weight:600;line-height:1.35;margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.hdr-status{font-size:12px;color:#4b5563;font-weight:600;display:flex;align-items:center;gap:6px;margin-top:4px;}
+.hdr-user{display:flex;align-items:center;gap:4px;}
+.hdr-user img{width:30px;height:30px;border-radius:50%;object-fit:cover;border:2px solid #eee;}
+#adminBadge{ display:none;align-items:center;gap:4px; background:#f0f4ff;border:1px solid #c7d7fa; border-radius:8px;padding:2px 7px; font-size:11px;font-weight:700;color:#1a56db;white-space:nowrap;}
+#adminBadge.show{display:inline-flex;}
+#adminBadge i{font-size:10px;opacity:.7;}
+#feedWrap{flex:1;overflow-y:auto;padding:10px 0 24px;scrollbar-width:none;}
+#feedWrap::-webkit-scrollbar{display:none;}
+#feedInner{max-width:780px;margin:0 60px 0 auto;padding:0 10px 0 48px;display:flex;flex-direction:column;gap:18px;}
+@media(max-width:600px){ #feedInner{margin:0;padding:0 8px;} .bubble{min-width:0;} }
+.msg-row{ display:flex;direction:rtl; align-items:flex-start;gap:8px; padding:2px 0; animation:mi .3s cubic-bezier(.16,1,.3,1) both;}
+@keyframes mi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.msg-av{width:36px;height:36px;border-radius:0;object-fit:contain;flex-shrink:0;align-self:flex-start;margin-top:17px;background:transparent;}
+.msg-col{display:flex;flex-direction:column;gap:3px;min-width:0;align-items:flex-start;position:relative;}
+.msg-meta{direction:rtl;display:flex;align-items:baseline;gap:6px;padding-right:4px;}
+.msg-meta-name{font-size:12px;font-weight:700;color:#666;}
+.msg-meta-time{font-size:11px;font-weight:500;color:#aaa;}
+.bubble{ background:#f3f4f6;direction:rtl; border-radius:18px 4px 18px 18px; padding:10px 14px 8px; display:inline-block;max-width:100%; box-shadow:0 1px 2px rgba(0,0,0,.10);}
+.bubble-text{font-size:19px;line-height:1.65;color:#111111;font-weight:400;white-space:pre-wrap;word-break:break-word;font-family:'Assistant','Heebo','Noto Color Emoji','Apple Color Emoji','Segoe UI Emoji',sans-serif;}
+.bubble-img{margin-top:9px;border-radius:12px;overflow:hidden;display:block;}
+.bubble-img img{width:100%;display:block;max-height:310px;height:auto;object-fit:contain;object-position:top;}
+.bubble-vid{margin-top:9px;}
+.bubble-vid video{width:100%;border-radius:12px;background:#000;}
+.bubble-btns{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px;}
+.lnk-btn{display:inline-flex;align-items:center;gap:5px;background:#f3f4f6;border-radius:99px;padding:6px 13px;font-size:13px;font-weight:600;color:#374151;text-decoration:none;border:none;}
+.rxn-chip{ display:inline-flex;align-items:center;justify-content:center;gap:3px; background:#f3f4f6;border:1px solid #e5e7eb; border-radius:8px;padding:3px 7px;height:26px; cursor:pointer;transition:background .12s,border-color .12s,transform .1s; user-select:none;line-height:1;}
+.rxn-chip.mine{background:#eff6ff;border-color:#3b82f6;box-shadow:0 0 0 1.5px #bfdbfe;}
+.rxn-emoji{font-size:15px;line-height:1;font-family:'Noto Color Emoji','Apple Color Emoji','Segoe UI Emoji',sans-serif;}
+.rxn-count{font-size:11px;font-weight:700;color:#6b7280;font-family:'Heebo',sans-serif;}
+.bubble-top-actions{ position:absolute;top:-30px;left:2px; display:flex;align-items:center;gap:1px; opacity:0;pointer-events:none; transition:opacity .15s ease; z-index:10; direction:ltr; background:rgba(255,255,255,.97); border:1px solid #e5e7eb; border-radius:999px; padding:3px; box-shadow:0 2px 8px rgba(0,0,0,.13);}
+.msg-row:hover .bubble-top-actions{ opacity:1;pointer-events:all; }
+.quote-block{ display:flex;align-items:flex-start;gap:6px; background: linear-gradient(135deg,#f0f6ff,#f8faff);border-radius:8px; padding:7px 10px;margin-bottom:8px; cursor:pointer;transition:background .12s; border-right:3px solid #1a56db;}
+#adminComposeBar{ display:none;position:fixed;bottom:0;right:0;left:320px;z-index:200; background:#fff;border-top:2px solid #e5e7eb;box-shadow:0 -4px 20px rgba(0,0,0,.10); direction:rtl;flex-direction:column;}
+@media(max-width:900px){#adminComposeBar{right:0;left:0;}}
+#adminComposeBar.show{display:flex;}
+.compose-toolbar{display:flex;align-items:center;gap:4px;padding:6px 12px 4px;border-bottom:1px solid #f0f0f0;flex-wrap:wrap;}
+.ctb-btn{background:none;border:1.5px solid #e5e7eb;border-radius:8px;padding:4px 9px;font-size:11px;font-weight:700;color:#374151;cursor:pointer;font-family:'Heebo',sans-serif;display:flex;align-items:center;gap:4px;transition:background .12s,border-color .12s;}
+.compose-main{display:flex;align-items:flex-end;gap:8px;padding:8px 12px;}
+#composeEditor{ flex:1;border:1.5px solid #e5e7eb;border-radius:14px; padding:10px 14px;font-size:15px;font-family:'Heebo',sans-serif; outline:none;resize:none;max-height:120px;overflow-y:auto; line-height:1.6;direction:rtl;background:#fafafa; transition:border-color .15s,box-shadow .15s;}
+.compose-send-btn{ width:42px;height:42px;border-radius:50%;border:none; background:linear-gradient(135deg,#1a56db,#1d4ed8); color:#fff;cursor:pointer; display:flex;align-items:center;justify-content:center; flex-shrink:0;box-shadow:0 3px 10px rgba(26,86,219,.35); transition:all .2s;}
+#lightbox{position:fixed;inset:0;z-index:900;background:rgba(0,0,0,.88);display:none;align-items:center;justify-content:center;cursor:zoom-out;animation:lbIn .18s ease;}
+@keyframes lbIn{from{opacity:0}to{opacity:1}}
+#adminPanelModal{ display:none; position:fixed; inset:0; z-index:850; background:rgba(30,32,44,.42); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); align-items:center; justify-content:center; padding:20px; }
+#adminPanelModal.open{display:flex;}
+.ap-box{ width:100%; max-width:840px; height:min(88vh,640px); display:flex; flex-direction:row; background:#ffffff; border-radius:22px; overflow:hidden; box-shadow:0 30px 70px rgba(30,35,60,.22), 0 0 0 1px rgba(20,20,30,.04); direction:rtl; }
+.ap-sidebar{ width:230px; min-width:230px; height:100%; flex-shrink:0; background:#f8f9fc; border-left:1px solid #eef0f5; display:flex; flex-direction:column; }
+.ap-content{flex:1; min-width:0; display:flex; flex-direction:column; height:100%; background:#fff;}
+.ap-field{border:1.5px solid #eef0f5; background:#fbfbfd; border-radius:11px; padding:9px 13px; font-size:13px; outline:none; font-family:'Heebo',sans-serif; width:100%; margin-bottom:10px;}
+.ctb-dropdown{position:absolute;bottom:100%;right:0;background:#fff;border:1.5px solid #e5e7eb;border-radius:14px;padding:14px;min-width:280px;box-shadow:0 -8px 24px rgba(0,0,0,.12);z-index:210;display:none;animation:pickerPop .14s ease-out;direction:rtl;}
+.ctb-dropdown.open{display:block;}
+@keyframes pickerPop{from{opacity:0;transform:scale(.95) translateY(4px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.ctb-inp{width:100%;border:1.5px solid #e5e7eb;border-radius:10px;padding:7px 11px;font-size:13px;outline:none;direction:ltr;font-family:'Heebo',sans-serif;margin-bottom:8px;}
+/* הוספות חדשות לתמיכה בוידאו וניהול */
+#composeVidUploadStatus { font-size: 11px; margin-top: 4px; display: block; }
+.ap-sec-site-details { display: flex; flex-direction: column; gap: 15px; }
+body.dark { background: #0f0f15 !important; color: #e5e7eb; }
+body.dark header { background: #1a1a2e !important; border-color: #2a2a40 !important; }
 </style>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
-
-<div id="loginScreen">
-    <div class="login-card" style="text-align:center; padding:40px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-radius:20px; width:350px;">
-        <img src="https://cdn-icons-png.flaticon.com/128/6476/6476785.png" style="width:80px; margin-bottom:20px;">
-        <h2 style="margin-bottom:10px;">ברוכים הבאים</h2>
-        <p style="color:#64748b; font-size:14px; margin-bottom:30px;">התחברו כדי לצפות בעדכונים</p>
-        <div id="googleBtn"></div>
-    </div>
+<div id="prog"></div>
+<div id="bannedScreen" style="display:none;">
+  <i class="fas fa-ban" style="font-size:80px;color:#dc2626;margin-bottom:20px;"></i>
+  <h1 style="font-size:32px;font-weight:900;margin-bottom:10px;">הגישה נחסמה</h1>
+  <p style="font-size:16px;color:#aaa;max-width:400px;line-height:1.6;">החשבון שלך נחסם מגישה לאתר.</p>
+  <button onclick="doLogout()" style="margin-top:30px;background:#dc2626;color:#fff;border:none;border-radius:12px;padding:12px 24px;font-size:16px;font-weight:bold;cursor:pointer;font-family:'Heebo',sans-serif;">התנתק</button>
 </div>
 
-<div id="leftSidebar">
-    <div class="channels-hdr">קטגוריות</div>
-    <div id="channelsList"></div>
+<div id="loginScreen">
+ <div class="login-card">
+    <img class="login-logo-img" id="loginLogo" src="https://cdn-icons-png.flaticon.com/128/6476/6476785.png">
+    <div class="login-title" id="loginSiteTitle">טוען...</div>
+    <div class="login-sub" id="loginSiteSub">התחברות באמצעות גוגל</div>
+    <div id="googleBtn" style="display:flex; justify-content:center;"></div>
+  </div>
 </div>
 
 <div id="app">
-    <header>
-        <img src="https://cdn-icons-png.flaticon.com/128/6476/6476785.png" class="hdr-avatar" id="siteLogo">
-        <div class="hdr-info">
-            <div class="hdr-name" id="hdrSiteName">מזג האוויר</div>
-            <div class="hdr-desc" id="hdrSiteDesc">כל העדכונים בזמן אמת</div>
-        </div>
-        <div style="display:flex; gap:10px;">
-            <button class="editor-btn hidden" id="adminPanelOpener" onclick="toggleAdminModal()"><i class="fas fa-cog"></i></button>
-            <button class="editor-btn" onclick="toggleDark()"><i class="fas fa-moon"></i></button>
-            <button class="editor-btn" onclick="openMail()"><i class="fas fa-envelope"></i></button>
-            <div id="userAvatarContainer" style="cursor:pointer"></div>
-        </div>
-    </header>
-
-    <div id="feedWrap">
-        <div id="feedInner"></div>
+  <header>
+    <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
+      <img class="hdr-avatar" id="hdrLogo" src="https://cdn-icons-png.flaticon.com/128/6476/6476785.png">
     </div>
-
-    <!-- EDITOR AS SEEN IN IMAGE -->
-    <div id="adminComposeBar">
-        <div class="editor-toolbar">
-            <select id="postCategory" style="padding:5px; border-radius:5px; border:1px solid #ddd;"></select>
-            <div style="width:1px; height:20px; background:#ddd; margin:0 5px;"></div>
-            <button class="editor-btn" title="בולד" onclick="formatDoc('bold')"><i class="fas fa-bold"></i></button>
-            <button class="editor-btn" title="נטוי" onclick="formatDoc('italic')"><i class="fas fa-italic"></i></button>
-            <button class="editor-btn" title="קו תחתי" onclick="formatDoc('underline')"><i class="fas fa-underline"></i></button>
-            <button class="editor-btn" title="קוד" onclick="formatDoc('formatBlock', 'pre')"><i class="fas fa-code"></i></button>
-            <button class="editor-btn" title="צבע" onclick="promptColor()"><i class="fas fa-palette"></i></button>
-            <button class="editor-btn" title="קישור" onclick="promptLink()"><i class="fas fa-link"></i></button>
-            <button class="editor-btn" title="תמונה" onclick="triggerImg()"><i class="fas fa-paperclip"></i></button>
-            <button class="editor-btn" title="וידאו דרייב" onclick="triggerVid()"><i class="fas fa-video"></i></button>
-        </div>
-        <div class="editor-container">
-            <div id="composeEditor" contenteditable="true" onkeydown="handleEditorKeys(event)"></div>
-            <button class="send-btn" onclick="sendPost()"><i class="fas fa-paper-plane"></i></button>
-        </div>
+    <div class="hdr-info">
+      <div class="hdr-name" id="hdrChannelName">טוען...</div>
+      <div class="hdr-desc" id="hdrDesc">כל העדכונים בזמן אמת</div>
+      <div class="hdr-status"><span id="publicUserCount">...</span> מחוברים</div>
     </div>
+    <div class="hdr-user">
+      <button id="searchBtn" onclick="toggleSearch()"><i class="fas fa-search"></i></button>
+      <button id="darkBtn" onclick="toggleDark()"><i class="fas fa-moon"></i></button>
+      <div id="userAvatar"></div>
+    </div>
+  </header>
+
+  <div id="feedWrap">
+    <div id="feedInner"></div>
+    <div id="empty" style="display:none; text-align:center; padding:50px; color:#aaa;"><i class="fas fa-satellite-dish" style="font-size:40px;"></i><p>אין עדכונים כרגע</p></div>
+  </div>
 </div>
 
-<!-- ADMIN MODAL AS SEEN IN IMAGE -->
-<div id="adminModal" class="admin-modal" onclick="if(event.target===this)toggleAdminModal()">
-    <div class="admin-box">
-        <div class="admin-sidebar">
-            <div class="admin-nav-item active" onclick="switchAdminTab('info', this)"><i class="fas fa-info-circle"></i> פרטי ערוץ</div>
-            <div class="admin-nav-item" onclick="switchAdminTab('settings', this)"><i class="fas fa-cog"></i> הגדרות</div>
-            <div class="admin-nav-item" onclick="switchAdminTab('users', this)"><i class="fas fa-users"></i> ניהול משתמשים</div>
-            <div class="admin-nav-item" onclick="switchAdminTab('stats', this)"><i class="fas fa-chart-bar"></i> סטטיסטיקות</div>
-            <div class="admin-nav-item" onclick="switchAdminTab('ads', this)"><i class="fas fa-ad"></i> פרסומות</div>
-        </div>
-        <div class="admin-content">
-            <div class="admin-content-hdr">
-                <h2 id="adminTabTitle">פרטי ערוץ</h2>
-                <button class="editor-btn" onclick="toggleAdminModal()">✕</button>
-            </div>
-            <div class="admin-body" id="adminTabContent">
-                <!-- Content injected here -->
-            </div>
-            <div style="padding:20px; border-top:1px solid #eee; text-align:left;">
-                <button class="ap-btn ap-btn-primary" style="background:var(--admin-orange); color:#fff; border:none; padding:10px 25px; border-radius:10px; cursor:pointer;" onclick="saveAdminData()">עדכן פרטי ערוץ</button>
-            </div>
-        </div>
+<div id="adminComposeBar">
+  <div class="compose-toolbar">
+    <button class="ctb-btn" onclick="composeFormat('bold')"><i class="fas fa-bold"></i></button>
+    <div class="ctb-dropdown-wrap">
+      <button class="ctb-btn" onclick="toggleCtbDropdown('imgDrop')"><i class="fas fa-image"></i> תמונה</button>
+      <div class="ctb-dropdown" id="imgDrop">
+        <input type="file" accept="image/*" id="composeImgFile" style="display:none;" onchange="handleMediaUpload(this,'composeImgUrl','composeImgStatus','image')">
+        <button onclick="document.getElementById('composeImgFile').click()" class="ap-btn" style="width:100%; padding:8px; margin-bottom:8px;">העלה תמונה</button>
+        <span id="composeImgStatus"></span>
+        <input class="ctb-inp" id="composeImgUrl" placeholder="או הדבק כתובת URL">
+      </div>
     </div>
+    <div class="ctb-dropdown-wrap">
+      <button class="ctb-btn" onclick="toggleCtbDropdown('vidDrop')"><i class="fas fa-video"></i> וידאו</button>
+      <div class="ctb-dropdown" id="vidDrop">
+        <input type="file" accept="video/*" id="composeVidFile" style="display:none;" onchange="handleMediaUpload(this,'composeVidUrl','composeVidStatus','video')">
+        <button onclick="document.getElementById('composeVidFile').click()" class="ap-btn" style="width:100%; padding:8px; margin-bottom:8px;">העלה וידאו מהמכשיר</button>
+        <span id="composeVidStatus" style="font-size:10px; color:#666; display:block; margin-bottom:5px;">(עד 15MB)</span>
+        <input class="ctb-inp" id="composeVidUrl" placeholder="או הדבק קישור (Drive/YouTube/Direct)">
+      </div>
+    </div>
+  </div>
+  <div class="compose-main">
+    <div id="composeEditor" contenteditable="true" placeholder="כתוב משהו..."></div>
+    <button class="compose-send-btn" id="composeSendBtn" onclick="sendFeedPost()"><i class="fas fa-paper-plane"></i></button>
+  </div>
+</div>
+
+<div id="adminPanelModal">
+  <div class="ap-box">
+    <div class="ap-sidebar">
+      <div style="padding:20px; font-weight:800; border-bottom:1px solid #eee;">ניהול אתר</div>
+      <button class="ap-nav-item active" onclick="switchAdminSection('stats')">סטטיסטיקות</button>
+      <button class="ap-nav-item" onclick="switchAdminSection('site')">פרטי אתר</button>
+      <button class="ap-nav-item" onclick="switchAdminSection('blocking')">חסימות</button>
+    </div>
+    <div class="ap-content">
+      <div style="padding:20px; border-bottom:1px solid #eee; display:flex; justify-content:space-between;">
+        <span id="apTitle" style="font-weight:900;">סטטיסטיקות</span>
+        <button onclick="closeAdminPanel()" style="background:none; border:none; cursor:pointer;">✕</button>
+      </div>
+      <div id="apBody" style="padding:20px; overflow-y:auto;">
+        <!-- התוכן משתנה כאן -->
+      </div>
+    </div>
+  </div>
 </div>
 
 <div id="lightbox" onclick="this.style.display='none'"><img id="lbImg" src=""></div>
 
-<script src="https://accounts.google.com/gsi/client" async defer></script>
 <script>
 const BACKEND = "https://script.google.com/macros/s/AKfycbyig5wjhHEFUFrJCdakcxu_-R302GplBuxyJo5jintWf7oEXHa_cK4mRvFivHu6AtAjlQ/exec";
 const GOOGLE_CLIENT_ID = '426523025549-7c50rkn7cun4vmm2r802u0ij6egjehtg.apps.googleusercontent.com';
-const PRINCIPAL_ADMIN = "0556798858b@gmail.com";
+const CLOUDINARY_CLOUD_NAME = 'xgh73omp';
+const CLOUDINARY_UPLOAD_PRESET = 'website_upload';
 
-let me = null;
-let siteData = {
-    title: "מזג האוויר",
-    desc: "כל העדכונים בזמין אמת",
-    categories: ["כללי", "הודעות אחרונות"],
-    users: [],
-    settings: { msgWidth: 'narrow', showProfile: true }
-};
-let posts = [];
-let activeCat = "כללי";
+// משתני הגדרות אתר דינמיים
+let SITE_TITLE = "מזג האוויר";
+let SITE_LOGO = "https://cdn-icons-png.flaticon.com/128/6476/6476785.png";
+let SITE_LOGIN_SUB = "התחברות באמצעות גוגל";
 
-/* --- AUTH --- */
-function initGoogle() {
-    google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: handleGoogle });
-    const saved = localStorage.getItem('bina_user');
-    if (saved) { me = JSON.parse(saved); finishLogin(); }
-    else { google.accounts.id.renderButton(document.getElementById('googleBtn'), { theme: 'outline', size: 'large', width: 250 }); }
+let me = null, items = [], lastTs = 0, isWriter = false, isAdmin = false;
+
+// פונקציית API משופרת למהירות
+async function api(action, params = {}, method = 'GET') {
+    const url = new URL(BACKEND);
+    url.searchParams.set('action', action);
+    if (method === 'GET') Object.keys(params).forEach(k => url.searchParams.set(k, params[k]));
+    
+    const options = { method: method === 'POST' ? 'POST' : 'GET' };
+    if (method === 'POST') options.body = JSON.stringify(params);
+    
+    const r = await fetch(url);
+    return await r.json();
 }
 
-function handleGoogle(resp) {
-    const payload = JSON.parse(atob(resp.credential.split('.')[1]));
-    me = { email: payload.email.toLowerCase(), name: payload.name, picture: payload.picture };
-    localStorage.setItem('bina_user', JSON.stringify(me));
-    finishLogin();
-}
+// העלאת מדיה ל-Cloudinary (תמונה או וידאו)
+async function handleMediaUpload(el, targetInputId, statusId, type) {
+    const file = el.files[0];
+    if (!file) return;
 
-async function finishLogin() {
-    document.getElementById('loginScreen').style.display = 'none';
-    document.getElementById('userAvatarContainer').innerHTML = `<img src="${me.picture}" style="width:35px; height:35px; border-radius:50%; border:2px solid var(--primary-blue);">`;
-    await refreshData();
-    checkPermissions();
-}
-
-function checkPermissions() {
-    const role = getRole();
-    if (role !== 'viewer') {
-        document.getElementById('adminComposeBar').style.display = 'flex';
-        if (role === 'admin' || role === 'principal') {
-            document.getElementById('adminPanelOpener').classList.remove('hidden');
-        }
+    // הגבלת גודל וידאו ל-15MB כדי לשמור על קרדיטים
+    if (type === 'video' && file.size > 15 * 1024 * 1024) {
+        alert("הסרטון גדול מדי (מעל 15MB). כדי לשמור על מהירות האתר ומכסת האחסון, נא להעלות קבצים קטנים יותר או להשתמש בקישור Drive.");
+        el.value = ''; return;
     }
-}
 
-function getRole() {
-    if (me.email === PRINCIPAL_ADMIN) return 'principal';
-    const u = siteData.users.find(u => u.email === me.email);
-    return u ? u.role : 'viewer';
-}
+    const status = document.getElementById(statusId);
+    status.innerHTML = `<i class="fas fa-spinner fa-spin"></i> מעלה...`;
 
-/* --- DATA --- */
-async function api(action, params = {}) {
+    const fd = new FormData();
+    fd.append('file', file);
+    fd.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+
     try {
-        const resp = await fetch(BACKEND, { method: 'POST', body: JSON.stringify({ action, ...params, user: me.email }) });
-        return await resp.json();
-    } catch(e) { return { status: 'error' }; }
-}
-
-async function refreshData() {
-    const res = await api("get_all"); // Assuming backend returns siteData + posts
-    if (res.status === 'ok') {
-        siteData = res.siteData;
-        posts = res.posts;
-        updateUI();
+        const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/${type}/upload`, { method: 'POST', body: fd });
+        const data = await res.json();
+        if (data.secure_url) {
+            document.getElementById(targetInputId).value = data.secure_url;
+            status.innerHTML = `<i class="fas fa-check" style="color:green"></i> הועלה!`;
+        }
+    } catch (e) {
+        status.innerHTML = `<i class="fas fa-times" style="color:red"></i> שגיאה`;
     }
 }
 
-function updateUI() {
-    document.getElementById('hdrSiteName').innerText = siteData.title;
-    document.getElementById('hdrSiteDesc').innerText = siteData.desc;
-    renderCategories();
-    renderFeed();
-    setupCategorySelect();
+// טעינת הגדרות אתר מה-Apps Script
+async function loadSiteSettings() {
+    const settings = await api('api_settings');
+    if (settings.title) SITE_TITLE = settings.title;
+    if (settings.logoUrl) SITE_LOGO = settings.logoUrl;
+    if (settings.loginText) SITE_LOGIN_SUB = settings.loginText;
+    updateUIWithSettings();
 }
 
-function renderCategories() {
-    const list = document.getElementById('channelsList');
-    list.innerHTML = siteData.categories.map(c => `
-        <div class="channel-item ${activeCat === c ? 'active' : ''}" onclick="setActiveCat('${c}')">
-            <i class="fas fa-hashtag"></i> ${c}
-            <div class="unread-badge-cat"></div>
-        </div>
-    `).join('');
+function updateUIWithSettings() {
+    document.getElementById('pageTitle').innerText = SITE_TITLE;
+    document.getElementById('loginSiteTitle').innerText = SITE_TITLE;
+    document.getElementById('hdrChannelName').innerText = SITE_TITLE;
+    document.getElementById('loginSiteSub').innerText = SITE_LOGIN_SUB;
+    document.getElementById('loginLogo').src = SITE_LOGO;
+    document.getElementById('hdrLogo').src = SITE_LOGO;
+    document.getElementById('favicon').href = SITE_LOGO;
 }
 
-function renderFeed() {
+async function handleGoogle(resp) {
+    const payload = JSON.parse(atob(resp.credential.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+    const email = payload.email.toLowerCase();
+    const d = await api('auth_check', { email });
+    if (d.banned) { document.getElementById('loginScreen').style.display='none'; document.getElementById('bannedScreen').style.display='flex'; return; }
+    
+    me = { email, name: payload.name, picture: payload.picture };
+    isAdmin = !!d.admin; isWriter = !!d.writer;
+    
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('app').style.display = 'flex';
+    if (isWriter || isAdmin) document.getElementById('adminComposeBar').style.display = 'flex';
+    
+    renderUserAvatar();
+    loadFeed();
+    setInterval(pollFeed, 10000); // Poll כל 10 שניות לחיסכון במשאבים
+}
+
+function renderUserAvatar() {
+    const av = document.getElementById('userAvatar');
+    av.innerHTML = `<img src="${me.picture}" onclick="openAdminPanel()" style="width:34px;height:34px;border-radius:50%;cursor:pointer;border:2px solid #1a56db;">`;
+}
+
+async function loadFeed() {
+    const d = await api('feed', { channel: 'general', limit: 20 });
+    items = d.messages || [];
     const inner = document.getElementById('feedInner');
-    const filtered = posts.filter(p => p.category === activeCat);
-    inner.innerHTML = filtered.map(p => `
-        <div class="bubble-container">
-            <img src="${p.senderPic || 'https://cdn-icons-png.flaticon.com/128/6476/6476785.png'}" class="msg-av-img">
-            <div class="bubble">
-                <div style="font-weight:800; font-size:12px; margin-bottom:5px; color:var(--primary-blue);">${p.senderName}</div>
-                <div class="bubble-text">${p.content}</div>
-                ${p.media ? renderMedia(p.media) : ''}
-                <div style="font-size:10px; color:#94a3b8; margin-top:8px; text-align:left;">${new Date(p.ts).toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit'})}</div>
-            </div>
-        </div>
-    `).join('');
+    inner.innerHTML = items.map(buildMsg).join('');
+    lastTs = items.length ? Math.max(...items.map(m => m.ts)) : 0;
+    document.getElementById('empty').style.display = items.length ? 'none' : 'block';
 }
 
-function renderMedia(m) {
-    if (m.type === 'image') return `<img src="${m.url}" style="width:100%; border-radius:10px; margin-top:10px; cursor:pointer;" onclick="openLightbox('${m.url}')">`;
-    if (m.type === 'video') {
-        let id = m.url.includes('id=') ? m.url.split('id=')[1] : m.url.split('/d/')[1].split('/')[0];
-        return `<div class="bubble-vid"><iframe src="https://drive.google.com/file/d/${id}/preview" style="width:100%; height:250px; border:none; margin-top:10px;"></iframe></div>`;
-    }
-    return '';
-}
-
-/* --- EDITOR FUNCTIONS --- */
-function formatDoc(cmd, val = null) {
-    document.execCommand(cmd, false, val);
-    document.getElementById('composeEditor').focus();
-}
-
-function handleEditorKeys(e) {
-    if (e.key === 'Enter' && e.ctrlKey) {
-        sendPost();
+async function pollFeed() {
+    const d = await api('feed_poll', { channel: 'general', since: lastTs }, 'POST');
+    if (d.newMessages && d.newMessages.length) {
+        lastTs = Math.max(...d.newMessages.map(m => m.ts));
+        const inner = document.getElementById('feedInner');
+        d.newMessages.forEach(m => {
+            const div = document.createElement('div');
+            div.innerHTML = buildMsg(m);
+            inner.prepend(div.firstChild);
+        });
+        document.getElementById('empty').style.display = 'none';
     }
 }
 
-function promptColor() {
-    const c = prompt("הכנס צבע (HEX או שם):", "#1a56db");
-    if(c) formatDoc('foreColor', c);
-}
-
-function promptLink() {
-    const u = prompt("הכנס כתובת אתר:");
-    if(u) formatDoc('createLink', u);
-}
-
-function triggerImg() { 
-    const u = prompt("הכנס קישור לתמונה:");
-    if(u) window._pendingMedia = { type: 'image', url: u };
-}
-
-function triggerVid() {
-    const u = prompt("הכנס קישור גוגל דרייב לסרטון:");
-    if(u) window._pendingMedia = { type: 'video', url: u };
-}
-
-async function sendPost() {
-    const ed = document.getElementById('composeEditor');
-    const content = ed.innerHTML;
-    const cat = document.getElementById('postCategory').value;
-    if (!content.trim() && !window._pendingMedia) return;
-
-    const res = await api("add_post", {
-        content, category: cat, media: window._pendingMedia, senderName: me.name, senderPic: me.picture
-    });
-
-    if (res.status === 'ok') {
-        ed.innerHTML = "";
-        window._pendingMedia = null;
-        await refreshData();
-    }
-}
-
-/* --- ADMIN MODAL TABS --- */
-function toggleAdminModal() {
-    const m = document.getElementById('adminModal');
-    m.style.display = (m.style.display === 'flex') ? 'none' : 'flex';
-    if(m.style.display === 'flex') switchAdminTab('info', document.querySelector('.admin-nav-item'));
-}
-
-function switchAdminTab(tab, el) {
-    document.querySelectorAll('.admin-nav-item').forEach(i => i.classList.remove('active'));
-    el.classList.add('active');
+function buildMsg(m) {
+    let media = "";
+    if (m.imgUrl) media += `<div class="bubble-img"><img src="${m.imgUrl}" loading="lazy" onclick="openLightbox('${m.imgUrl}')"></div>`;
+    if (m.videoUrl) media += `<div class="bubble-vid"><video controls preload="none" src="${m.videoUrl}"></video></div>`;
     
-    const container = document.getElementById('adminTabContent');
-    document.getElementById('adminTabTitle').innerText = el.innerText;
+    return `
+    <div class="msg-row" data-id="${m.id}">
+      <img class="msg-av" src="${SITE_LOGO}">
+      <div class="msg-col">
+        <div class="msg-meta"><span class="msg-meta-name">${SITE_TITLE}</span></div>
+        <div class="bubble">
+          <div class="bubble-text">${m.text || ''}</div>
+          ${media}
+        </div>
+      </div>
+    </div>`;
+}
 
-    if (tab === 'info') {
-        container.innerHTML = `
-            <div class="form-group">
-                <label>שם הערוץ:</label>
-                <input class="form-input" id="setSiteTitle" value="${siteData.title}">
-            </div>
-            <div class="form-group">
-                <label>תיאור הערוץ:</label>
-                <textarea class="form-input" id="setSiteDesc" rows="3">${siteData.desc}</textarea>
-            </div>
-            <div class="form-group">
-                <label>קישור ללוגו (URL):</label>
-                <input class="form-input" id="setSiteLogo" value="${document.getElementById('siteLogo').src}">
-            </div>
-        `;
-    } else if (tab === 'settings') {
-        container.innerHTML = `
-            <div class="form-group">
-                <label>רוחב הודעות:</label>
-                <select class="form-input" id="setMsgWidth">
-                    <option value="narrow" ${siteData.settings.msgWidth==='narrow'?'selected':''}>קלאסי (צר וממורכז)</option>
-                    <option value="wide" ${siteData.settings.msgWidth==='wide'?'selected':''}>רחב</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label><input type="checkbox" ${siteData.settings.showProfile?'checked':''} id="setShowProfile"> הצג תמונת פרופיל ליד הודעה</label>
-            </div>
-        `;
-    } else if (tab === 'users') {
-        renderUsersTab(container);
-    } else {
-        container.innerHTML = `<p style="color:#aaa; text-align:center; padding:50px;">פונקציה זו תהיה זמינה בגרסה הבאה.</p>`;
+function openLightbox(src) { document.getElementById('lbImg').src = src; document.getElementById('lightbox').style.display = 'flex'; }
+
+// פאנל ניהול עם הסעיפים החדשים
+function switchAdminSection(sec) {
+    const body = document.getElementById('apBody');
+    document.getElementById('apTitle').innerText = (sec === 'stats' ? 'סטטיסטיקות' : sec === 'site' ? 'פרטי אתר' : 'חסימות');
+    
+    if (sec === 'stats') {
+        body.innerHTML = `<div style="text-align:center;">טוען נתונים...</div>`;
+        api('site_stats').then(d => {
+            body.innerHTML = `
+            <div class="ap-field" style="text-align:center"><b>מחוברים עכשיו:</b> ${d.online}</div>
+            <div class="ap-field" style="text-align:center"><b>שיא כל הזמנים:</b> ${d.peak}</div>
+            <div class="ap-field" style="text-align:center"><b>ביקורים ביממה:</b> ${d.day}</div>`;
+        });
+    } else if (sec === 'site') {
+        body.innerHTML = `
+        <div class="ap-sec-site-details">
+            <label>שם האתר:</label><input id="set_title" class="ap-field" value="${SITE_TITLE}">
+            <label>לוגו אתר (כתובת URL):</label><input id="set_logo" class="ap-field" value="${SITE_LOGO}">
+            <label>טקסט מסך התחברות:</label><input id="set_loginText" class="ap-field" value="${SITE_LOGIN_SUB}">
+            <button onclick="saveSiteSettings()" class="ap-btn" style="background:#1a56db; color:#fff; width:100%; padding:10px;">שמור שינויים</button>
+        </div>`;
+    } else if (sec === 'blocking') {
+        body.innerHTML = `<input id="block_email" class="ap-field" placeholder="אימייל לחסימה"><button onclick="blockUser()" class="ap-btn" style="width:100%">חסום משתמש</button>`;
     }
 }
 
-function renderUsersTab(container) {
-    container.innerHTML = `
-        <div style="margin-bottom:20px; padding:15px; background:#f1f5f9; border-radius:10px;">
-            <p style="font-weight:800; margin-bottom:10px;">הוספת משתמש חדש</p>
-            <input id="addUserEmail" class="form-input" placeholder="אימייל גוגל" style="margin-bottom:10px;">
-            <select id="addUserRole" class="form-input">
-                <option value="admin">מנהל</option>
-                <option value="uploader">מעלה תוכן</option>
-            </select>
-            <button class="ap-btn" onclick="submitNewUser()" style="background:var(--primary-blue); color:#fff; width:100%; margin-top:10px; border-radius:8px; padding:8px;">הוסף</button>
-        </div>
-        <div id="usersListTable">
-            ${siteData.users.map(u => `
-                <div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #eee;">
-                    <span>${u.email} <strong>(${u.role})</strong></span>
-                    <button onclick="deleteUser('${u.email}')" style="color:red; background:none; border:none; cursor:pointer;">מחק</button>
-                </div>
-            `).join('')}
-        </div>
-    `;
+async function saveSiteSettings() {
+    const title = document.getElementById('set_title').value;
+    const logoUrl = document.getElementById('set_logo').value;
+    const loginText = document.getElementById('set_loginText').value;
+    
+    await api('api_settings', { admin_email: me.email, title, logoUrl, loginText }, 'POST');
+    alert("ההגדרות נשמרו ויתעדכנו בטעינה הבאה.");
+    location.reload();
 }
 
-async function saveAdminData() {
-    const title = document.getElementById('setSiteTitle')?.value;
-    const desc = document.getElementById('setSiteDesc')?.value;
-    const logo = document.getElementById('setSiteLogo')?.value;
+async function sendFeedPost() {
+    const text = document.getElementById('composeEditor').innerText.trim();
+    const imgUrl = document.getElementById('composeImgUrl').value;
+    const videoUrl = document.getElementById('composeVidUrl').value;
+    if (!text && !imgUrl && !videoUrl) return;
     
-    if (title) siteData.title = title;
-    if (desc) siteData.desc = desc;
-    
-    const res = await api("update_site", { siteData });
-    if (res.status === 'ok') {
-        alert("הנתונים עודכנו בהצלחה!");
-        if(logo) document.getElementById('siteLogo').src = logo;
-        updateUI();
+    const d = await api('feed_add', { senderEmail: me.email, sender: SITE_TITLE, text, imgUrl, videoUrl, channel: 'general' }, 'POST');
+    if (d.status === 'ok') {
+        document.getElementById('composeEditor').innerText = '';
+        document.getElementById('composeImgUrl').value = '';
+        document.getElementById('composeVidUrl').value = '';
+        loadFeed();
     }
 }
 
-/* --- UTILS --- */
-function setActiveCat(c) { activeCat = c; renderCategories(); renderFeed(); }
-function setupCategorySelect() {
-    document.getElementById('postCategory').innerHTML = siteData.categories.map(c => `<option value="${c}">${c}</option>`).join('');
+function openAdminPanel() { if(isAdmin) document.getElementById('adminPanelModal').classList.add('open'); }
+function closeAdminPanel() { document.getElementById('adminPanelModal').classList.remove('open'); }
+function toggleCtbDropdown(id) { 
+    const el = document.getElementById(id); 
+    const isOpen = el.classList.contains('open');
+    document.querySelectorAll('.ctb-dropdown').forEach(d => d.classList.remove('open'));
+    if(!isOpen) el.classList.add('open');
 }
-function toggleDark() { document.body.classList.toggle('dark'); }
-function openLightbox(s) { document.getElementById('lbImg').src = s; document.getElementById('lightbox').style.display = 'flex'; }
-function openMail() { window.location.href = "mailto:0556798858b@gmail.com"; }
+function composeFormat(cmd) { document.execCommand(cmd, false, null); }
 
-window.addEventListener('load', initGoogle);
+// אתחול
+window.onload = () => {
+    loadSiteSettings(); // טעינת מראה האתר מהשרת
+    google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: handleGoogle });
+    google.accounts.id.renderButton(document.getElementById('googleBtn'), { theme: 'outline', size: 'large' });
+};
 </script>
 </body>
 </html>
