@@ -1,4 +1,3 @@
-html
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
@@ -8,7 +7,6 @@ html
 <meta name="description" content="מזג האוויר">
 <meta name="keywords" content="מזג האוויר">
 <meta name="google-site-verification" content="ZXEdDW4jzJU_cxuE1lL0tf76JJf3KZle2MIMjs4ua98" />
-<meta http-equiv="Cross-Origin-Opener-Policy" content="same-origin-allow-popups">
 
 <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/128/6476/6476785.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -122,6 +120,7 @@ header{ background:#fff;border-bottom:1px solid rgba(0,0,0,.08); height:64px;pad
 .msg-meta{direction:rtl;display:flex;align-items:baseline;gap:6px;padding-right:4px;}
 .msg-meta-name{font-size:12px;font-weight:700;color:#666;}
 .msg-meta-time{font-size:11px;font-weight:500;color:#aaa;}
+.msg-meta-views{font-size:11px;font-weight:500;color:#aaa;display:inline-flex;align-items:center;gap:3px;}
 .bubble{ background:#f3f4f6;direction:rtl; border-radius:18px 4px 18px 18px; padding:10px 14px 8px; display:inline-block;max-width:100%; box-shadow:0 1px 2px rgba(0,0,0,.10);}
 .bubble.is-red{background:#fff9f9;border-right:3px solid #e02020;}
 .bubble-text{font-size:19px;line-height:1.65;color:#111111;font-weight:400;white-space:pre-wrap;word-break:break-word;font-family:'Assistant','Heebo','Noto Color Emoji','Apple Color Emoji','Segoe UI Emoji',sans-serif;}
@@ -488,7 +487,7 @@ body.dark .bubble-top-actions .link-btn,
 body.dark .bubble-top-actions .cmt-btn,
 body.dark .msg-action-btn { color: #9ca3af; }
 body.dark #adminComposeBar { background: #1a1a2e !important; border-color: #2a2a40 !important; }
-body.dark #composeEditor { background: #0f0f15 !important; border-color: #3a3555 !important; color: #e5e7eb !important; }
+body.dark #composeEditor { background: #0f0f15 !important; border-color: #3a3a55 !important; color: #e5e7eb !important; }
 body.dark .compose-toolbar { border-color: #2a2a40; }
 body.dark .ctb-btn { background: #1a1a2e; border-color: #3a3a55; color: #d1d5db; }
 body.dark #tagFilterBar { background: #1a1a2e !important; border-color: #2a2a40 !important; }
@@ -694,9 +693,9 @@ body, html { background: #fff !important; }
 
 <div id="loginScreen">
  <div class="login-card">
-    <img class="login-logo-img" src="https://cdn-icons-png.flaticon.com/128/6476/6476785.png" onerror="this.style.display='none'">
+    <img class="login-logo-img" id="loginLogoImg" src="https://cdn-icons-png.flaticon.com/128/6476/6476785.png" onerror="this.style.display='none'">
     <div class="login-title" id="loginSiteTitle">מזג האוויר</div>
-    <div class="login-sub">התחברות באמצעות גוגל</div>
+    <div class="login-sub" id="loginSubText">התחברות באמצעות גוגל</div>
     <div id="googleBtn" style="display:flex; justify-content:center;"></div>
   </div>
 </div>
@@ -1047,6 +1046,42 @@ body, html { background: #fff !important; }
           <div id="reportsList" style="display:flex;flex-direction:column;gap:10px;"></div>
         </div>
 
+        <div class="ap-sec" id="ap-sec-site" style="display:none;">
+          <div style="border:1.5px solid #eef0f5;border-radius:14px;padding:16px;margin-bottom:14px;">
+            <div style="font-size:12.5px;font-weight:800;color:#4a55c7;margin-bottom:11px;"><i class="fas fa-globe" style="font-size:11px"></i> זהות האתר</div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="font-size:11px;font-weight:700;color:#5b6072;">שם האתר</div>
+              <input id="siteNameInput" type="text" placeholder="שם האתר..." class="ap-field">
+
+              <div style="font-size:11px;font-weight:700;color:#5b6072;margin-top:6px;">לוגו האתר</div>
+              <div style="display:flex;align-items:center;gap:12px;">
+                <img id="siteLogoPreview" src="" style="width:52px;height:52px;border-radius:12px;object-fit:contain;background:#f8f9fc;border:1.5px solid #eef0f5;flex-shrink:0;">
+                <div style="flex:1;display:flex;flex-direction:column;gap:8px;">
+                  <input type="file" accept="image/*" id="siteLogoFile" style="display:none;" onchange="handleImageUploadInput(this,'siteLogoUrlInput','siteLogoUploadStatus')">
+                  <button type="button" onclick="document.getElementById('siteLogoFile').click()" class="ap-btn ap-btn-soft" style="width:100%;"><i class="fas fa-upload"></i> החלפת לוגו</button>
+                  <span id="siteLogoUploadStatus" style="display:none;align-items:center;gap:6px;font-size:11px;color:#666;"></span>
+                </div>
+              </div>
+              <input id="siteLogoUrlInput" type="text" placeholder="או קישור ישיר ללוגו https://..." class="ap-field" style="direction:ltr;" oninput="document.getElementById('siteLogoPreview').src=this.value">
+
+              <div style="font-size:11px;font-weight:700;color:#5b6072;margin-top:6px;">טקסט מתחת לשם, במסך ההתחברות</div>
+              <input id="siteLoginTextInput" type="text" placeholder="לדוגמה: ברוכים הבאים לקהילה..." class="ap-field">
+              <div style="font-size:11px;color:#a3a8b8;">אם משאירים ריק, יוצג הטקסט הכללי \"התחברות באמצעות גוגל\".</div>
+            </div>
+          </div>
+
+          <div style="border:1.5px solid #eef0f5;border-radius:14px;padding:16px;margin-bottom:14px;">
+            <div style="font-size:12.5px;font-weight:800;color:#4a55c7;margin-bottom:11px;"><i class="fas fa-signature" style="font-size:11px"></i> חתימת הודעה</div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <input id="siteSignatureInput" type="text" placeholder="לדוגמה: לשליחת תוכן ולכל נושא - example@gmail.com" class="ap-field">
+              <div style="font-size:11px;color:#a3a8b8;">חתימה אחת שמתווספת אוטומטית בסוף כל הודעה באתר. משאירים ריק = בלי חתימה.</div>
+            </div>
+          </div>
+
+          <button onclick="saveSiteDetails()" class="ap-btn ap-btn-primary" style="width:100%;">שמור שינויים</button>
+          <div id="siteDetailsMsg" style="display:none;margin-top:10px;font-size:12px;font-weight:700;text-align:center;"></div>
+        </div>
+
         <div class="ap-sec" id="ap-sec-writers" style="display:none;">
           <div id="adminsList" style="display:flex;flex-direction:column;gap:8px;margin-bottom:18px;"></div>
           <div style="border-top:1px solid #f1f2f6;padding-top:16px;">
@@ -1138,12 +1173,16 @@ body, html { background: #fff !important; }
 
 const BACKEND = "https://script.google.com/macros/s/AKfycbyig5wjhHEFUFrJCdakcxu_-R302GplBuxyJo5jintWf7oEXHa_cK4mRvFivHu6AtAjlQ/exec";
 const GOOGLE_CLIENT_ID = '426523025549-7c50rkn7cun4vmm2r802u0ij6egjehtg.apps.googleusercontent.com';
-const LOGO = 'https://cdn-icons-png.flaticon.com/128/6476/6476785.png';
-const SITE_TITLE = 'מזג האוויר';
+// אלה היו const בעבר - עכשיו let, כי loadPublicSiteSettings() מעדכנת אותם
+// בפועל מההגדרות (שם/לוגו האתר) מיד עם טעינת העמוד, לפני ואחרי התחברות.
+let LOGO = 'https://cdn-icons-png.flaticon.com/128/6476/6476785.png';
+let SITE_TITLE = 'מזג האוויר';
+let LOGIN_TEXT = ''; // טקסט מותאם אישית מתחת לשם האתר במסך ההתחברות (ריק = ברירת המחדל הקיימת)
+let SIGNATURE = ''; // חתימה גלובלית שמתווספת בסוף כל הודעה, אם הוגדרה
 const STORAGE_KEY = 'bina_user';
 const AD_KEY = 'shaagat_ad';
 const AD_INTERVAL = 60 * 60 * 1000;
-const CHANNEL = 'general'; // אין יותר ערוצים - הכל בערוץ אחד קבוע
+let CHANNEL = 'general'; // ברירת מחדל - מתעדכן בפועל דרך switchChannel() אחרי טעינת רשימת הערוצים
 const CLOUDINARY_CLOUD_NAME = 'xgh73omp';
 const CLOUDINARY_UPLOAD_PRESET = 'website_upload';
 async function uploadToCloudinary(file, onProgress) {
@@ -1280,6 +1319,25 @@ function showToast(msg, type) {
   setTimeout(() => t.remove(), 3000);
 }
 
+/* ================= הגדרות אתר ציבוריות (שם/לוגו/טקסט התחברות/חתימה) =================
+   נטענות מיד עם העמוד - לפני שמתחברים - כי מסך ההתחברות עצמו צריך להציג
+   את השם/לוגו/טקסט המותאמים. הפעולה api_settings ציבורית בכוונה בשרת. */
+let _publicSettings = null;
+async function loadPublicSiteSettings() {
+  const d = await api('api_settings', {});
+  if (d.status === 'error') return; // כשל רשת - נשארים עם ברירות המחדל, לא קריטי
+  _publicSettings = d;
+  if (d.title) SITE_TITLE = d.title;
+  if (d.logoUrl) LOGO = d.logoUrl;
+  LOGIN_TEXT = d.loginText || '';
+  SIGNATURE = d.signature || '';
+
+  const pageTitle = document.getElementById('pageTitle'); if (pageTitle) pageTitle.innerText = SITE_TITLE;
+  const logT = document.getElementById('loginSiteTitle'); if (logT) logT.innerText = SITE_TITLE;
+  const logoImg = document.getElementById('loginLogoImg'); if (logoImg && d.logoUrl) logoImg.src = d.logoUrl;
+  const subText = document.getElementById('loginSubText'); if (subText) subText.innerText = LOGIN_TEXT || 'התחברות באמצעות גוגל';
+}
+
 /* ================= התחברות ================= */
 function doLogout() {
   clearSavedUser(); me = null;
@@ -1293,7 +1351,7 @@ function doLogout() {
 async function verifyAndLogin(user) {
   // שולחים את ה-session השמור, לא email גולמי - השרת מאמת אותו מקומית
   // (חתום ב-HMAC, בלי לצאת לגוגל) ומחזיר את הזהות האמיתית + הרשאות טריות.
-  const d = await api('auth_check', { session: user.session });
+  const d = await api('auth_check', { session: user.session }, 'POST');
   if (d.status !== 'ok') {
     // ה-session פג תוקף (30 יום) או לא תקין מסיבה אחרת - חוזרים למסך
     // התחברות רגיל במקום להישאר תקועים. true = "טופל", false = "נכשל".
@@ -1376,8 +1434,8 @@ async function handleGoogle(resp) {
     displayName = payload.name || ''; displayPicture = payload.picture || '';
   } catch (e) { /* לא קריטי - זה רק לתצוגה אופטימית, האימות האמיתי קורה בשרת למטה */ }
 
-  const d = await api('auth_check', { idToken: resp.credential });
-  if (d.status !== 'ok') { alert('חלה שגיאה באימות מול גוגל. נסה/י שוב.'); return; }
+  const d = await api('auth_check', { idToken: resp.credential }, 'POST');
+  if (d.status !== 'ok') { alert(d.message || 'חלה שגיאה באימות מול גוגל. נסה/י שוב.'); return; }
   if (d.banned) {
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('app').style.display = 'none';
@@ -1393,7 +1451,7 @@ async function handleGoogle(resp) {
 }
 
 function initGoogle() {
-  google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: handleGoogle, auto_select: true, itp_support: true });
+  google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: handleGoogle, auto_select: true });
   // saved.session קיים רק אצל מי שכבר התחבר אחרי השדרוג הזה - משתמש "ישן"
   // ששמור מלפני השדרוג (עם email בלבד, בלי session) פשוט יראה כפתור
   // התחברות רגיל וילחץ עליו פעם אחת, בדיוק כמו התחברות ראשונה.
@@ -1410,6 +1468,7 @@ function showGoogleLoginUI() {
 }
 function tryInitGoogle() { if (window.google && window.google.accounts) initGoogle(); else setTimeout(tryInitGoogle, 100); }
 if (document.readyState === 'complete') tryInitGoogle(); else window.addEventListener('load', tryInitGoogle);
+loadPublicSiteSettings(); // רץ מיד, במקביל לאתחול גוגל - לא מחכים אחד לשני
 
 /* ================= תפריט משתמש ================= */
 function toggleUserMenu(e) {
@@ -1450,13 +1509,18 @@ function refreshUserMenu() {
 
 /* ================= פאנל ניהול (עדין ובהיר, עם סרגל צד) ================= */
 let _adminPanelActiveSection = null;
+// minRole = דרגת ההרשאה המינימלית שרואה את הסעיף הזה בפאנל הניהול.
+// היררכיה: writer < contentManager < super. (היה superOnly בוליארי - עכשיו
+// מדורג, כדי שאפשר יהיה לתת גישה חלקית למנהל תוכן, למשל לדיווחים.)
+const AP_ROLE_RANK = { user: 0, writer: 1, contentManager: 2, super: 3 };
 const AP_SECTIONS = [
-  { key: 'stats', icon: 'fa-chart-line', title: 'סטטיסטיקות קהילה', superOnly: false },
-  { key: 'reports', icon: 'fa-flag', title: 'דיווחי משתמשים', superOnly: true },
-  { key: 'writers', icon: 'fa-user-group', title: 'מורשי כתיבה', superOnly: true },
-  { key: 'blocking', icon: 'fa-user-slash', title: 'חסימת משתמשים', superOnly: true },
-  { key: 'ads', icon: 'fa-rectangle-ad', title: 'פרסומות', superOnly: true },
-  { key: 'messages', icon: 'fa-comments', title: 'הודעות צוות', superOnly: true },
+  { key: 'stats', icon: 'fa-chart-line', title: 'סטטיסטיקות קהילה', minRole: 'writer' },
+  { key: 'reports', icon: 'fa-flag', title: 'דיווחי משתמשים', minRole: 'contentManager' },
+  { key: 'site', icon: 'fa-gear', title: 'פרטי אתר', minRole: 'super' },
+  { key: 'writers', icon: 'fa-user-group', title: 'מורשי כתיבה', minRole: 'super' }, // TODO: יוחלף במסך "ניהול משתמשים והרשאות" המלא בשלב הבא
+  { key: 'blocking', icon: 'fa-user-slash', title: 'חסימת משתמשים', minRole: 'super' },
+  { key: 'ads', icon: 'fa-rectangle-ad', title: 'פרסומות', minRole: 'super' },
+  { key: 'messages', icon: 'fa-comments', title: 'הודעות צוות', minRole: 'super' },
 ];
 
 function openAdminPanel() {
@@ -1469,9 +1533,9 @@ function openAdminPanel() {
     ? `<img src="${escAttr(me.picture)}">`
     : `<div class="ap-sidebar-avatar-fallback">${esc(me.name[0].toUpperCase())}</div>`;
   document.getElementById('apHdrName').innerText = me.name;
-  document.getElementById('apHdrRole').innerText = role === 'super' ? 'מנהל ראשי' : 'כותב מורשה';
+  document.getElementById('apHdrRole').innerText = role === 'super' ? 'מנהל ראשי' : role === 'contentManager' ? 'מנהל תוכן' : 'כותב מורשה';
 
-  const visible = AP_SECTIONS.filter(s => role === 'super' || !s.superOnly);
+  const visible = AP_SECTIONS.filter(s => AP_ROLE_RANK[role] >= AP_ROLE_RANK[s.minRole]);
   document.getElementById('apNav').innerHTML = visible.map(s => `
     <button class="ap-nav-item" data-sec="${s.key}" onclick="switchAdminSection('${s.key}')">
       <span class="ap-nav-icon"><i class="fas ${s.icon}"></i></span>
@@ -1493,6 +1557,7 @@ function switchAdminSection(sec) {
   document.getElementById('apContentTitle').innerText = found ? found.title : 'פאנל ניהול';
   if (sec === 'stats') openSiteStats();
   else if (sec === 'reports') openReportsModal();
+  else if (sec === 'site') openSiteDetails();
   else if (sec === 'writers') openManageAdmins();
   else if (sec === 'blocking') openSiteSettings();
   else if (sec === 'ads') openAdPanel();
@@ -1557,9 +1622,11 @@ const REACT_SVG = `<svg viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org
 
 function buildMsg(e) {
   const id = e.id;
-  const role = getRole();
-  const canDel = role === 'super' || (role === 'writer' && e.senderEmail === me?.email);
-  const canEdit = role === 'super' || (role === 'writer' && e.senderEmail === me?.email);
+  const isOwner = !!me && e.senderEmail === me.email;
+  // isModerator() = אדמין/מנהל תוכן - יכול על כל הודעה. כותב רגיל - רק על שלו.
+  // (isAdmin() כאן, כמו בכל הקובץ, אומר בפועל "כותב ומעלה" - ראו הערה למעלה)
+  const canDel = isModerator() || (isAdmin() && isOwner);
+  const canEdit = canDel;
 
   let content = `<div class="bubble-text">${rich(e.text || '')}</div>`;
   let media = '';
@@ -1591,7 +1658,30 @@ function buildMsg(e) {
     </div>`;
   }
 
-  return `<div class="msg-row" data-id="${escAttr(id)}"><img class="msg-av" src="${LOGO}" onerror="this.style.display='none'"><div class="msg-col"><div class="msg-meta"><span class="msg-meta-name">${esc(SITE_TITLE)}</span><span class="msg-meta-time">${fmtTime(e.ts)}</span></div><div class="bubble-wrap-outer"><div class="bubble-top-actions"><button class="link-btn" onclick="copyMsgLink('${escAttr(id)}',this)" title="העתק קישור"><i class="fas fa-link"></i></button><button class="msg-action-btn" onclick="reportMsg('${escAttr(id)}')" title="דווח על תוכן פוגעני"><i class="fas fa-flag"></i></button>${canEdit ? `<button class="msg-action-btn edit" onclick="openEditMsg('${escAttr(id)}')"><i class="fas fa-pen"></i></button><button class="msg-action-btn quote" onclick="quoteFeedMsg('${escAttr(id)}')"><i class="fas fa-quote-right"></i></button>` : ''}${canDel ? `<button class="msg-action-btn del" onclick="deleteFeedMsg('${escAttr(id)}')"><i class="fas fa-trash"></i></button>` : ''}</div><div class="bubble">${quoteHtml}${content}${media}${btns}${tagsHtml}</div></div><div class="bubble-foot"><div class="rxn-row" id="rxn-${escAttr(id)}"><button class="rxn-add-btn" onclick="openPicker(event,'${escAttr(id)}')">${REACT_SVG}</button></div></div></div></div>`;
+  let sigHtml = '';
+  if (SIGNATURE) sigHtml = `<div class="msg-signature" style="margin-top:9px;padding-top:8px;border-top:1px solid rgba(0,0,0,.07);font-size:11.5px;color:#8a8f9e;">${esc(SIGNATURE)}</div>`;
+
+  const showViews = _publicSettings && _publicSettings.showViewCounts;
+  const canSeeViews = showViews === 'all' || (showViews === 'moderators' && isModerator());
+  const viewsHtml = canSeeViews ? `<span class="msg-meta-views" title="צפיות"><i class="fas fa-eye" style="font-size:10px"></i> ${Number(e.views || 0)}</span>` : '';
+
+  markMsgViewed(id);
+
+  return `<div class="msg-row" data-id="${escAttr(id)}"><img class="msg-av" src="${LOGO}" onerror="this.style.display='none'"><div class="msg-col"><div class="msg-meta"><span class="msg-meta-name">${esc(SITE_TITLE)}</span><span class="msg-meta-time">${fmtTime(e.ts)}</span>${viewsHtml}</div><div class="bubble-wrap-outer"><div class="bubble-top-actions"><button class="link-btn" onclick="copyMsgLink('${escAttr(id)}',this)" title="העתק קישור"><i class="fas fa-link"></i></button><button class="msg-action-btn" onclick="reportMsg('${escAttr(id)}')" title="דווח על תוכן פוגעני"><i class="fas fa-flag"></i></button>${canEdit ? `<button class="msg-action-btn edit" onclick="openEditMsg('${escAttr(id)}')"><i class="fas fa-pen"></i></button><button class="msg-action-btn quote" onclick="quoteFeedMsg('${escAttr(id)}')"><i class="fas fa-quote-right"></i></button>` : ''}${canDel ? `<button class="msg-action-btn del" onclick="deleteFeedMsg('${escAttr(id)}')"><i class="fas fa-trash"></i></button>` : ''}</div><div class="bubble">${quoteHtml}${content}${media}${btns}${tagsHtml}${sigHtml}</div></div><div class="bubble-foot"><div class="rxn-row" id="rxn-${escAttr(id)}"><button class="rxn-add-btn" onclick="openPicker(event,'${escAttr(id)}')">${REACT_SVG}</button></div></div></div></div>`;
+}
+
+// סופר צפיה פעם אחת בלבד לכל הודעה, לכל דפדפן - נשמר ב-localStorage כדי
+// שרענון עמוד לא יספור מחדש. שומרים רק את 500 המזהים האחרונים כדי שזה
+// לא יגדל בלי גבול עם הזמן.
+function markMsgViewed(id) {
+  if (!id) return;
+  let seen;
+  try { seen = JSON.parse(localStorage.getItem('viewed_msgs') || '[]'); } catch (e) { seen = []; }
+  if (seen.includes(String(id))) return;
+  seen.push(String(id));
+  if (seen.length > 500) seen = seen.slice(seen.length - 500);
+  try { localStorage.setItem('viewed_msgs', JSON.stringify(seen)); } catch (e) {}
+  api('msg_view', { id }, 'POST'); // לא קריטי אם נכשל - זה רק מונה תצוגה
 }
 
 function copyMsgLink(id, btn) {
@@ -2192,6 +2282,45 @@ async function sendAdminMsg() {
 
 /* ================= ניהול מורשי כתיבה ================= */
 async function openManageAdmins() { document.getElementById('adminMsgResult').style.display = 'none'; await renderAdminsList(); }
+
+/* ================= פרטי אתר + חתימה (סעיפים 3+5) ================= */
+async function openSiteDetails() {
+  const msgEl = document.getElementById('siteDetailsMsg'); msgEl.style.display = 'none';
+  const d = await api('api_settings', {});
+  if (d.status === 'error') return;
+  document.getElementById('siteNameInput').value = d.title || '';
+  document.getElementById('siteLogoUrlInput').value = d.logoUrl || '';
+  document.getElementById('siteLogoPreview').src = d.logoUrl || LOGO;
+  document.getElementById('siteLoginTextInput').value = d.loginText || '';
+  document.getElementById('siteSignatureInput').value = d.signature || '';
+}
+
+async function saveSiteDetails() {
+  const btn = event.target;
+  const orig = btn.innerText; btn.innerText = 'שומר...'; btn.disabled = true;
+  const title = document.getElementById('siteNameInput').value.trim();
+  const logoUrl = document.getElementById('siteLogoUrlInput').value.trim();
+  const loginText = document.getElementById('siteLoginTextInput').value.trim();
+  const signature = document.getElementById('siteSignatureInput').value.trim();
+
+  const d = await api('api_settings', { title, logoUrl, loginText, signature }, 'POST');
+  btn.innerText = orig; btn.disabled = false;
+
+  const msgEl = document.getElementById('siteDetailsMsg');
+  msgEl.style.display = 'block';
+  if (d.status === 'ok') {
+    msgEl.style.color = '#1a8a4a';
+    msgEl.innerHTML = '<i class="fas fa-check-circle"></i> נשמר בהצלחה';
+    // מעדכנים מיד בעמוד הנוכחי - בלי לחכות לרענון
+    if (title) { SITE_TITLE = title; const pt = document.getElementById('pageTitle'); if (pt) pt.innerText = title; const hc = document.getElementById('hdrChannelName'); if (hc) hc.innerText = title; }
+    if (logoUrl) LOGO = logoUrl;
+    LOGIN_TEXT = loginText; SIGNATURE = signature;
+  } else {
+    msgEl.style.color = '#c0392b';
+    msgEl.innerHTML = '<i class="fas fa-triangle-exclamation"></i> ' + esc(d.message || 'שמירה נכשלה, נסה/י שוב');
+  }
+  setTimeout(() => { msgEl.style.display = 'none'; }, 4000);
+}
 function closeManageAdmins() { closeAdminPanel(); }
 async function renderAdminsList() {
   const list = document.getElementById('adminsList'); if (!list) return;
