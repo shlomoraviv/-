@@ -1,3 +1,4 @@
+html
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
@@ -7,6 +8,7 @@
 <meta name="description" content="מזג האוויר">
 <meta name="keywords" content="מזג האוויר">
 <meta name="google-site-verification" content="ZXEdDW4jzJU_cxuE1lL0tf76JJf3KZle2MIMjs4ua98" />
+<meta http-equiv="Cross-Origin-Opener-Policy" content="same-origin-allow-popups">
 
 <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/128/6476/6476785.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -486,7 +488,7 @@ body.dark .bubble-top-actions .link-btn,
 body.dark .bubble-top-actions .cmt-btn,
 body.dark .msg-action-btn { color: #9ca3af; }
 body.dark #adminComposeBar { background: #1a1a2e !important; border-color: #2a2a40 !important; }
-body.dark #composeEditor { background: #0f0f15 !important; border-color: #3a3a55 !important; color: #e5e7eb !important; }
+body.dark #composeEditor { background: #0f0f15 !important; border-color: #3a3555 !important; color: #e5e7eb !important; }
 body.dark .compose-toolbar { border-color: #2a2a40; }
 body.dark .ctb-btn { background: #1a1a2e; border-color: #3a3a55; color: #d1d5db; }
 body.dark #tagFilterBar { background: #1a1a2e !important; border-color: #2a2a40 !important; }
@@ -1391,7 +1393,7 @@ async function handleGoogle(resp) {
 }
 
 function initGoogle() {
-  google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: handleGoogle, auto_select: true });
+  google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: handleGoogle, auto_select: true, itp_support: true });
   // saved.session קיים רק אצל מי שכבר התחבר אחרי השדרוג הזה - משתמש "ישן"
   // ששמור מלפני השדרוג (עם email בלבד, בלי session) פשוט יראה כפתור
   // התחברות רגיל וילחץ עליו פעם אחת, בדיוק כמו התחברות ראשונה.
