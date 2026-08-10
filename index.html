@@ -10,13 +10,8 @@
 
 <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/128/6476/6476785.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800;900&family=Assistant:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<!-- טוענים רק את חבילת ה-solid של Font Awesome (fontawesome.min.css הבסיסי + solid.min.css) -
-     כל השימושים בקוד הזה הם באייקוני fas בלבד, אז אין צורך בחבילת all.min.css המלאה
-     (שכוללת גם brands/regular ומכבידה על הטעינה הראשונית ללא תועלת בפועל). -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/fontawesome.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/solid.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&family=Assistant:wght@300;400;500;600;700;800&family=Noto+Color+Emoji&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 html{height:100%;}
@@ -30,6 +25,10 @@ body{height:100%;font-family:'Heebo',sans-serif;-webkit-font-smoothing:antialias
 .login-logo-img{width:90px;height:90px;border-radius:16px;margin:0 auto 14px;display:block;object-fit:contain;}
 .login-title{font-size:20px;font-weight:900;color:#111;margin-bottom:4px;}
 .login-sub{font-size:13px;color:#888;margin-bottom:24px;}
+
+#leftSidebar { order: 1; }
+#app { order: 2; }
+#rightSidebar, #adOnlySidebar { order: 3; }
 
 /* LEFT SIDEBAR FOR CHANNELS */
 #leftSidebar {
@@ -120,7 +119,6 @@ header{ background:#fff;border-bottom:1px solid rgba(0,0,0,.08); height:64px;pad
 .msg-meta{direction:rtl;display:flex;align-items:baseline;gap:6px;padding-right:4px;}
 .msg-meta-name{font-size:12px;font-weight:700;color:#666;}
 .msg-meta-time{font-size:11px;font-weight:500;color:#aaa;}
-.msg-meta-views{font-size:11px;font-weight:500;color:#aaa;display:inline-flex;align-items:center;gap:3px;}
 .bubble{ background:#f3f4f6;direction:rtl; border-radius:18px 4px 18px 18px; padding:10px 14px 8px; display:inline-block;max-width:100%; box-shadow:0 1px 2px rgba(0,0,0,.10);}
 .bubble.is-red{background:#fff9f9;border-right:3px solid #e02020;}
 .bubble-text{font-size:19px;line-height:1.65;color:#111111;font-weight:400;white-space:pre-wrap;word-break:break-word;font-family:'Assistant','Heebo','Noto Color Emoji','Apple Color Emoji','Segoe UI Emoji',sans-serif;}
@@ -583,6 +581,29 @@ body, html { background: #fff !important; }
 }
 
 /* פיד היצירות שלך */
+.your-feed-container {
+    width: 100%;
+    max-width: 850px; 
+}
+
+/* 1. הגדרה לעמודת הפרסומות כשיש בה תוכן */
+.ads-sidebar {
+    width: 300px; 
+    flex-shrink: 0; 
+}
+
+/* 2. החיישן האוטומטי: אם קופסת הפרסומות ריקה מתוכן - תעלים אותה! */
+.ads-sidebar:empty {
+    display: none;
+}
+/* פריסה חכמה לאזור הפוסטים (בלי לשבור את ה-JS) */
+#prog {
+    width: 100%;
+    max-width: 850px; /* רוחב מושלם שלא נמתח מידי */
+    margin-right: 5%; /* מרחיק קצת מהתפריט הימני */
+    margin-left: auto; /* דוחף הכל שמאלה ומשאיר מקום לפרסומות בעתיד */
+}
+
 /* ================= פאנל ניהול (עדין ובהיר) ================= */
 #adminPanelModal{
   display:none; position:fixed; inset:0; z-index:850;
@@ -684,6 +705,7 @@ body, html { background: #fff !important; }
   gtag('config', 'G-Q4DQKGJ9E3');
 </script>
 </head>
+<div id="prog"></div>
 <div id="bannedScreen" style="display:none;">
   <i class="fas fa-ban" style="font-size:80px;color:#dc2626;margin-bottom:20px;"></i>
   <h1 style="font-size:32px;font-weight:900;margin-bottom:10px;">הגישה נחסמה</h1>
@@ -695,8 +717,16 @@ body, html { background: #fff !important; }
  <div class="login-card">
     <img class="login-logo-img" id="loginLogoImg" src="https://cdn-icons-png.flaticon.com/128/6476/6476785.png" onerror="this.style.display='none'">
     <div class="login-title" id="loginSiteTitle">מזג האוויר</div>
-    <div class="login-sub" id="loginSubText">התחברות באמצעות גוגל</div>
+    <div class="login-sub" id="loginSiteSub">התחברות באמצעות גוגל</div>
     <div id="googleBtn" style="display:flex; justify-content:center;"></div>
+  </div>
+</div>
+
+<div id="leftSidebar">
+  <div class="channels-hdr">ערוצים</div>
+  <div id="channelsList"></div>
+  <div id="channelsAdminBtnWrap" style="display:none;padding:10px;border-top:1px solid #f0f0f0;">
+    <button onclick="openChannelModal()" style="width:100%;background:#f4f5f9;border:none;border-radius:10px;padding:9px;font-size:12px;font-weight:800;color:#4a4f63;cursor:pointer;font-family:'Heebo',sans-serif;"><i class="fas fa-plus"></i> ערוץ חדש</button>
   </div>
 </div>
 
@@ -719,7 +749,8 @@ body, html { background: #fff !important; }
 <div id="app">
   <header>
     <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;position:relative;">
-      <img class="hdr-avatar" src="https://cdn-icons-png.flaticon.com/128/6476/6476785.png" onerror="this.style.background='#e02020'">
+      <button id="mobileMenuBtn" onclick="toggleLeftSidebar()" title="ערוצים"><i class="fas fa-bars"></i></button>
+      <img class="hdr-avatar" id="hdrAvatarImg" src="https://cdn-icons-png.flaticon.com/128/6476/6476785.png" onerror="this.style.background='#e02020'">
       <div id="hdrEmailCountBadge" style="position:absolute;top:-4px;left:-4px;background:#1a56db;color:#fff;border-radius:99px;font-size:9px;font-weight:800;padding:1px 5px;min-width:16px;text-align:center;border:1.5px solid #fff;display:none;font-family:'Heebo',sans-serif;line-height:14px;"></div>
     </div>
     <div class="hdr-info">
@@ -811,7 +842,11 @@ body, html { background: #fff !important; }
         <i class="fas fa-video"></i> סרטון
       </button>
       <div class="ctb-dropdown" id="vidDrop">
-        <span class="ctb-inp-label">קישור לסרטון מכל מקור (URL)</span>
+        <span class="ctb-inp-label">העלאת סרטון מהמכשיר (יעלה אוטומטית לדרייב)</span>
+        <input type="file" accept="video/*" id="composeVidFile" style="display:none;" onchange="handleVideoUploadInput(this)">
+        <button type="button" onclick="document.getElementById('composeVidFile').click()" style="width:100%;background:#eff6ff;border:1px solid #bfdbfe;color:#1a56db;font-size:12px;font-weight:700;cursor:pointer;padding:8px;border-radius:8px;font-family:'Heebo',sans-serif;display:flex;align-items:center;justify-content:center;gap:6px;"><i class="fas fa-upload"></i> בחר סרטון מהמכשיר (עד 20MB)</button>
+        <span id="composeVidUploadStatus" style="display:none;align-items:center;gap:6px;font-size:11px;color:#666;margin-top:6px;"></span>
+        <span class="ctb-inp-label" style="margin-top:8px;display:block;">או קישור לסרטון מכל מקור (URL)</span>
         <input class="ctb-inp" id="composeVidUrl" type="text" placeholder="https://..." oninput="updateComposeVid()">
       </div>
     </div>
@@ -850,6 +885,9 @@ body, html { background: #fff !important; }
     </div>
     <button class="ctb-btn" onmousedown="event.preventDefault()" onclick="insertDivider()" title="קו מפריד">
       <i class="fas fa-minus" style="font-size:11px"></i> קו
+    </button>
+    <button class="ctb-btn" id="sigToggleBtn" onmousedown="event.preventDefault()" onclick="toggleComposeSignature()" title="הצג את החתימה האישית שלי בתחתית ההודעה">
+      <i class="fas fa-signature" style="font-size:11px"></i> חתימה
     </button>
     <div class="ctb-dropdown-wrap" id="linkDropWrap">
       <button class="ctb-btn" id="linkDropBtn" onclick="saveLinkSelection();toggleCtbDropdown('linkDrop')" title="הוסף קישור">
@@ -937,35 +975,7 @@ body, html { background: #fff !important; }
 
 <div id="emojiPicker">
   <button class="ep-close-btn" onclick="document.getElementById('emojiPicker').classList.remove('show')" title="סגור" style="position:absolute;top:6px;left:6px;background:none;border:none;cursor:pointer;color:#aaa;font-size:13px;width:20px;height:20px;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:background .1s;z-index:2;" onmouseover="this.style.background='#f0f0f0'" onmouseout="this.style.background='none'">✕</button>
-  <button class="ep-btn" onclick="pickEmoji('❤️')">❤️</button>
-  <button class="ep-btn" onclick="pickEmoji('👍')">👍</button>
-  <button class="ep-btn" onclick="pickEmoji('😂')">😂</button>
-  <button class="ep-btn" onclick="pickEmoji('😭')">😭</button>
-  <button class="ep-btn" onclick="pickEmoji('🔥')">🔥</button>
-  <button class="ep-btn" onclick="pickEmoji('🙏')">🙏</button>
-  <button class="ep-btn" onclick="pickEmoji('😍')">😍</button>
-  <button class="ep-btn" onclick="pickEmoji('😮')">😮</button>
-  <button class="ep-btn" onclick="pickEmoji('💯')">💯</button>
-  <button class="ep-btn" onclick="pickEmoji('👎')">👎</button>
-  <button class="ep-btn" onclick="pickEmoji('😊')">😊</button>
-  <button class="ep-btn" onclick="pickEmoji('😢')">😢</button>
-  <button class="ep-btn" onclick="pickEmoji('🤬')">🤬</button>
-  <button class="ep-btn" onclick="pickEmoji('💥')">💥</button>
-  <button class="ep-btn" onclick="pickEmoji('🥳')">🥳</button>
-  <button class="ep-btn" onclick="pickEmoji('😕')">😕</button>
-  <button class="ep-btn" onclick="pickEmoji('🍿')">🍿</button>
-  <button class="ep-btn" onclick="pickEmoji('💪')">💪</button>
-  <button class="ep-btn" onclick="pickEmoji('🚀')">🚀</button>
-  <button class="ep-btn" onclick="pickEmoji('😉')">😉</button>
-  <button class="ep-btn" onclick="pickEmoji('🥵')">🥵</button>
-  <button class="ep-btn" onclick="pickEmoji('🤑')">🤑</button>
-  <button class="ep-btn" onclick="pickEmoji('🎯')">🎯</button>
-  <button class="ep-btn" onclick="pickEmoji('🌀')">🌀</button>
-  <button class="ep-btn" onclick="pickEmoji('😌')">😌</button>
-  <button class="ep-btn" onclick="pickEmoji('💔')">💔</button>
-  <button class="ep-btn" onclick="pickEmoji('😨')">😨</button>
-  <button class="ep-btn" onclick="pickEmoji('🤣')">🤣</button>
-  <button class="ep-btn" onclick="pickEmoji('📖')">📖</button>
+  <div id="emojiPickerGrid" style="display:contents;"></div>
 </div>
 
 <div id="lightbox" onclick="closeLightbox()">
@@ -1008,6 +1018,138 @@ body, html { background: #fff !important; }
     </div>
   </div>
 </div>
+<div id="sigModalOverlay" style="display:none;position:fixed;inset:0;z-index:950;background:rgba(0,0,0,.5);backdrop-filter:blur(3px);align-items:center;justify-content:center;padding:16px;" onclick="if(event.target===this)closeSignatureModal()">
+  <div style="background:#fff;border-radius:20px;max-width:440px;width:100%;box-shadow:0 24px 60px rgba(0,0,0,.25);overflow:hidden;animation:pickerPop .2s ease-out;font-family:'Heebo',sans-serif;direction:rtl;">
+    <div style="padding:18px 20px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #f0f0f0;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="width:36px;height:36px;border-radius:10px;background:#eff6ff;display:flex;align-items:center;justify-content:center;">
+          <i class="fas fa-signature" style="color:#1a56db;font-size:14px;"></i>
+        </div>
+        <div style="font-size:15px;font-weight:900;color:#111;">עריכת חתימה אישית</div>
+      </div>
+      <button onclick="closeSignatureModal()" style="background:none;border:none;font-size:18px;cursor:pointer;color:#aaa;padding:4px;border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;" onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='none'">✕</button>
+    </div>
+    <div style="padding:18px 20px;">
+      <div style="background:#f8faff;border-right:3px solid #1a56db;border-radius:8px;padding:10px 12px;margin-bottom:16px;font-size:13px;color:#3b4a6b;line-height:1.6;">
+        <i class="fas fa-info-circle" style="color:#1a56db;margin-left:5px;"></i>
+        החתימה תוצג בתחתית הודעה רק כשתפעיל את כפתור "חתימה" בסרגל הכתיבה לפני השליחה.
+      </div>
+      <label style="font-size:12px;font-weight:700;color:#374151;display:block;margin-bottom:6px;">נוסח החתימה</label>
+      <input id="sigModalInput" type="text" maxlength="80" placeholder="לדוגמה: בברכה, דוד" style="width:100%;border:1.5px solid #e5e7eb;border-radius:10px;padding:10px 12px;font-size:13px;outline:none;font-family:'Heebo',sans-serif;">
+    </div>
+    <div style="padding:0 20px 18px;display:flex;gap:10px;">
+      <button onclick="saveSignature()" style="flex:1;background:#1a56db;color:#fff;border:none;border-radius:12px;padding:12px;font-size:14px;font-weight:800;cursor:pointer;font-family:'Heebo',sans-serif;">
+        <i class="fas fa-save" style="font-size:12px;"></i> שמור
+      </button>
+      <button onclick="closeSignatureModal()" style="background:#f3f4f6;color:#374151;border:none;border-radius:12px;padding:12px 20px;font-size:14px;font-weight:800;cursor:pointer;font-family:'Heebo',sans-serif;">
+        ביטול
+      </button>
+    </div>
+  </div>
+</div>
+<div id="userEditModalOverlay" style="display:none;position:fixed;inset:0;z-index:950;background:rgba(0,0,0,.5);backdrop-filter:blur(3px);align-items:center;justify-content:center;padding:16px;" onclick="if(event.target===this)closeUserEditModal()">
+  <div style="background:#fff;border-radius:20px;max-width:440px;width:100%;box-shadow:0 24px 60px rgba(0,0,0,.25);overflow:hidden;animation:pickerPop .2s ease-out;font-family:'Heebo',sans-serif;direction:rtl;">
+    <div style="padding:18px 20px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #f0f0f0;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="width:36px;height:36px;border-radius:10px;background:#eff6ff;display:flex;align-items:center;justify-content:center;">
+          <i class="fas fa-user-gear" style="color:#1a56db;font-size:14px;"></i>
+        </div>
+        <div>
+          <div style="font-size:15px;font-weight:900;color:#111;" id="userEditName"></div>
+          <div style="font-size:11px;color:#8a90a6;direction:ltr;" id="userEditEmail"></div>
+        </div>
+      </div>
+      <button onclick="closeUserEditModal()" style="background:none;border:none;font-size:18px;cursor:pointer;color:#aaa;padding:4px;border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;flex-shrink:0;" onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='none'">✕</button>
+    </div>
+    <div style="padding:18px 20px;">
+      <div style="font-size:12px;font-weight:800;color:#5b6072;margin-bottom:10px;">תפקיד</div>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:18px;">
+        <label style="display:flex;align-items:flex-start;gap:9px;background:#f8f9fc;border:1.5px solid #eef0f5;border-radius:12px;padding:10px 12px;cursor:pointer;">
+          <input type="radio" name="userEditRole" value="admin" style="margin-top:3px;">
+          <span><span style="font-size:13px;font-weight:800;color:#1f2430;">אדמין</span><br><span style="font-size:11px;color:#8a90a6;">שליטה מלאה: הגדרות אתר, ערוצים, משתמשים ופרסומות</span></span>
+        </label>
+        <label style="display:flex;align-items:flex-start;gap:9px;background:#f8f9fc;border:1.5px solid #eef0f5;border-radius:12px;padding:10px 12px;cursor:pointer;">
+          <input type="radio" name="userEditRole" value="content_manager" style="margin-top:3px;">
+          <span><span style="font-size:13px;font-weight:800;color:#1f2430;">מנהל תוכן</span><br><span style="font-size:11px;color:#8a90a6;">כותב + עריכה/מחיקה של הודעות משתמשים אחרים</span></span>
+        </label>
+        <label style="display:flex;align-items:flex-start;gap:9px;background:#f8f9fc;border:1.5px solid #eef0f5;border-radius:12px;padding:10px 12px;cursor:pointer;">
+          <input type="radio" name="userEditRole" value="writer" style="margin-top:3px;">
+          <span><span style="font-size:13px;font-weight:800;color:#1f2430;">כותב</span><br><span style="font-size:11px;color:#8a90a6;">פרסום הודעות, עריכה/מחיקה רק של הודעות שהוא כתב</span></span>
+        </label>
+        <label style="display:flex;align-items:flex-start;gap:9px;background:#f8f9fc;border:1.5px solid #eef0f5;border-radius:12px;padding:10px 12px;cursor:pointer;">
+          <input type="radio" name="userEditRole" value="" style="margin-top:3px;">
+          <span><span style="font-size:13px;font-weight:800;color:#1f2430;">ללא הרשאה</span><br><span style="font-size:11px;color:#8a90a6;">משתמש רגיל, ללא אפשרות פרסום</span></span>
+        </label>
+      </div>
+      <div style="border-top:1px solid #f1f2f6;padding-top:14px;">
+        <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:#c94b4b;cursor:pointer;">
+          <input type="checkbox" id="userEditBlocked"> חסימת משתמש (מניעת גישה למערכת)
+        </label>
+      </div>
+    </div>
+    <div style="padding:0 20px 18px;display:flex;gap:10px;">
+      <button onclick="saveUserEdit()" style="flex:1;background:#1a56db;color:#fff;border:none;border-radius:12px;padding:12px;font-size:14px;font-weight:800;cursor:pointer;font-family:'Heebo',sans-serif;">
+        <i class="fas fa-save" style="font-size:12px;"></i> שמור
+      </button>
+      <button onclick="closeUserEditModal()" style="background:#f3f4f6;color:#374151;border:none;border-radius:12px;padding:12px 20px;font-size:14px;font-weight:800;cursor:pointer;font-family:'Heebo',sans-serif;">
+        ביטול
+      </button>
+    </div>
+  </div>
+</div>
+<div id="adBannerModalOverlay" style="display:none;position:fixed;inset:0;z-index:950;background:rgba(0,0,0,.5);backdrop-filter:blur(3px);align-items:center;justify-content:center;padding:16px;" onclick="if(event.target===this)closeAdBannerModal()">
+  <div style="background:#fff;border-radius:20px;max-width:440px;width:100%;box-shadow:0 24px 60px rgba(0,0,0,.25);overflow:hidden;font-family:'Heebo',sans-serif;direction:rtl;max-height:88vh;overflow-y:auto;">
+    <div style="padding:18px 20px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #f0f0f0;">
+      <div style="font-size:15px;font-weight:900;color:#111;" id="adBannerModalTitle">פרסומת חדשה</div>
+      <button onclick="closeAdBannerModal()" style="background:none;border:none;font-size:18px;cursor:pointer;color:#aaa;padding:4px;border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">✕</button>
+    </div>
+    <div style="padding:18px 20px;display:flex;flex-direction:column;gap:10px;">
+      <div style="display:flex;align-items:center;gap:14px;">
+        <img id="adBannerPreview" src="" style="width:52px;height:52px;border-radius:12px;object-fit:cover;background:#f5f6fa;border:1.5px solid #eef0f5;display:none;">
+        <div style="flex:1;display:flex;flex-direction:column;gap:8px;">
+          <input type="file" accept="image/*" id="adBannerImgFile" style="display:none;" onchange="handleImageUploadInput(this,'adBannerImageUrl','adBannerUploadStatus')">
+          <button type="button" onclick="document.getElementById('adBannerImgFile').click()" class="ap-btn ap-btn-soft"><i class="fas fa-upload"></i> העלאת תמונה מהמכשיר</button>
+          <span id="adBannerUploadStatus" style="display:none;align-items:center;gap:6px;font-size:11px;color:#666;"></span>
+        </div>
+      </div>
+      <input id="adBannerImageUrl" type="text" placeholder="או קישור לתמונה https://..." class="ap-field" style="direction:ltr;" oninput="onAdBannerImgInput()">
+      <input id="adBannerLinkUrl" type="text" placeholder="קישור ללחיצה https://..." class="ap-field" style="direction:ltr;">
+      <textarea id="adBannerHtmlCode" rows="3" placeholder="לחלופין: קוד HTML מלא לפרסומת..." class="ap-field" style="direction:ltr;font-family:monospace;"></textarea>
+      <div id="adBannerTimerWrap">
+        <div style="font-size:11px;color:#8a90a6;margin-bottom:5px;">שניות השהיה לפני שאפשר לסגור (0-5, פופאפ בלבד)</div>
+        <input id="adBannerTimer" type="number" min="0" max="5" placeholder="0" class="ap-field">
+      </div>
+      <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:#374151;cursor:pointer;margin-top:4px;">
+        <input type="checkbox" id="adBannerEnabled" checked> פעילה (מוצגת באתר)
+      </label>
+      <div id="adBannerMsg" style="display:none;font-size:12px;font-weight:700;text-align:center;"></div>
+    </div>
+    <div style="padding:0 20px 18px;display:flex;gap:10px;">
+      <button onclick="saveAdBanner()" class="ap-btn ap-btn-primary" style="flex:1;"><i class="fas fa-save" style="font-size:12px;"></i> שמור</button>
+      <button onclick="closeAdBannerModal()" class="ap-btn ap-btn-soft">ביטול</button>
+    </div>
+  </div>
+</div>
+<div id="channelModalOverlay" style="display:none;position:fixed;inset:0;z-index:950;background:rgba(0,0,0,.5);backdrop-filter:blur(3px);align-items:center;justify-content:center;padding:16px;" onclick="if(event.target===this)closeChannelModal()">
+  <div style="background:#fff;border-radius:20px;max-width:400px;width:100%;box-shadow:0 24px 60px rgba(0,0,0,.25);overflow:hidden;font-family:'Heebo',sans-serif;direction:rtl;">
+    <div style="padding:18px 20px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #f0f0f0;">
+      <div style="font-size:15px;font-weight:900;color:#111;" id="channelModalTitle">ערוץ חדש</div>
+      <button onclick="closeChannelModal()" style="background:none;border:none;font-size:18px;cursor:pointer;color:#aaa;padding:4px;border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">✕</button>
+    </div>
+    <div style="padding:18px 20px;display:flex;flex-direction:column;gap:10px;">
+      <div style="font-size:12px;font-weight:800;color:#5b6072;">שם הערוץ</div>
+      <input id="channelNameInput" type="text" placeholder="לדוגמה: כללי, מבצעים, שאלות..." class="ap-field">
+      <div style="font-size:12px;font-weight:800;color:#5b6072;margin-top:4px;">אייקון (Font Awesome, רשות)</div>
+      <input id="channelIconInput" type="text" placeholder="fa-hashtag" class="ap-field" style="direction:ltr;">
+      <div id="channelModalMsg" style="display:none;font-size:12px;font-weight:700;text-align:center;"></div>
+    </div>
+    <div style="padding:0 20px 18px;display:flex;gap:10px;">
+      <button onclick="saveChannel()" class="ap-btn ap-btn-primary" style="flex:1;"><i class="fas fa-save" style="font-size:12px;"></i> שמור</button>
+      <button id="channelDeleteBtn" onclick="deleteChannelFromModal()" class="ap-btn ap-btn-danger" style="display:none;">מחיקה</button>
+      <button onclick="closeChannelModal()" class="ap-btn ap-btn-soft">ביטול</button>
+    </div>
+  </div>
+</div>
 <div id="adminPanelModal" onclick="if(event.target===this)closeAdminPanel()">
   <div class="ap-box" onclick="event.stopPropagation()">
 
@@ -1046,54 +1188,45 @@ body, html { background: #fff !important; }
           <div id="reportsList" style="display:flex;flex-direction:column;gap:10px;"></div>
         </div>
 
-        <div class="ap-sec" id="ap-sec-site" style="display:none;">
-          <div style="border:1.5px solid #eef0f5;border-radius:14px;padding:16px;margin-bottom:14px;">
-            <div style="font-size:12.5px;font-weight:800;color:#4a55c7;margin-bottom:11px;"><i class="fas fa-globe" style="font-size:11px"></i> זהות האתר</div>
-            <div style="display:flex;flex-direction:column;gap:8px">
-              <div style="font-size:11px;font-weight:700;color:#5b6072;">שם האתר</div>
-              <input id="siteNameInput" type="text" placeholder="שם האתר..." class="ap-field">
-
-              <div style="font-size:11px;font-weight:700;color:#5b6072;margin-top:6px;">לוגו האתר</div>
-              <div style="display:flex;align-items:center;gap:12px;">
-                <img id="siteLogoPreview" src="" style="width:52px;height:52px;border-radius:12px;object-fit:contain;background:#f8f9fc;border:1.5px solid #eef0f5;flex-shrink:0;">
-                <div style="flex:1;display:flex;flex-direction:column;gap:8px;">
-                  <input type="file" accept="image/*" id="siteLogoFile" style="display:none;" onchange="handleImageUploadInput(this,'siteLogoUrlInput','siteLogoUploadStatus')">
-                  <button type="button" onclick="document.getElementById('siteLogoFile').click()" class="ap-btn ap-btn-soft" style="width:100%;"><i class="fas fa-upload"></i> החלפת לוגו</button>
-                  <span id="siteLogoUploadStatus" style="display:none;align-items:center;gap:6px;font-size:11px;color:#666;"></span>
-                </div>
-              </div>
-              <input id="siteLogoUrlInput" type="text" placeholder="או קישור ישיר ללוגו https://..." class="ap-field" style="direction:ltr;" oninput="document.getElementById('siteLogoPreview').src=this.value">
-
-              <div style="font-size:11px;font-weight:700;color:#5b6072;margin-top:6px;">טקסט מתחת לשם, במסך ההתחברות</div>
-              <input id="siteLoginTextInput" type="text" placeholder="לדוגמה: ברוכים הבאים לקהילה..." class="ap-field">
-              <div style="font-size:11px;color:#a3a8b8;">אם משאירים ריק, יוצג הטקסט הכללי \"התחברות באמצעות גוגל\".</div>
-            </div>
+        <div class="ap-sec" id="ap-sec-users" style="display:none;">
+          <input id="usersSearchInput" type="text" placeholder="חיפוש לפי שם או אימייל..." class="ap-field" style="margin-bottom:6px;" oninput="onUsersSearchInput()">
+          <div id="usersListTotal" style="font-size:11px;color:#a3a8b8;margin:8px 2px 12px;"></div>
+          <div id="usersList" style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px;"></div>
+          <div style="display:flex;align-items:center;justify-content:center;gap:12px;">
+            <button class="ap-btn ap-btn-soft" onclick="changeUsersPage(-1)"><i class="fas fa-chevron-right"></i> הקודם</button>
+            <span id="usersPageLabel" style="font-size:12px;color:#5b6072;font-weight:700;"></span>
+            <button class="ap-btn ap-btn-soft" onclick="changeUsersPage(1)">הבא <i class="fas fa-chevron-left"></i></button>
           </div>
-
-          <div style="border:1.5px solid #eef0f5;border-radius:14px;padding:16px;margin-bottom:14px;">
-            <div style="font-size:12.5px;font-weight:800;color:#4a55c7;margin-bottom:11px;"><i class="fas fa-signature" style="font-size:11px"></i> חתימת הודעה</div>
-            <div style="display:flex;flex-direction:column;gap:8px">
-              <input id="siteSignatureInput" type="text" placeholder="לדוגמה: לשליחת תוכן ולכל נושא - example@gmail.com" class="ap-field">
-              <div style="font-size:11px;color:#a3a8b8;">חתימה אחת שמתווספת אוטומטית בסוף כל הודעה באתר. משאירים ריק = בלי חתימה.</div>
-            </div>
-          </div>
-
-          <button onclick="saveSiteDetails()" class="ap-btn ap-btn-primary" style="width:100%;">שמור שינויים</button>
-          <div id="siteDetailsMsg" style="display:none;margin-top:10px;font-size:12px;font-weight:700;text-align:center;"></div>
         </div>
 
-        <div class="ap-sec" id="ap-sec-writers" style="display:none;">
-          <div id="adminsList" style="display:flex;flex-direction:column;gap:8px;margin-bottom:18px;"></div>
-          <div style="border-top:1px solid #f1f2f6;padding-top:16px;">
-            <div style="font-size:12px;font-weight:800;color:#5b6072;margin-bottom:9px;">הוספת יוצר / איש צוות חדש</div>
-            <div style="display:flex;flex-direction:column;gap:8px;">
-              <input id="newAdminEmail" type="email" placeholder="אימייל Google..." class="ap-field" style="direction:ltr;">
-              <input id="newAdminName" type="text" placeholder="שם תצוגה (יופיע בפוסטים)..." class="ap-field">
-              <div style="font-size:11px;color:#a3a8b8;line-height:1.5;">הוספה כאן נותנת הרשאת כתיבה כללית (writer). כדי להעניק הרשאת ניהול מלאה (admin) יש להוסיף את המייל בגיליון עצמו, בטאב Admins.</div>
-              <button onclick="addAdmin()" class="ap-btn ap-btn-primary">+ הוסף משתמש</button>
-            </div>
-            <div id="adminMsgResult" style="display:none;margin-top:10px;font-size:12px;font-weight:700;text-align:center;"></div>
+        <div class="ap-sec" id="ap-sec-branding" style="display:none;">
+          <div style="margin-bottom:22px;">
+            <div style="font-size:12px;font-weight:800;color:#5b6072;margin-bottom:9px;">שם האתר</div>
+            <input type="text" id="brandingTitleInput" class="ap-field" placeholder="שם האתר...">
           </div>
+          <div style="margin-bottom:22px;">
+            <div style="font-size:12px;font-weight:800;color:#5b6072;margin-bottom:9px;">לוגו האתר</div>
+            <div style="display:flex;align-items:center;gap:14px;margin-bottom:10px;">
+              <img id="brandingLogoPreview" src="" style="width:56px;height:56px;border-radius:14px;object-fit:contain;background:#f5f6fa;border:1.5px solid #eef0f5;">
+              <div style="flex:1;display:flex;flex-direction:column;gap:8px;">
+                <input type="file" accept="image/*" id="brandingLogoFile" style="display:none;" onchange="handleImageUploadInput(this,'brandingLogoUrl','brandingLogoUploadStatus')">
+                <button type="button" onclick="document.getElementById('brandingLogoFile').click()" class="ap-btn ap-btn-soft"><i class="fas fa-upload"></i> העלאת לוגו מהמכשיר</button>
+                <span id="brandingLogoUploadStatus" style="display:none;align-items:center;gap:6px;font-size:11px;color:#666;"></span>
+              </div>
+            </div>
+            <input id="brandingLogoUrl" type="text" placeholder="או קישור לתמונה https://..." class="ap-field" style="direction:ltr;" oninput="document.getElementById('brandingLogoPreview').src=this.value">
+          </div>
+          <div style="margin-bottom:6px;">
+            <div style="font-size:12px;font-weight:800;color:#5b6072;margin-bottom:9px;">טקסט מסך ההתחברות</div>
+            <input type="text" id="brandingLoginTextInput" class="ap-field" placeholder="לדוגמה: התחברות באמצעות גוגל">
+          </div>
+          <div style="border-top:1px solid #f1f2f6;margin-top:18px;padding-top:16px;">
+            <div style="font-size:12px;font-weight:800;color:#5b6072;margin-bottom:6px;">אימוג'ים לתגובות על הודעות</div>
+            <div style="font-size:11px;color:#a3a8b8;margin-bottom:9px;line-height:1.5;">אלו האימוג'ים שיוצגו לבחירה בחלונית התגובות. יש להדביק/להקליד אותם ברצף, בלי רווחים או פסיקים ביניהם.</div>
+            <textarea id="brandingReactionEmojis" rows="2" class="ap-field" style="font-size:18px;line-height:1.6;" placeholder="❤️👍😂😭🔥..."></textarea>
+          </div>
+          <div id="brandingMsg" style="display:none;margin-top:12px;font-size:12px;font-weight:700;text-align:center"></div>
+          <button class="ap-btn ap-btn-primary" style="width:100%;margin-top:14px;" onclick="saveSiteBranding()"><i class="fas fa-save" style="font-size:11px;"></i> שמור פרטי אתר</button>
         </div>
 
         <div class="ap-sec" id="ap-sec-blocking" style="display:none;">
@@ -1112,38 +1245,14 @@ body, html { background: #fff !important; }
         </div>
 
         <div class="ap-sec" id="ap-sec-ads" style="display:none;">
-          <div style="border:1.5px solid #eef0f5;border-radius:14px;padding:16px;margin-bottom:14px;">
-            <div style="font-size:12.5px;font-weight:800;color:#4a55c7;margin-bottom:11px;"><i class="fas fa-window-restore" style="font-size:11px"></i> פרסומת פופאפ</div>
-            <div style="display:flex;flex-direction:column;gap:8px">
-              <input type="file" accept="image/*" id="adPopupImageFile" style="display:none;" onchange="handleImageUploadInput(this,'adPopupImageUrl','adPopupUploadStatus')">
-              <button type="button" onclick="document.getElementById('adPopupImageFile').click()" class="ap-btn ap-btn-soft" style="width:100%;"><i class="fas fa-upload"></i> העלאת תמונה מהמכשיר</button>
-              <span id="adPopupUploadStatus" style="display:none;align-items:center;gap:6px;font-size:11px;color:#666;"></span>
-              <input id="adPopupImageUrl" type="text" placeholder="או קישור לתמונה https://..." class="ap-field" style="direction:ltr;">
-              <input id="adPopupLinkUrl" type="text" placeholder="קישור ללחיצה https://..." class="ap-field" style="direction:ltr;">
-              <textarea id="adPopupHtmlUrl" rows="3" placeholder="או הדבק כאן קוד HTML מלא..." class="ap-field" style="direction:ltr;font-family:monospace;"></textarea>
-              <input id="adPopupTimer" type="number" placeholder="שניות השהיה (מקסימום 5)" min="0" max="5" class="ap-field">
-              <div style="display:flex;gap:8px;margin-top:3px;">
-                <button onclick="saveAd('popup')" class="ap-btn ap-btn-primary" style="flex:1;">שמור</button>
-                <button onclick="deleteAd('popup')" class="ap-btn ap-btn-danger" style="flex:1;">הסר</button>
-              </div>
-            </div>
+          <div style="display:flex;gap:8px;margin-bottom:16px;">
+            <button class="ap-btn ap-btn-primary" style="flex:1;" onclick="openAdBannerModal('popup')"><i class="fas fa-plus"></i> פרסומת פופאפ חדשה</button>
+            <button class="ap-btn ap-btn-primary" style="flex:1;" onclick="openAdBannerModal('side')"><i class="fas fa-plus"></i> פרסומת צד חדשה</button>
           </div>
-          <div style="border:1.5px solid #eef0f5;border-radius:14px;padding:16px;">
-            <div style="font-size:12.5px;font-weight:800;color:#4a55c7;margin-bottom:11px;"><i class="fas fa-columns" style="font-size:11px"></i> פרסומת עמודה צדדית</div>
-            <div style="display:flex;flex-direction:column;gap:8px">
-              <input type="file" accept="image/*" id="adSideImageFile" style="display:none;" onchange="handleImageUploadInput(this,'adSideImageUrl','adSideUploadStatus')">
-              <button type="button" onclick="document.getElementById('adSideImageFile').click()" class="ap-btn ap-btn-soft" style="width:100%;"><i class="fas fa-upload"></i> העלאת תמונה מהמכשיר</button>
-              <span id="adSideUploadStatus" style="display:none;align-items:center;gap:6px;font-size:11px;color:#666;"></span>
-              <input id="adSideImageUrl" type="text" placeholder="או קישור לתמונה https://..." class="ap-field" style="direction:ltr;">
-              <input id="adSideLinkUrl" type="text" placeholder="קישור ללחיצה https://... (לתמונה בלבד)" class="ap-field" style="direction:ltr;">
-              <textarea id="adSideHtmlUrl" rows="3" placeholder="או הדבק כאן קוד HTML מלא..." class="ap-field" style="direction:ltr;font-family:monospace;"></textarea>
-              <div style="display:flex;gap:8px">
-                <button onclick="saveAd('side')" class="ap-btn ap-btn-primary" style="flex:1;">שמור</button>
-                <button onclick="deleteAd('side')" class="ap-btn ap-btn-danger" style="flex:1;">הסר</button>
-              </div>
-            </div>
-          </div>
-          <div id="adMsg" style="display:none;margin-top:12px;font-size:12px;font-weight:700;text-align:center"></div>
+          <div style="font-size:12.5px;font-weight:800;color:#4a55c7;margin-bottom:9px;"><i class="fas fa-window-restore" style="font-size:11px"></i> פרסומות פופאפ</div>
+          <div id="adPopupBannersList" style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px;"></div>
+          <div style="font-size:12.5px;font-weight:800;color:#4a55c7;margin-bottom:9px;"><i class="fas fa-columns" style="font-size:11px"></i> פרסומות עמודה צדדית</div>
+          <div id="adSideBannersList" style="display:flex;flex-direction:column;gap:8px;"></div>
         </div>
 
         <div class="ap-sec" id="ap-sec-messages" style="display:none;display:flex;flex-direction:column;height:100%;">
@@ -1173,16 +1282,21 @@ body, html { background: #fff !important; }
 
 const BACKEND = "https://script.google.com/macros/s/AKfycbyig5wjhHEFUFrJCdakcxu_-R302GplBuxyJo5jintWf7oEXHa_cK4mRvFivHu6AtAjlQ/exec";
 const GOOGLE_CLIENT_ID = '426523025549-7c50rkn7cun4vmm2r802u0ij6egjehtg.apps.googleusercontent.com';
-// אלה היו const בעבר - עכשיו let, כי loadPublicSiteSettings() מעדכנת אותם
-// בפועל מההגדרות (שם/לוגו האתר) מיד עם טעינת העמוד, לפני ואחרי התחברות.
 let LOGO = 'https://cdn-icons-png.flaticon.com/128/6476/6476785.png';
 let SITE_TITLE = 'מזג האוויר';
-let LOGIN_TEXT = ''; // טקסט מותאם אישית מתחת לשם האתר במסך ההתחברות (ריק = ברירת המחדל הקיימת)
-let SIGNATURE = ''; // חתימה גלובלית שמתווספת בסוף כל הודעה, אם הוגדרה
+let SITE_LOGIN_TEXT = 'התחברות באמצעות גוגל';
+let SITE_REACTION_EMOJIS = ['❤️','👍','😂','😭','🔥','🙏','😍','😮','💯','👎','😊','😢','🤬','💥','🥳','😕','🍿','💪','🚀','😉','🥵','🤑','🎯','🌀','😌','💔','😨','🤣','📖'];
+function renderEmojiPickerGrid() {
+  const grid = document.getElementById('emojiPickerGrid'); if (!grid) return;
+  grid.innerHTML = SITE_REACTION_EMOJIS.map(em => `<button class="ep-btn" onclick="pickEmoji('${escAttr(em)}')">${esc(em)}</button>`).join('');
+}
+const DEFAULT_LOGO = LOGO; // ליפול חזרה אליו אם אין לוגו מותאם אישית בהגדרות
 const STORAGE_KEY = 'bina_user';
 const AD_KEY = 'shaagat_ad';
 const AD_INTERVAL = 60 * 60 * 1000;
-let CHANNEL = 'general'; // ברירת מחדל - מתעדכן בפועל דרך switchChannel() אחרי טעינת רשימת הערוצים
+let CHANNEL = 'all'; // ערוץ פעיל כרגע. 'all' = קטגוריית "הכל" (מציגה יחד את כל הערוצים)
+let _channels = [{ id: 'all', name: 'הכל', icon: 'fa-layer-group' }];
+let _channelsUnread = {};
 const CLOUDINARY_CLOUD_NAME = 'xgh73omp';
 const CLOUDINARY_UPLOAD_PRESET = 'website_upload';
 async function uploadToCloudinary(file, onProgress) {
@@ -1228,19 +1342,86 @@ async function handleImageUploadInput(fileInputEl, targetInputId, statusElId) {
 }
 
 let me = null, items = [], lastTs = 0, newCount = 0, atBottom = true;
+
+/* ================= העלאת סרטון אוטומטית לדרייב ================= */
+// אין שרת קבצים משלנו, אז סרטון שמעלים נשלח (כ-base64) לגוגל אפ-סקריפט,
+// שמעלה אותו לתיקייה בדרייב של בעל הסקריפט ומחזיר מזהה קובץ. לצורך נגינה
+// ישירה בתג <video> (ולא כתצוגה מקדימה של דרייב) יש הגבלת גודל של כ-20MB -
+// מעבר לזה דרייב לרוב מציג מסך "לא ניתן לסרוק לוירוסים" במקום לשדר את
+// הסרטון ישירות, מה שישבור את הנגינה/ההורדה. לסרטונים גדולים יותר - עדיף
+// להשתמש בשדה קישור URL הרגיל.
+const MAX_VIDEO_UPLOAD_BYTES = 20 * 1024 * 1024;
+async function handleVideoUploadInput(fileInputEl) {
+  const file = fileInputEl.files && fileInputEl.files[0];
+  if (!file) return;
+  const statusEl = document.getElementById('composeVidUploadStatus');
+  if (file.size > MAX_VIDEO_UPLOAD_BYTES) {
+    alert('הסרטון גדול מדי (מקסימום כ-20MB להעלאה אוטומטית). ניתן להשתמש בשדה הקישור עבור סרטונים גדולים יותר.');
+    fileInputEl.value = ''; return;
+  }
+  if (statusEl) { statusEl.style.display = 'inline-flex'; statusEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> מעלה לדרייב... זה עשוי לקחת כמה רגעים'; }
+  try {
+    const dataBase64 = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result.split(',')[1]);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+    const d = await api('video_upload', { email: me.email, filename: file.name, mimeType: file.type || 'video/mp4', dataBase64 }, 'POST');
+    if (d.status === 'ok') {
+      composeVidUrl = d.videoUrl; // בפורמט 'drive:FILE_ID'
+      document.getElementById('composeVidUrl').value = '';
+      updateAttachPreview();
+      if (statusEl) { statusEl.innerHTML = '<i class="fas fa-check" style="color:#3f9a6e;"></i> הסרטון הועלה בהצלחה'; setTimeout(() => { statusEl.style.display = 'none'; }, 2500); }
+    } else {
+      if (statusEl) { statusEl.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:#c94b4b;"></i> ${esc(d.message || 'שגיאה בהעלאה')}`; setTimeout(() => { statusEl.style.display = 'none'; }, 4000); }
+    }
+  } catch (err) {
+    if (statusEl) { statusEl.innerHTML = '<i class="fas fa-exclamation-triangle" style="color:#c94b4b;"></i> שגיאה בהעלאה'; setTimeout(() => { statusEl.style.display = 'none'; }, 3000); }
+  } finally {
+    fileInputEl.value = '';
+  }
+}
+
 let activePicker = null;
 let rxnCache = {};
 const knownIds = new Set();
 let oldestTs = 0, allLoaded = false, loadingMore = false, pollPending = false;
 let _writersMap = {}; // email(lower) -> {name}
-let _isSuper = false, _isWriter = false, _isContentManager = false;
+let _myRole = ''; // '' | 'writer' | 'content_manager' | 'admin'
+const ROLE_RANK = { '': 0, 'writer': 1, 'content_manager': 2, 'admin': 3 };
+const ROLE_LABELS = { admin: 'אדמין', content_manager: 'מנהל תוכן', writer: 'כותב', user: 'משתמש', '': 'משתמש' };
 
 let composeImgUrl = '', composeVidUrl = '', composeBtns = [], composeHtmlCode = '';
+let mySignature = '';
+let composeShowSignature = localStorage.getItem('shaagat_sig_on') === '1';
 let adminMsgsLastId = null, adminMsgsUnread = 0;
 let _updateMode = false, _updateUntil = '';
 let _adminMsgsKnownIds = new Set();
 let _reportTargetMsgId = null;
 let _editMsgId = null;
+
+/* ================= מנהל תזמון (עוצר קריאות שרת כשהלשונית ברקע) ================= */
+// כל האינטרוולים שקוראים לשרת (פיד, סטטוס אונליין, הודעות צוות וכו') עוברים
+// דרך כאן במקום setInterval ישיר, כדי שברגע שהלשונית עוברת לרקע (המשתמש עבר
+// לטאב אחר) כל הקריאות האלה ייעצרו לגמרי, וכשחוזרים ללשונית - מתבצע ריענון
+// מיידי אחד ואז הקריאות ממשיכות כרגיל. זה מקטין משמעותית את כמות הקריאות
+// לשרת (וגם את העומס אצל המשתמש) בלי לפגוע בעדכניות בזמן שימוש בפועל.
+const _polledTasks = [];
+function registerPolledTask(fn, intervalMs, runImmediately) {
+  _polledTasks.push({ fn, intervalMs, timer: null });
+  if (runImmediately) fn();
+}
+function startPolledTasks() {
+  _polledTasks.forEach(t => { if (!t.timer) t.timer = setInterval(t.fn, t.intervalMs); });
+}
+function stopPolledTasks() {
+  _polledTasks.forEach(t => { if (t.timer) { clearInterval(t.timer); t.timer = null; } });
+}
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) { stopPolledTasks(); }
+  else { _polledTasks.forEach(t => t.fn()); startPolledTasks(); }
+});
 
 /* ================= עזרים כלליים ================= */
 function esc(t) { return (t || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
@@ -1257,14 +1438,9 @@ function fmtDate(ts) {
   catch (e) { return ''; }
 }
 
-/* קריאת API מרוכזת: תמיד דרך אותו URL, action בפרמטר.
-   מצרפת אוטומטית session (אם המשתמש מחובר) לכל קריאה - כך שאין צורך
-   לזכור להוסיף את זה ידנית בכל אחת מהעשרות קריאות ל-api() בקובץ הזה.
-   השרת מתעלם מפרמטר session בפעולות ציבוריות (כמו קריאת הגדרות אתר). */
+/* קריאת API מרוכזת: תמיד דרך אותו URL, action בפרמטר */
 async function api(action, params, method) {
   method = method || 'GET';
-  params = Object.assign({}, params || {});
-  if (me && me.session && params.session === undefined) params.session = me.session;
   try {
     if (method === 'GET') {
       const qs = new URLSearchParams(Object.assign({ action }, params || {}));
@@ -1286,18 +1462,11 @@ async function api(action, params, method) {
 
 function getRole() {
   if (!me) return 'visitor';
-  if (_isSuper) return 'super';
-  if (_isContentManager) return 'contentManager';
-  if (_isWriter) return 'writer';
-  return 'user';
+  return _myRole || 'user'; // '' -> 'user' (מחובר, בלי שום הרשאה מיוחדת)
 }
-// שימו לב: isAdmin() בפועל בודק "כותב ומעלה" (יכול לגשת לבר הכתיבה), לא
-// "אדמין בלבד" - שם קצת מטעה שנשאר מהגרסה הקודמת. isSuperAdmin() הוא
-// הבדיקה ל"אדמין אמיתי בלבד". isModerator() חדש - אדמין או מנהל תוכן,
-// כלומר מי שיכול לערוך/למחוק הודעות של משתמשים אחרים (לא רק את שלו).
-function isAdmin() { const r = getRole(); return r === 'super' || r === 'contentManager' || r === 'writer'; }
-function isSuperAdmin() { return _isSuper; }
-function isModerator() { return _isSuper || _isContentManager; }
+function isAdmin() { return ROLE_RANK[_myRole || ''] >= ROLE_RANK['writer']; } // מותר לכתוב הודעות (כותב ומעלה)
+function isContentManager() { return ROLE_RANK[_myRole || ''] >= ROLE_RANK['content_manager']; } // מודרציה על הודעות של אחרים
+function isSuperAdmin() { return _myRole === 'admin'; } // שליטה מלאה: הגדרות/ערוצים/משתמשים/פרסומות
 
 function getDisplayName(email, fallback) {
   const entry = _writersMap[(email || '').toLowerCase()];
@@ -1319,29 +1488,9 @@ function showToast(msg, type) {
   setTimeout(() => t.remove(), 3000);
 }
 
-/* ================= הגדרות אתר ציבוריות (שם/לוגו/טקסט התחברות/חתימה) =================
-   נטענות מיד עם העמוד - לפני שמתחברים - כי מסך ההתחברות עצמו צריך להציג
-   את השם/לוגו/טקסט המותאמים. הפעולה api_settings ציבורית בכוונה בשרת. */
-let _publicSettings = null;
-async function loadPublicSiteSettings() {
-  const d = await api('api_settings', {});
-  if (d.status === 'error') return; // כשל רשת - נשארים עם ברירות המחדל, לא קריטי
-  _publicSettings = d;
-  if (d.title) SITE_TITLE = d.title;
-  if (d.logoUrl) LOGO = d.logoUrl;
-  LOGIN_TEXT = d.loginText || '';
-  SIGNATURE = d.signature || '';
-
-  const pageTitle = document.getElementById('pageTitle'); if (pageTitle) pageTitle.innerText = SITE_TITLE;
-  const logT = document.getElementById('loginSiteTitle'); if (logT) logT.innerText = SITE_TITLE;
-  const logoImg = document.getElementById('loginLogoImg'); if (logoImg && d.logoUrl) logoImg.src = d.logoUrl;
-  const subText = document.getElementById('loginSubText'); if (subText) subText.innerText = LOGIN_TEXT || 'התחברות באמצעות גוגל';
-}
-
 /* ================= התחברות ================= */
 function doLogout() {
   clearSavedUser(); me = null;
-  _isSuper = false; _isWriter = false; _isContentManager = false;
   document.getElementById('app').style.display = 'none';
   document.getElementById('bannedScreen').style.display = 'none';
   document.getElementById('loginScreen').style.display = 'flex';
@@ -1349,28 +1498,16 @@ function doLogout() {
 }
 
 async function verifyAndLogin(user) {
-  // שולחים את ה-session השמור, לא email גולמי - השרת מאמת אותו מקומית
-  // (חתום ב-HMAC, בלי לצאת לגוגל) ומחזיר את הזהות האמיתית + הרשאות טריות.
-  const d = await api('auth_check', { session: user.session }, 'POST');
-  if (d.status !== 'ok') {
-    // ה-session פג תוקף (30 יום) או לא תקין מסיבה אחרת - חוזרים למסך
-    // התחברות רגיל במקום להישאר תקועים. true = "טופל", false = "נכשל".
-    clearSavedUser(); me = null;
-    return false;
-  }
+  const d = await api('auth_check', { email: user.email });
   if (d.banned) {
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('app').style.display = 'none';
     document.getElementById('bannedScreen').style.display = 'flex';
-    return true;
+    return false;
   }
-  _isSuper = !!d.admin;
-  _isContentManager = !!d.contentManager;
-  _isWriter = !!d.writer;
-  // מרעננים גם את השם/תמונה מהמקור השמור, אבל email+session תמיד מהשרת
-  // (ה-session מתחדש בכל בדיקה - כך שמשתמש פעיל לעולם לא "יתנתק" לבד)
-  me = Object.assign({}, user, { email: d.email, session: d.session });
-  saveUser(me);
+  _myRole = d.role || (d.admin ? 'admin' : d.writer ? 'writer' : '');
+  mySignature = d.signature || '';
+  me = user; saveUser(user);
   await applyLogin();
   return true;
 }
@@ -1393,7 +1530,7 @@ async function applyLogin() {
   document.getElementById('loginScreen').style.display = 'none';
   document.getElementById('app').style.display = 'flex';
 
-  api('api_log_login', { name: me.name, picture: me.picture }, 'POST'); // email כבר לא נשלח - השרת לוקח אותו מה-session המאומת
+  api('api_log_login', { email: me.email, name: me.name, picture: me.picture }, 'POST');
 
   // מציגים מיד את מה שאפשר בלי לחכות לשרת - הרשאות הכתיבה כבר ידועות מ-auth_check
   applyWritePerm();
@@ -1403,72 +1540,78 @@ async function applyLogin() {
   // רשימת הכותבים (לשמות תצוגה + פאנל יוצרים) נטענת במקביל ולא חוסמת את הפיד
   loadWritersMap().then(() => { refreshUserMenu(); applyWritePerm(); });
 
-  // לכל משתמש מחובר (לא רק אדמין!) - זה היה בטעות בתוך הבלוק "רק לאדמין"
-  // למטה, כך שמונה ה"מחוברים כרגע" בפועל שיקף רק אדמינים ולא ביקור אמיתי.
-  pingSitePresence(); setInterval(pingSitePresence, 15000);
-
   if (isAdmin()) {
-    loadAdminMsgs(); setInterval(loadAdminMsgs, 8000);
-    pollUpdateMode(); setInterval(pollUpdateMode, 8000);
+    registerPolledTask(loadAdminMsgs, 8000, true);
+    registerPolledTask(pingSitePresence, 15000, true);
+    registerPolledTask(pollUpdateMode, 8000, true);
     document.getElementById('feedWrap').style.paddingBottom = '120px';
   }
 
+  loadChannelsList();
+  registerPolledTask(loadUnreadStatus, 20000, true);
+  document.getElementById('channelsAdminBtnWrap').style.display = isSuperAdmin() ? 'block' : 'none';
+
   setTimeout(loadAd, 3000); setInterval(loadAd, 60 * 60 * 1000);
   initDark(); initNotifications();
-  triggerStats(); setInterval(triggerStats, 20000);
+  registerPolledTask(triggerStats, 25000, true);
+  startPolledTasks();
 }
 
 async function handleGoogle(resp) {
-  // מפענחים את ה-token בצד הלקוח רק בשביל תצוגה אופטימית מיידית (שם/תמונה) -
-  // לא סומכים על זה בשביל הזהות עצמה! את המייל האמיתי ואת ה-session
-  // מקבלים אך ורק מהשרת, אחרי שהוא מאמת את ה-token מול גוגל בעצמו
-  // (חתימה+תוקף+audience) - זה בדיוק התיקון לפרצת האבטחה שנמצאה.
-  let displayName = '', displayPicture = '';
+  let payload = {};
   try {
     const base64Url = resp.credential.split('.')[1];
     const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
     const pad = base64.length % 4;
     const paddedBase64 = pad ? base64 + '='.repeat(4 - pad) : base64;
     const jsonPayload = decodeURIComponent(window.atob(paddedBase64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
-    const payload = JSON.parse(jsonPayload);
-    displayName = payload.name || ''; displayPicture = payload.picture || '';
-  } catch (e) { /* לא קריטי - זה רק לתצוגה אופטימית, האימות האמיתי קורה בשרת למטה */ }
+    payload = JSON.parse(jsonPayload);
+  } catch (e) { alert('חלה שגיאה טכנית בהתחברות. נסה שוב.'); return; }
 
-  const d = await api('auth_check', { idToken: resp.credential }, 'POST');
-  if (d.status !== 'ok') { alert(d.message || 'חלה שגיאה באימות מול גוגל. נסה/י שוב.'); return; }
-  if (d.banned) {
-    document.getElementById('loginScreen').style.display = 'none';
-    document.getElementById('app').style.display = 'none';
-    document.getElementById('bannedScreen').style.display = 'flex';
-    return;
-  }
-  _isSuper = !!d.admin;
-  _isContentManager = !!d.contentManager;
-  _isWriter = !!d.writer;
-  me = { email: d.email, name: displayName || d.email.split('@')[0], picture: displayPicture, session: d.session };
-  saveUser(me);
-  await applyLogin();
+  const email = (payload.email || '').toLowerCase();
+  if (!email || !email.includes('@')) return;
+  const picture = payload.picture || '';
+  const name = payload.name || email.split('@')[0];
+  await verifyAndLogin({ email, name, picture });
 }
 
 function initGoogle() {
   google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: handleGoogle, auto_select: true });
-  // saved.session קיים רק אצל מי שכבר התחבר אחרי השדרוג הזה - משתמש "ישן"
-  // ששמור מלפני השדרוג (עם email בלבד, בלי session) פשוט יראה כפתור
-  // התחברות רגיל וילחץ עליו פעם אחת, בדיוק כמו התחברות ראשונה.
   const saved = loadSavedUser();
-  if (saved && saved.session) {
-    verifyAndLogin(saved).then(ok => { if (!ok) showGoogleLoginUI(); });
-    return;
-  }
-  showGoogleLoginUI();
-}
-function showGoogleLoginUI() {
+  if (saved) { verifyAndLogin(saved); return; }
   google.accounts.id.renderButton(document.getElementById('googleBtn'), { theme: 'outline', size: 'large', locale: 'he', width: 240 });
   google.accounts.id.prompt();
 }
 function tryInitGoogle() { if (window.google && window.google.accounts) initGoogle(); else setTimeout(tryInitGoogle, 100); }
 if (document.readyState === 'complete') tryInitGoogle(); else window.addEventListener('load', tryInitGoogle);
-loadPublicSiteSettings(); // רץ מיד, במקביל לאתחול גוגל - לא מחכים אחד לשני
+
+/* ================= פרטי אתר (שם/לוגו/טקסט מסך התחברות) ================= */
+// נטען מיד עם עליית הדף, במקביל לאתחול Google - כדי שגם מסך ההתחברות עצמו
+// (לפני שיש בכלל משתמש מחובר) יציג את השם/לוגו המעודכנים מההגדרות, ולא
+// יסתמך רק על ברירת המחדל הקבועה בקוד.
+let _siteSettingsCache = null;
+function applySiteBrandingToDom() {
+  document.getElementById('pageTitle') && (document.getElementById('pageTitle').innerText = SITE_TITLE);
+  document.title = SITE_TITLE;
+  document.getElementById('loginSiteTitle') && (document.getElementById('loginSiteTitle').innerText = SITE_TITLE);
+  document.getElementById('loginSiteSub') && (document.getElementById('loginSiteSub').innerText = SITE_LOGIN_TEXT);
+  document.getElementById('hdrChannelName') && (document.getElementById('hdrChannelName').innerText = SITE_TITLE);
+  const loginLogo = document.getElementById('loginLogoImg'); if (loginLogo) { loginLogo.style.display = ''; loginLogo.src = LOGO; }
+  const hdrLogo = document.getElementById('hdrAvatarImg'); if (hdrLogo) hdrLogo.src = LOGO;
+}
+async function loadSiteBranding() {
+  const d = await api('api_settings', {});
+  if (d && d.status !== 'error') {
+    _siteSettingsCache = d;
+    if (d.title) SITE_TITLE = d.title;
+    if (d.logoUrl) LOGO = d.logoUrl;
+    if (d.loginText) SITE_LOGIN_TEXT = d.loginText;
+    if (Array.isArray(d.reactionEmojis) && d.reactionEmojis.length) SITE_REACTION_EMOJIS = d.reactionEmojis;
+  }
+  applySiteBrandingToDom();
+  renderEmojiPickerGrid();
+}
+loadSiteBranding();
 
 /* ================= תפריט משתמש ================= */
 function toggleUserMenu(e) {
@@ -1489,6 +1632,7 @@ function refreshUserMenu() {
   if (isAdmin()) {
     adminMenuHtml += `<div style="border-top:1px solid #e5e7eb; margin-top:8px; padding:8px 10px 2px;">
       <button onclick="openAdminPanel()" style="width:100%;padding:11px 14px;text-align:right;background:linear-gradient(135deg,#1a56db,#6d28d9);border:none;border-radius:12px;cursor:pointer;font-size:13.5px;font-weight:800;color:#fff;display:flex;align-items:center;gap:10px;box-shadow:0 4px 14px -4px rgba(26,86,219,.6);transition:transform .15s,box-shadow .15s;" onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 6px 18px -4px rgba(26,86,219,.7)'" onmouseout="this.style.transform='none';this.style.boxShadow='0 4px 14px -4px rgba(26,86,219,.6)'"><i class="fas fa-shield-halved" style="width:16px;"></i> פאנל ניהול</button>
+      <button onclick="openEditSignature()" style="width:100%;padding:10px 14px;text-align:right;background:none;border:1.5px solid #e5e7eb;border-radius:12px;cursor:pointer;font-size:13px;font-weight:700;color:#374151;display:flex;align-items:center;gap:10px;margin-top:8px;font-family:'Heebo',sans-serif;"><i class="fas fa-signature" style="width:16px;"></i> עריכת חתימה</button>
     </div>`;
   }
   const menu = document.getElementById('userMenu'); if (!menu) return;
@@ -1498,7 +1642,7 @@ function refreshUserMenu() {
       <div style="flex:1;min-width:0;">
         <div style="font-size:14px;font-weight:800;color:#111;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(me.name)}</div>
         <div style="font-size:11px;color:#6b7280;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(me.email)}</div>
-        <div style="font-size:10px;font-weight:800;color:#1a56db;">${role === 'super' ? 'מנהל ראשי' : role === 'writer' ? 'כותב מורשה' : 'משתמש'}</div>
+        <div style="font-size:10px;font-weight:800;color:#1a56db;">${ROLE_LABELS[role] || 'משתמש'}</div>
       </div>
     </div>
     ${adminMenuHtml}
@@ -1509,18 +1653,14 @@ function refreshUserMenu() {
 
 /* ================= פאנל ניהול (עדין ובהיר, עם סרגל צד) ================= */
 let _adminPanelActiveSection = null;
-// minRole = דרגת ההרשאה המינימלית שרואה את הסעיף הזה בפאנל הניהול.
-// היררכיה: writer < contentManager < super. (היה superOnly בוליארי - עכשיו
-// מדורג, כדי שאפשר יהיה לתת גישה חלקית למנהל תוכן, למשל לדיווחים.)
-const AP_ROLE_RANK = { user: 0, writer: 1, contentManager: 2, super: 3 };
 const AP_SECTIONS = [
+  { key: 'branding', icon: 'fa-palette', title: 'פרטי אתר', minRole: 'admin' },
   { key: 'stats', icon: 'fa-chart-line', title: 'סטטיסטיקות קהילה', minRole: 'writer' },
-  { key: 'reports', icon: 'fa-flag', title: 'דיווחי משתמשים', minRole: 'contentManager' },
-  { key: 'site', icon: 'fa-gear', title: 'פרטי אתר', minRole: 'super' },
-  { key: 'writers', icon: 'fa-user-group', title: 'מורשי כתיבה', minRole: 'super' }, // TODO: יוחלף במסך "ניהול משתמשים והרשאות" המלא בשלב הבא
-  { key: 'blocking', icon: 'fa-user-slash', title: 'חסימת משתמשים', minRole: 'super' },
-  { key: 'ads', icon: 'fa-rectangle-ad', title: 'פרסומות', minRole: 'super' },
-  { key: 'messages', icon: 'fa-comments', title: 'הודעות צוות', minRole: 'super' },
+  { key: 'reports', icon: 'fa-flag', title: 'דיווחי משתמשים', minRole: 'content_manager' },
+  { key: 'users', icon: 'fa-users-gear', title: 'ניהול משתמשים והרשאות', minRole: 'admin' },
+  { key: 'blocking', icon: 'fa-user-slash', title: 'חסימת משתמשים', minRole: 'admin' },
+  { key: 'ads', icon: 'fa-rectangle-ad', title: 'פרסומות', minRole: 'admin' },
+  { key: 'messages', icon: 'fa-comments', title: 'הודעות צוות', minRole: 'admin' },
 ];
 
 function openAdminPanel() {
@@ -1533,9 +1673,9 @@ function openAdminPanel() {
     ? `<img src="${escAttr(me.picture)}">`
     : `<div class="ap-sidebar-avatar-fallback">${esc(me.name[0].toUpperCase())}</div>`;
   document.getElementById('apHdrName').innerText = me.name;
-  document.getElementById('apHdrRole').innerText = role === 'super' ? 'מנהל ראשי' : role === 'contentManager' ? 'מנהל תוכן' : 'כותב מורשה';
+  document.getElementById('apHdrRole').innerText = ROLE_LABELS[role] || 'כותב';
 
-  const visible = AP_SECTIONS.filter(s => AP_ROLE_RANK[role] >= AP_ROLE_RANK[s.minRole]);
+  const visible = AP_SECTIONS.filter(s => ROLE_RANK[role] >= ROLE_RANK[s.minRole]);
   document.getElementById('apNav').innerHTML = visible.map(s => `
     <button class="ap-nav-item" data-sec="${s.key}" onclick="switchAdminSection('${s.key}')">
       <span class="ap-nav-icon"><i class="fas ${s.icon}"></i></span>
@@ -1555,10 +1695,10 @@ function switchAdminSection(sec) {
   document.querySelectorAll('.ap-sec').forEach(s => s.style.display = (s.id === 'ap-sec-' + sec) ? (sec === 'messages' ? 'flex' : 'block') : 'none');
   const found = AP_SECTIONS.find(s => s.key === sec);
   document.getElementById('apContentTitle').innerText = found ? found.title : 'פאנל ניהול';
-  if (sec === 'stats') openSiteStats();
+  if (sec === 'branding') openSiteBranding();
+  else if (sec === 'stats') openSiteStats();
   else if (sec === 'reports') openReportsModal();
-  else if (sec === 'site') openSiteDetails();
-  else if (sec === 'writers') openManageAdmins();
+  else if (sec === 'users') openManageUsers();
   else if (sec === 'blocking') openSiteSettings();
   else if (sec === 'ads') openAdPanel();
   else if (sec === 'messages') openAdminMsgs();
@@ -1576,7 +1716,96 @@ function applyWritePerm() {
   if (isAdmin()) { bar.classList.add('show'); bar.classList.remove('blocked'); }
   else { bar.classList.remove('show'); }
   const badge = document.getElementById('composerNameBadge');
-  if (badge && me) badge.innerText = 'כותב בתור: ' + getDisplayName(me.email, me.name);
+  if (badge && me) badge.innerText = CHANNEL === 'all' ? 'בחר/י ערוץ מסוים כדי לפרסם' : 'כותב בתור: ' + getDisplayName(me.email, me.name);
+  document.getElementById('sigToggleBtn')?.classList.toggle('has-val', composeShowSignature);
+}
+
+/* ================= ערוצים ================= */
+async function loadChannelsList() {
+  const d = await api('channels_list', {});
+  const real = (d.channels || []);
+  _channels = [{ id: 'all', name: 'הכל', icon: 'fa-layer-group' }, ...real];
+  renderChannelsList();
+}
+function renderChannelsList() {
+  const list = document.getElementById('channelsList'); if (!list) return;
+  list.innerHTML = _channels.map(c => `
+    <div class="channel-item ${c.id === CHANNEL ? 'active' : ''}" onclick="switchChannel('${escAttr(c.id)}')" oncontextmenu="return handleChannelContext(event,'${escAttr(c.id)}')">
+      <i class="fas ${esc(c.icon || 'fa-hashtag')}"></i>
+      <span style="flex:1;">${esc(c.name)}</span>
+      ${_channelsUnread[c.id] ? '<span style="width:8px;height:8px;border-radius:50%;background:#dc2626;flex-shrink:0;"></span>' : ''}
+      ${(isSuperAdmin() && c.id !== 'all') ? `<button onclick="event.stopPropagation();openChannelModal('${escAttr(c.id)}')" style="background:none;border:none;color:#9ca3af;cursor:pointer;padding:2px;font-size:11px;"><i class="fas fa-pen"></i></button>` : ''}
+    </div>`).join('');
+}
+function handleChannelContext(ev) { ev.preventDefault(); return false; }
+function toggleLeftSidebar() { document.getElementById('leftSidebar').classList.toggle('open'); }
+async function switchChannel(id) {
+  if (id === CHANNEL) { if (window.innerWidth <= 900) document.getElementById('leftSidebar').classList.remove('open'); return; }
+  CHANNEL = id;
+  knownIds.clear(); items = []; oldestTs = 0; lastTs = 0; allLoaded = false; atBottom = true;
+  renderChannelsList();
+  applyWritePerm();
+  document.getElementById('feedInner').innerHTML = '';
+  await loadFeed();
+  if (id !== 'all') { _channelsUnread[id] = false; renderChannelsList(); }
+  if (window.innerWidth <= 900) document.getElementById('leftSidebar').classList.remove('open');
+}
+async function loadUnreadStatus() {
+  if (!me) return;
+  const d = await api('unread_status', { email: me.email });
+  if (d.status === 'ok') { _channelsUnread = d.unread || {}; renderChannelsList(); }
+}
+
+/* -------- ניהול ערוצים (CRUD, אדמין בלבד) -------- */
+let _channelEditId = null;
+function openChannelModal(id) {
+  _channelEditId = id || null;
+  const ch = id ? _channels.find(c => c.id === id) : null;
+  document.getElementById('channelModalTitle').innerText = ch ? 'עריכת ערוץ' : 'ערוץ חדש';
+  document.getElementById('channelNameInput').value = ch ? ch.name : '';
+  document.getElementById('channelIconInput').value = ch ? (ch.icon || '') : '';
+  document.getElementById('channelDeleteBtn').style.display = ch ? 'block' : 'none';
+  document.getElementById('channelModalMsg').style.display = 'none';
+  document.getElementById('channelModalOverlay').style.display = 'flex';
+}
+function closeChannelModal() { document.getElementById('channelModalOverlay').style.display = 'none'; _channelEditId = null; }
+async function saveChannel() {
+  if (!isSuperAdmin()) return;
+  const name = document.getElementById('channelNameInput').value.trim();
+  const icon = document.getElementById('channelIconInput').value.trim();
+  const msgEl = document.getElementById('channelModalMsg');
+  if (!name) { msgEl.style.display = 'block'; msgEl.style.color = '#c94b4b'; msgEl.textContent = 'יש להזין שם ערוץ'; return; }
+  const d = await api('channel_save', { email: me.email, id: _channelEditId, name, icon }, 'POST');
+  if (d.status === 'ok') { closeChannelModal(); await loadChannelsList(); showToast('הערוץ נשמר', 'success'); }
+  else { msgEl.style.display = 'block'; msgEl.style.color = '#c94b4b'; msgEl.textContent = d.message || 'שגיאה בשמירה'; }
+}
+async function deleteChannelFromModal() {
+  if (!isSuperAdmin() || !_channelEditId) return;
+  if (!confirm('למחוק את הערוץ? ההודעות שבו יעברו לערוץ הכללי.')) return;
+  await api('channel_delete', { email: me.email, id: _channelEditId }, 'POST');
+  closeChannelModal();
+  if (CHANNEL === _channelEditId) await switchChannel('all');
+  await loadChannelsList();
+}
+
+/* ================= חתימה אישית ================= */
+function toggleComposeSignature() {
+  composeShowSignature = !composeShowSignature;
+  localStorage.setItem('shaagat_sig_on', composeShowSignature ? '1' : '0');
+  document.getElementById('sigToggleBtn')?.classList.toggle('has-val', composeShowSignature);
+}
+function openEditSignature() {
+  document.getElementById('userMenu') && (document.getElementById('userMenu').style.display = 'none');
+  document.getElementById('sigModalInput').value = mySignature || '';
+  document.getElementById('sigModalOverlay').style.display = 'flex';
+  setTimeout(() => document.getElementById('sigModalInput').focus(), 80);
+}
+function closeSignatureModal() { document.getElementById('sigModalOverlay').style.display = 'none'; }
+async function saveSignature() {
+  const text = document.getElementById('sigModalInput').value.trim();
+  const d = await api('set_signature', { email: me.email, signature: text }, 'POST');
+  if (d.status === 'ok') { mySignature = text; closeSignatureModal(); showToast('החתימה נשמרה', 'success'); }
+  else showToast('שגיאה בשמירת החתימה', 'error');
 }
 
 /* ================= טקסט עשיר ================= */
@@ -1622,21 +1851,28 @@ const REACT_SVG = `<svg viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org
 
 function buildMsg(e) {
   const id = e.id;
-  const isOwner = !!me && e.senderEmail === me.email;
-  // isModerator() = אדמין/מנהל תוכן - יכול על כל הודעה. כותב רגיל - רק על שלו.
-  // (isAdmin() כאן, כמו בכל הקובץ, אומר בפועל "כותב ומעלה" - ראו הערה למעלה)
-  const canDel = isModerator() || (isAdmin() && isOwner);
-  const canEdit = canDel;
+  const role = getRole();
+  const canDel = isContentManager() || (role !== 'visitor' && role !== 'user' && e.senderEmail === me?.email);
+  const canEdit = isContentManager() || (role !== 'visitor' && role !== 'user' && e.senderEmail === me?.email);
 
   let content = `<div class="bubble-text">${rich(e.text || '')}</div>`;
   let media = '';
   if (e.imgUrl) { const su = escAttr(e.imgUrl); media += `<div class="bubble-img"><img src="${su}" loading="lazy" style="cursor:pointer;border-radius:12px;display:block;" onclick="openLightbox('${su}')" onerror="this.closest('.bubble-img').remove()"></div>`; }
   if (e.videoUrl) {
     const vu = e.videoUrl;
+    const uploadedMatch = vu.match(/^drive:(.+)$/); // סרטון שהועלה אוטומטית לדרייב (סעיף 2) - לא קישור שהודבק ידנית
     const ytMatch = vu.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
     const driveMatch = vu.match(/drive\.google\.com\/file\/d\/([^/]+)/);
     const isDirectVideo = /\.(mp4|webm|ogg|m3u8)([?#,]|$)/i.test(vu) || vu.includes('.m3u8');
-    if (ytMatch) media += `<div class="bubble-vid" style="margin-top:9px;border-radius:12px;overflow:hidden;"><iframe width="100%" height="200" src="https://www.youtube.com/embed/${ytMatch[1]}" frameborder="0" allowfullscreen></iframe></div>`;
+    if (uploadedMatch) {
+      const fid = uploadedMatch[1];
+      const dlUrl = `https://drive.google.com/uc?export=download&id=${fid}`;
+      media += `<div class="bubble-vid" style="margin-top:9px;">
+        <video controls playsinline preload="metadata" style="border-radius:12px;background:#000;" src="${escAttr(dlUrl)}"></video>
+        <a href="${escAttr(dlUrl)}" download class="lnk-btn" style="margin-top:6px;"><i class="fas fa-download" style="font-size:11px;"></i> הורדת הסרטון</a>
+      </div>`;
+    }
+    else if (ytMatch) media += `<div class="bubble-vid" style="margin-top:9px;border-radius:12px;overflow:hidden;"><iframe width="100%" height="200" src="https://www.youtube.com/embed/${ytMatch[1]}" frameborder="0" allowfullscreen></iframe></div>`;
     else if (driveMatch) media += `<div class="bubble-vid" style="margin-top:9px;border-radius:12px;overflow:hidden;"><iframe src="https://drive.google.com/file/d/${driveMatch[1]}/preview" width="100%" height="300" frameborder="0" allow="autoplay" allowfullscreen></iframe></div>`;
     else if (isDirectVideo) media += `<div class="bubble-vid" style="margin-top:9px;border-radius:12px;overflow:hidden;width:100%;"><video controls playsinline preload="metadata" style="max-height:480px;display:block;border-radius:12px;object-fit:contain;" src="${escAttr(vu)}"></video></div>`;
     else media += `<div class="bubble-vid" style="margin-top:9px;border-radius:12px;overflow:hidden;width:100%;background:#000;"><iframe src="${escAttr(vu)}" width="100%" height="300" frameborder="0" allowfullscreen></iframe></div>`;
@@ -1646,6 +1882,9 @@ function buildMsg(e) {
 
   let tagsHtml = '';
   if (e.tags && e.tags.length) tagsHtml = '<div class="post-tags-row" style="margin-top:8px;">' + e.tags.map(t => `<span class="post-tag" onclick="document.getElementById('searchInput').value='${escAttr(t)}';onSearch('${escAttr(t)}')"><i class="fas fa-tag"></i> ${esc(t)}</span>`).join('') + '</div>';
+
+  let sigHtml = '';
+  if (e.signature) sigHtml = `<div class="msg-signature" style="margin-top:8px;font-size:12px;color:#9ca3af;font-style:italic;text-align:left;">— ${esc(e.signature)}</div>`;
 
   let quoteHtml = '';
   if (e.quote) {
@@ -1658,30 +1897,7 @@ function buildMsg(e) {
     </div>`;
   }
 
-  let sigHtml = '';
-  if (SIGNATURE) sigHtml = `<div class="msg-signature" style="margin-top:9px;padding-top:8px;border-top:1px solid rgba(0,0,0,.07);font-size:11.5px;color:#8a8f9e;">${esc(SIGNATURE)}</div>`;
-
-  const showViews = _publicSettings && _publicSettings.showViewCounts;
-  const canSeeViews = showViews === 'all' || (showViews === 'moderators' && isModerator());
-  const viewsHtml = canSeeViews ? `<span class="msg-meta-views" title="צפיות"><i class="fas fa-eye" style="font-size:10px"></i> ${Number(e.views || 0)}</span>` : '';
-
-  markMsgViewed(id);
-
-  return `<div class="msg-row" data-id="${escAttr(id)}"><img class="msg-av" src="${LOGO}" onerror="this.style.display='none'"><div class="msg-col"><div class="msg-meta"><span class="msg-meta-name">${esc(SITE_TITLE)}</span><span class="msg-meta-time">${fmtTime(e.ts)}</span>${viewsHtml}</div><div class="bubble-wrap-outer"><div class="bubble-top-actions"><button class="link-btn" onclick="copyMsgLink('${escAttr(id)}',this)" title="העתק קישור"><i class="fas fa-link"></i></button><button class="msg-action-btn" onclick="reportMsg('${escAttr(id)}')" title="דווח על תוכן פוגעני"><i class="fas fa-flag"></i></button>${canEdit ? `<button class="msg-action-btn edit" onclick="openEditMsg('${escAttr(id)}')"><i class="fas fa-pen"></i></button><button class="msg-action-btn quote" onclick="quoteFeedMsg('${escAttr(id)}')"><i class="fas fa-quote-right"></i></button>` : ''}${canDel ? `<button class="msg-action-btn del" onclick="deleteFeedMsg('${escAttr(id)}')"><i class="fas fa-trash"></i></button>` : ''}</div><div class="bubble">${quoteHtml}${content}${media}${btns}${tagsHtml}${sigHtml}</div></div><div class="bubble-foot"><div class="rxn-row" id="rxn-${escAttr(id)}"><button class="rxn-add-btn" onclick="openPicker(event,'${escAttr(id)}')">${REACT_SVG}</button></div></div></div></div>`;
-}
-
-// סופר צפיה פעם אחת בלבד לכל הודעה, לכל דפדפן - נשמר ב-localStorage כדי
-// שרענון עמוד לא יספור מחדש. שומרים רק את 500 המזהים האחרונים כדי שזה
-// לא יגדל בלי גבול עם הזמן.
-function markMsgViewed(id) {
-  if (!id) return;
-  let seen;
-  try { seen = JSON.parse(localStorage.getItem('viewed_msgs') || '[]'); } catch (e) { seen = []; }
-  if (seen.includes(String(id))) return;
-  seen.push(String(id));
-  if (seen.length > 500) seen = seen.slice(seen.length - 500);
-  try { localStorage.setItem('viewed_msgs', JSON.stringify(seen)); } catch (e) {}
-  api('msg_view', { id }, 'POST'); // לא קריטי אם נכשל - זה רק מונה תצוגה
+  return `<div class="msg-row" data-id="${escAttr(id)}"><img class="msg-av" src="${LOGO}" onerror="this.style.display='none'"><div class="msg-col"><div class="msg-meta"><span class="msg-meta-name">${esc(SITE_TITLE)}</span><span class="msg-meta-time">${fmtTime(e.ts)}</span></div><div class="bubble-wrap-outer"><div class="bubble-top-actions"><button class="link-btn" onclick="copyMsgLink('${escAttr(id)}',this)" title="העתק קישור"><i class="fas fa-link"></i></button><button class="msg-action-btn" onclick="reportMsg('${escAttr(id)}')" title="דווח על תוכן פוגעני"><i class="fas fa-flag"></i></button>${canEdit ? `<button class="msg-action-btn edit" onclick="openEditMsg('${escAttr(id)}')"><i class="fas fa-pen"></i></button><button class="msg-action-btn quote" onclick="quoteFeedMsg('${escAttr(id)}')"><i class="fas fa-quote-right"></i></button>` : ''}${canDel ? `<button class="msg-action-btn del" onclick="deleteFeedMsg('${escAttr(id)}')"><i class="fas fa-trash"></i></button>` : ''}</div><div class="bubble">${quoteHtml}${content}${media}${btns}${tagsHtml}${sigHtml}</div></div><div class="bubble-foot"><div class="rxn-row" id="rxn-${escAttr(id)}"><button class="rxn-add-btn" onclick="openPicker(event,'${escAttr(id)}')">${REACT_SVG}</button></div></div></div></div>`;
 }
 
 function copyMsgLink(id, btn) {
@@ -1884,7 +2100,7 @@ async function loadMore() {
 }
 
 async function pollAll() {
-  if (!me || !items.length || pollPending || document.hidden) return; pollPending = true;
+  if (!me || !items.length || pollPending) return; pollPending = true;
   const d = await api('feed_poll', { channel: CHANNEL, msgIds: items.map(e => e.id), since: lastTs }, 'POST');
   pollPending = false;
   if (d.status !== 'ok') return;
@@ -1906,19 +2122,8 @@ async function pollAll() {
     items = items.filter(i => i.id !== id); knownIds.delete(id);
   });
 }
-setInterval(pollAll, 6000);
-
-// כל הפולינגים למעלה משהים את עצמם כשהטאב ברקע (document.hidden) כדי לחסוך
-// עומס שרת וסוללה. ברגע שחוזרים לטאב מרעננים הכל מיד, כדי שלא יישאר מידע תקוע.
-let _tabWasHidden = document.hidden;
-document.addEventListener('visibilitychange', () => {
-  if (!document.hidden && _tabWasHidden) {
-    pollAll();
-    if (isAdmin()) { loadAdminMsgs(); pollUpdateMode(); triggerStats(); }
-    if (me) pingSitePresence();
-  }
-  _tabWasHidden = document.hidden;
-});
+registerPolledTask(pollAll, 6000, false);
+startPolledTasks();
 
 document.getElementById('feedWrap')?.addEventListener('scroll', () => {
   const wrap = document.getElementById('feedWrap');
@@ -1987,7 +2192,7 @@ function onComposeKeyDown(e) {}
 function showPreview() {
   const ed = document.getElementById('composeEditor'); const text = editorToMarkdown(ed).trim();
   if (!text && !composeImgUrl && !composeHtmlCode && !composeVidUrl) { alert('אין מה להציג.'); return; }
-  const mockEntry = { id: 'preview', text, imgUrl: composeImgUrl, videoUrl: composeVidUrl, htmlCode: composeHtmlCode, sender: getDisplayName(me?.email, me?.name), ts: Date.now(), buttons: composeBtns, quote: ed._quoteData };
+  const mockEntry = { id: 'preview', text, imgUrl: composeImgUrl, videoUrl: composeVidUrl, htmlCode: composeHtmlCode, sender: getDisplayName(me?.email, me?.name), ts: Date.now(), buttons: composeBtns, quote: ed._quoteData, signature: (composeShowSignature && mySignature) ? mySignature : '' };
   document.getElementById('previewModalBody').innerHTML = buildMsg(mockEntry);
   document.getElementById('previewModal').style.display = 'flex';
 }
@@ -1995,6 +2200,7 @@ function closePreview() { document.getElementById('previewModal').style.display 
 
 async function sendFeedPost() {
   if (!me || !isAdmin()) { alert('אין לך הרשאת כתיבה'); return; }
+  if (CHANNEL === 'all') { alert('יש לבחור ערוץ מסוים כדי לפרסם הודעה'); return; }
   const ed = document.getElementById('composeEditor');
   const editorText = editorToMarkdown(ed).trim();
   const tagsInput = document.getElementById('composeTagsInput')?.value.trim();
@@ -2002,7 +2208,8 @@ async function sendFeedPost() {
   if (!editorText && !composeImgUrl && !composeHtmlCode) { alert('הודעה ריקה'); return; }
   const btn = document.getElementById('composeSendBtn'); btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; btn.disabled = true;
   const displayName = getDisplayName(me.email, me.name);
-  const d = await api('feed_add', { channel: CHANNEL, text: editorText, quote: ed._quoteData, imgUrl: composeImgUrl, videoUrl: composeVidUrl, htmlCode: composeHtmlCode, sender: displayName, senderEmail: me.email, buttons: composeBtns, tags }, 'POST');
+  const signature = (composeShowSignature && mySignature) ? mySignature : '';
+  const d = await api('feed_add', { channel: CHANNEL, text: editorText, quote: ed._quoteData, imgUrl: composeImgUrl, videoUrl: composeVidUrl, htmlCode: composeHtmlCode, sender: displayName, senderEmail: me.email, buttons: composeBtns, tags, signature }, 'POST');
   if (d.status === 'ok') { clearCompose(); document.getElementById('feedWrap').scrollTop = 999999; await loadFeed(); }
   else { alert('שגיאה בשליחה'); }
   btn.innerHTML = '<i class="fas fa-paper-plane"></i>'; btn.disabled = false;
@@ -2015,6 +2222,8 @@ function openEditMsg(id) {
   composeImgUrl = e.imgUrl || ''; composeVidUrl = e.videoUrl || ''; composeHtmlCode = e.htmlCode || ''; composeBtns = (e.buttons || []).map(b => ({ text: b.text, url: b.url }));
   if (composeImgUrl) { document.getElementById('composeImgUrl').value = composeImgUrl; const th = document.getElementById('composeImgThumb'); if (th) { document.getElementById('composeImgThumbImg').src = composeImgUrl; th.style.display = 'flex'; } }
   if (composeVidUrl) document.getElementById('composeVidUrl').value = composeVidUrl;
+  composeShowSignature = !!e.signature;
+  document.getElementById('sigToggleBtn')?.classList.toggle('has-val', composeShowSignature);
   updateAttachPreview();
   document.getElementById('composeSendBtn').style.display = 'none'; document.getElementById('composePreviewBtn').style.display = 'none';
   document.getElementById('composeEditConfirmBtn').style.display = 'flex'; document.getElementById('composeEditCancelBtn').style.display = 'flex';
@@ -2022,13 +2231,14 @@ function openEditMsg(id) {
   document.getElementById('adminComposeBar').scrollIntoView({ behavior: 'smooth', block: 'end' });
   setTimeout(() => { ed.focus(); const r = document.createRange(); r.selectNodeContents(ed); r.collapse(false); const s = window.getSelection(); s.removeAllRanges(); s.addRange(r); }, 200);
 }
-function cancelEditMode() { _editMsgId = null; clearCompose(); document.getElementById('composeSendBtn').style.display = 'flex'; document.getElementById('composePreviewBtn').style.display = 'flex'; document.getElementById('composeEditConfirmBtn').style.display = 'none'; document.getElementById('composeEditCancelBtn').style.display = 'none'; document.getElementById('composeEditBanner').classList.remove('show'); }
+function cancelEditMode() { _editMsgId = null; clearCompose(); composeShowSignature = localStorage.getItem('shaagat_sig_on') === '1'; document.getElementById('sigToggleBtn')?.classList.toggle('has-val', composeShowSignature); document.getElementById('composeSendBtn').style.display = 'flex'; document.getElementById('composePreviewBtn').style.display = 'flex'; document.getElementById('composeEditConfirmBtn').style.display = 'none'; document.getElementById('composeEditCancelBtn').style.display = 'none'; document.getElementById('composeEditBanner').classList.remove('show'); }
 async function saveEditMsg() {
   if (!_editMsgId || !me) return;
   const ed = document.getElementById('composeEditor'); const editorText = editorToMarkdown(ed).trim();
   if (!editorText && !composeImgUrl && !composeHtmlCode) { alert('ההודעה לא יכולה להיות ריקה'); return; }
   const btn = document.getElementById('composeEditConfirmBtn'); btn.innerHTML = '<i class="fas fa-spinner fa-spin" style="font-size:12px"></i>'; btn.disabled = true;
-  const d = await api('feed_edit', { email: me.email, id: _editMsgId, text: editorText, imgUrl: composeImgUrl, videoUrl: composeVidUrl, htmlCode: composeHtmlCode, buttons: composeBtns.map(b => ({ text: b.text, url: b.url })) }, 'POST');
+  const signature = (composeShowSignature && mySignature) ? mySignature : '';
+  const d = await api('feed_edit', { email: me.email, id: _editMsgId, text: editorText, imgUrl: composeImgUrl, videoUrl: composeVidUrl, htmlCode: composeHtmlCode, buttons: composeBtns.map(b => ({ text: b.text, url: b.url })), signature }, 'POST');
   if (d.status === 'ok') { cancelEditMode(); await loadFeed(); } else { alert('שגיאה בשמירה'); }
   btn.innerHTML = '<i class="fas fa-check" style="font-size:14px"></i>'; btn.disabled = false;
 }
@@ -2110,7 +2320,7 @@ function isUntilExpired(until) {
   const now = new Date(); return (now.getHours() * 60 + now.getMinutes()) > (parseInt(m[1], 10) * 60 + parseInt(m[2], 10));
 }
 async function pollUpdateMode() {
-  if (!isAdmin() || document.hidden) return;
+  if (!isAdmin()) return;
   const d = await api('update_mode_get', {});
   if (_updateMode && isUntilExpired(_updateUntil)) { _updateMode = false; _updateUntil = ''; applyUpdateModeUI(); saveUpdateModeToServer(false, ''); }
   const sendBtn = document.getElementById('composeSendBtn');
@@ -2151,6 +2361,45 @@ function switchLbView(viewType) {
 let siteBlockedEmails = [];
 function openSiteSettings() { loadSiteSettingsData(); }
 function closeSiteSettings() { closeAdminPanel(); }
+
+/* ================= פרטי אתר (שם/לוגו/טקסט התחברות) ================= */
+async function openSiteBranding() {
+  const d = _siteSettingsCache || await api('api_settings', {});
+  document.getElementById('brandingTitleInput').value = d.title || SITE_TITLE;
+  document.getElementById('brandingLogoUrl').value = d.logoUrl || '';
+  document.getElementById('brandingLogoPreview').src = d.logoUrl || LOGO;
+  document.getElementById('brandingLoginTextInput').value = d.loginText || SITE_LOGIN_TEXT;
+  document.getElementById('brandingReactionEmojis').value = (d.reactionEmojis || SITE_REACTION_EMOJIS).join('');
+}
+// מפרק מחרוזת אימוג'ים רצופה (בלי רווחים) לרשימת אימוג'ים בודדים - Intl.Segmenter
+// יודע לזהות אימוג'ים מורכבים מכמה code points (למשל עם גוון עור או ❤️ עם variation
+// selector) כתו אחד; בדפדפן ישן שבו זה לא קיים נופלים ל-Array.from הפשוט יותר.
+function splitEmojis(str) {
+  try {
+    if (typeof Intl !== 'undefined' && Intl.Segmenter) {
+      const seg = new Intl.Segmenter('en', { granularity: 'grapheme' });
+      return Array.from(seg.segment(str), s => s.segment).filter(s => s.trim());
+    }
+  } catch (e) { /* נופלים לגיבוי למטה */ }
+  return Array.from(str).filter(s => s.trim());
+}
+async function saveSiteBranding() {
+  if (!isSuperAdmin()) return;
+  const title = document.getElementById('brandingTitleInput').value.trim();
+  const logoUrl = document.getElementById('brandingLogoUrl').value.trim();
+  const loginText = document.getElementById('brandingLoginTextInput').value.trim();
+  const reactionEmojis = splitEmojis(document.getElementById('brandingReactionEmojis').value.trim());
+  const msgEl = document.getElementById('brandingMsg');
+  if (!title) { msgEl.style.display = 'block'; msgEl.style.color = '#c94b4b'; msgEl.textContent = 'שם האתר לא יכול להיות ריק'; return; }
+  if (!reactionEmojis.length) { msgEl.style.display = 'block'; msgEl.style.color = '#c94b4b'; msgEl.textContent = 'יש להזין לפחות אימוג\'י אחד לתגובות'; return; }
+  const d = await api('api_settings', { admin_email: me.email, title, logoUrl, loginText, reactionEmojis }, 'POST');
+  if (d.status === 'ok') {
+    SITE_TITLE = title; if (logoUrl) LOGO = logoUrl; SITE_LOGIN_TEXT = loginText || SITE_LOGIN_TEXT; SITE_REACTION_EMOJIS = reactionEmojis;
+    applySiteBrandingToDom(); renderEmojiPickerGrid();
+    msgEl.style.display = 'block'; msgEl.style.color = '#3f9a6e'; msgEl.textContent = 'נשמר בהצלחה ✓';
+  } else { msgEl.style.display = 'block'; msgEl.style.color = '#c94b4b'; msgEl.textContent = 'שגיאה בשמירה'; }
+  setTimeout(() => { msgEl.style.display = 'none'; }, 3000);
+}
 async function loadSiteSettingsData() {
   const d = await api('api_settings', {});
   siteBlockedEmails = d.blockedEmails || [];
@@ -2160,7 +2409,7 @@ async function blockUser() {
   const email = document.getElementById('settingsBlockEmail').value.trim().toLowerCase(); if (!email) return;
   if (!siteBlockedEmails.includes(email)) {
     siteBlockedEmails.push(email); document.getElementById('settingsBlockEmail').value = ''; renderBlockedUsers();
-    await api('api_settings', { blockedEmails: siteBlockedEmails }, 'POST');
+    await api('api_settings', { admin_email: me.email, blockedEmails: siteBlockedEmails }, 'POST');
     showToast('המשתמש נחסם', 'success');
   }
 }
@@ -2171,7 +2420,7 @@ function renderBlockedUsers() {
 }
 async function unblockUser(email) {
   siteBlockedEmails = siteBlockedEmails.filter(e => e !== email); renderBlockedUsers();
-  await api('api_settings', { blockedEmails: siteBlockedEmails }, 'POST');
+  await api('api_settings', { admin_email: me.email, blockedEmails: siteBlockedEmails }, 'POST');
 }
 async function exportEmailsToGroups() {
   if (!isSuperAdmin()) return;
@@ -2185,11 +2434,13 @@ async function exportEmailsToGroups() {
 /* ================= פרסומות ================= */
 function shouldShowAd() { const last = parseInt(localStorage.getItem(AD_KEY) || '0'); return Date.now() - last > AD_INTERVAL; }
 function markAdShown() { localStorage.setItem(AD_KEY, String(Date.now())); }
+function pickRandom(arr) { return (arr && arr.length) ? arr[Math.floor(Math.random() * arr.length)] : null; }
 
 async function loadAd() {
   const d = await api('ad_get', {});
-  if (d.side && (d.side.imageUrl || d.side.htmlCode)) showAdSide(d.side); else hideAdSide();
-  if (d.popup && (d.popup.imageUrl || d.popup.htmlCode) && shouldShowAd()) showAdPopup(d.popup);
+  const side = pickRandom(d.side); const popup = pickRandom(d.popup);
+  if (side) showAdSide(side); else hideAdSide();
+  if (popup && shouldShowAd()) showAdPopup(popup);
 }
 function showAdSide(ad) {
   const img = document.getElementById('adSidebarImg'); const link = document.getElementById('adSidebarLink'); const frame = document.getElementById('adSidebarFrame');
@@ -2217,30 +2468,73 @@ function showAdPopup(ad) {
 }
 function closeAd() { document.getElementById('adOverlay')?.remove(); }
 
-async function openAdPanel() {
-  const d = await api('ad_get', {});
-  if (d.popup) { document.getElementById('adPopupImageUrl').value = d.popup.imageUrl || ''; document.getElementById('adPopupLinkUrl').value = d.popup.link || ''; document.getElementById('adPopupHtmlUrl').value = d.popup.htmlCode || ''; document.getElementById('adPopupTimer').value = d.popup.timer || 0; }
-  if (d.side) { document.getElementById('adSideImageUrl').value = d.side.imageUrl || ''; document.getElementById('adSideLinkUrl').value = d.side.link || ''; document.getElementById('adSideHtmlUrl').value = d.side.htmlCode || ''; }
-}
+/* -------- ניהול פרסומות (CRUD מלא, אדמין) -------- */
+let _adBannerEditId = null;
+async function openAdPanel() { await loadAdBannersAdmin(); }
 function closeAdPanel() { closeAdminPanel(); }
-async function saveAd(type) {
-  const imgEl = type === 'popup' ? 'adPopupImageUrl' : 'adSideImageUrl'; const lnkEl = type === 'popup' ? 'adPopupLinkUrl' : 'adSideLinkUrl'; const htmlEl = type === 'popup' ? 'adPopupHtmlUrl' : 'adSideHtmlUrl';
-  const imageUrl = document.getElementById(imgEl).value.trim(); const linkUrl = document.getElementById(lnkEl).value.trim(); const htmlCode = document.getElementById(htmlEl)?.value.trim() || '';
-  let timer = 0; if (type === 'popup') { timer = parseInt(document.getElementById('adPopupTimer').value || 0); if (timer < 0) timer = 0; if (timer > 5) timer = 5; }
-  if (!imageUrl && !htmlCode) { showAdMsg('יש להזין תמונה או קוד HTML', 'red'); return; }
-  const d = await api('ad_set', { email: me.email, imageUrl, linkUrl, htmlCode, displayType: type, timer }, 'POST');
-  if (d.status === 'ok') { showAdMsg('נשמר ✓', 'green'); loadAd(); } else showAdMsg('שגיאה', 'red');
+async function loadAdBannersAdmin() {
+  const popupList = document.getElementById('adPopupBannersList'); const sideList = document.getElementById('adSideBannersList');
+  if (!popupList || !sideList) return;
+  popupList.innerHTML = sideList.innerHTML = '<div style="text-align:center;padding:14px;color:#a3a8b8;"><i class="fas fa-spinner fa-spin"></i></div>';
+  const d = await api('ad_banners_list', { email: me.email });
+  const banners = d.banners || [];
+  const renderList = (type) => {
+    const list = banners.filter(b => b.type === type);
+    if (!list.length) return '<div class="ap-empty">אין עדיין פרסומות מסוג זה</div>';
+    return list.map(b => `<div class="ap-row-card">
+      ${b.imageUrl ? `<img src="${escAttr(b.imageUrl)}" style="width:48px;height:48px;border-radius:10px;object-fit:cover;flex-shrink:0;background:#eee;">` : `<div style="width:48px;height:48px;border-radius:10px;background:#eef0f5;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fas fa-code" style="color:#a3a8b8;"></i></div>`}
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:12px;font-weight:800;color:${b.enabled ? '#1f2430' : '#c94b4b'};">${b.enabled ? 'פעילה' : 'מושבתת'}${b.type === 'popup' && b.timer ? ` · השהיה ${b.timer}שנ׳` : ''}</div>
+        <div style="font-size:11px;color:#8a90a6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;direction:ltr;text-align:right;">${esc(b.link || (b.htmlCode ? 'קוד HTML מותאם' : ''))}</div>
+      </div>
+      <button onclick='openAdBannerModal("${b.type}", ${escAttr(JSON.stringify(b))})' title="עריכה" style="background:#f4f5f9;border:none;border-radius:8px;padding:6px 10px;cursor:pointer;color:#4a4f63;font-size:11px;flex-shrink:0;"><i class="fas fa-pen" style="font-size:10px;"></i></button>
+      <button onclick="deleteAdBanner('${escAttr(b.id)}')" title="מחיקה" style="background:#fdf1f1;border:1px solid #f6dede;border-radius:8px;padding:6px 10px;cursor:pointer;color:#c94b4b;font-size:11px;flex-shrink:0;"><i class="fas fa-trash" style="font-size:10px;"></i></button>
+    </div>`).join('');
+  };
+  popupList.innerHTML = renderList('popup');
+  sideList.innerHTML = renderList('side');
 }
-async function deleteAd(type) {
-  const imgEl = type === 'popup' ? 'adPopupImageUrl' : 'adSideImageUrl'; const lnkEl = type === 'popup' ? 'adPopupLinkUrl' : 'adSideLinkUrl';
-  await api('ad_set', { email: me.email, imageUrl: '', linkUrl: '', displayType: type, timer: 0 }, 'POST');
-  document.getElementById(imgEl).value = ''; document.getElementById(lnkEl).value = ''; if (type === 'side') hideAdSide(); showAdMsg('הוסרה ✓', 'green');
+function onAdBannerImgInput() {
+  const url = document.getElementById('adBannerImageUrl').value.trim();
+  const prev = document.getElementById('adBannerPreview');
+  if (url) { prev.src = url; prev.style.display = 'block'; } else prev.style.display = 'none';
 }
-function showAdMsg(txt, color) { const el = document.getElementById('adMsg'); el.textContent = txt; el.style.color = color === 'green' ? '#16a34a' : '#dc2626'; el.style.display = 'block'; setTimeout(() => el.style.display = 'none', 2000); }
+function openAdBannerModal(type, banner) {
+  _adBannerEditId = banner ? banner.id : null;
+  document.getElementById('adBannerModalTitle').innerText = banner ? 'עריכת פרסומת' : (type === 'popup' ? 'פרסומת פופאפ חדשה' : 'פרסומת צד חדשה');
+  document.getElementById('adBannerImageUrl').value = banner?.imageUrl || '';
+  document.getElementById('adBannerLinkUrl').value = banner?.link || '';
+  document.getElementById('adBannerHtmlCode').value = banner?.htmlCode || '';
+  document.getElementById('adBannerTimer').value = banner?.timer || 0;
+  document.getElementById('adBannerEnabled').checked = banner ? !!banner.enabled : true;
+  document.getElementById('adBannerTimerWrap').style.display = type === 'popup' ? 'block' : 'none';
+  document.getElementById('adBannerModalOverlay').dataset.type = type;
+  onAdBannerImgInput();
+  document.getElementById('adBannerModalOverlay').style.display = 'flex';
+}
+function closeAdBannerModal() { document.getElementById('adBannerModalOverlay').style.display = 'none'; _adBannerEditId = null; }
+async function saveAdBanner() {
+  if (!isSuperAdmin()) return;
+  const type = document.getElementById('adBannerModalOverlay').dataset.type || 'side';
+  const imageUrl = document.getElementById('adBannerImageUrl').value.trim();
+  const link = document.getElementById('adBannerLinkUrl').value.trim();
+  const htmlCode = document.getElementById('adBannerHtmlCode').value.trim();
+  let timer = parseInt(document.getElementById('adBannerTimer').value || 0); if (timer < 0) timer = 0; if (timer > 5) timer = 5;
+  const enabled = document.getElementById('adBannerEnabled').checked;
+  const msgEl = document.getElementById('adBannerMsg');
+  if (!imageUrl && !htmlCode) { msgEl.style.display = 'block'; msgEl.style.color = '#c94b4b'; msgEl.textContent = 'יש להזין תמונה או קוד HTML'; return; }
+  const d = await api('ad_banner_save', { email: me.email, id: _adBannerEditId, type, imageUrl, link, htmlCode, timer, enabled }, 'POST');
+  if (d.status === 'ok') { closeAdBannerModal(); await loadAdBannersAdmin(); loadAd(); showToast('הפרסומת נשמרה', 'success'); }
+  else { msgEl.style.display = 'block'; msgEl.style.color = '#c94b4b'; msgEl.textContent = d.message || 'שגיאה בשמירה'; }
+}
+async function deleteAdBanner(id) {
+  if (!isSuperAdmin() || !confirm('למחוק את הפרסומת?')) return;
+  await api('ad_banner_delete', { email: me.email, id }, 'POST');
+  await loadAdBannersAdmin(); loadAd();
+}
 
 /* ================= הודעות צוות ================= */
 async function loadAdminMsgs() {
-  if (document.hidden) return;
   const d = await api('admin_msgs_get', {});
   if (d.status !== 'ok') return;
   const msgs = d.messages || [];
@@ -2280,93 +2574,72 @@ async function sendAdminMsg() {
   if (d.status === 'ok') { const d2 = await api('admin_msgs_get', {}); renderAdminMsgs(d2.messages || []); }
 }
 
-/* ================= ניהול מורשי כתיבה ================= */
-async function openManageAdmins() { document.getElementById('adminMsgResult').style.display = 'none'; await renderAdminsList(); }
-
-/* ================= פרטי אתר + חתימה (סעיפים 3+5) ================= */
-async function openSiteDetails() {
-  const msgEl = document.getElementById('siteDetailsMsg'); msgEl.style.display = 'none';
-  const d = await api('api_settings', {});
-  if (d.status === 'error') return;
-  document.getElementById('siteNameInput').value = d.title || '';
-  document.getElementById('siteLogoUrlInput').value = d.logoUrl || '';
-  document.getElementById('siteLogoPreview').src = d.logoUrl || LOGO;
-  document.getElementById('siteLoginTextInput').value = d.loginText || '';
-  document.getElementById('siteSignatureInput').value = d.signature || '';
+/* ================= ניהול משתמשים והרשאות ================= */
+let _usersPage = 1, _usersQuery = '', _usersSearchTimer = null, _usersEditTarget = null;
+async function openManageUsers() { _usersPage = 1; await loadUsersPage(); }
+function onUsersSearchInput() {
+  clearTimeout(_usersSearchTimer);
+  _usersSearchTimer = setTimeout(() => { _usersQuery = document.getElementById('usersSearchInput').value.trim(); _usersPage = 1; loadUsersPage(); }, 350);
 }
-
-async function saveSiteDetails() {
-  const btn = event.target;
-  const orig = btn.innerText; btn.innerText = 'שומר...'; btn.disabled = true;
-  const title = document.getElementById('siteNameInput').value.trim();
-  const logoUrl = document.getElementById('siteLogoUrlInput').value.trim();
-  const loginText = document.getElementById('siteLoginTextInput').value.trim();
-  const signature = document.getElementById('siteSignatureInput').value.trim();
-
-  const d = await api('api_settings', { title, logoUrl, loginText, signature }, 'POST');
-  btn.innerText = orig; btn.disabled = false;
-
-  const msgEl = document.getElementById('siteDetailsMsg');
-  msgEl.style.display = 'block';
-  if (d.status === 'ok') {
-    msgEl.style.color = '#1a8a4a';
-    msgEl.innerHTML = '<i class="fas fa-check-circle"></i> נשמר בהצלחה';
-    // מעדכנים מיד בעמוד הנוכחי - בלי לחכות לרענון
-    if (title) { SITE_TITLE = title; const pt = document.getElementById('pageTitle'); if (pt) pt.innerText = title; const hc = document.getElementById('hdrChannelName'); if (hc) hc.innerText = title; }
-    if (logoUrl) LOGO = logoUrl;
-    LOGIN_TEXT = loginText; SIGNATURE = signature;
-  } else {
-    msgEl.style.color = '#c0392b';
-    msgEl.innerHTML = '<i class="fas fa-triangle-exclamation"></i> ' + esc(d.message || 'שמירה נכשלה, נסה/י שוב');
-  }
-  setTimeout(() => { msgEl.style.display = 'none'; }, 4000);
-}
-function closeManageAdmins() { closeAdminPanel(); }
-async function renderAdminsList() {
-  const list = document.getElementById('adminsList'); if (!list) return;
+function changeUsersPage(delta) { _usersPage = Math.max(1, _usersPage + delta); loadUsersPage(); }
+async function loadUsersPage() {
+  const list = document.getElementById('usersList'); if (!list) return;
   list.innerHTML = '<div style="text-align:center;padding:20px;color:#a3a8b8;"><i class="fas fa-spinner fa-spin"></i> טוען...</div>';
-  const d = await api('allowed_list', {});
-  const users = d.list || [];
-  if (!users.length) { list.innerHTML = '<div class="ap-empty">אין כותבים מורשים עדיין</div>'; return; }
+  const d = await api('users_list', { email: me.email, q: _usersQuery, page: _usersPage, pageSize: 20 });
+  if (d.status !== 'ok') { list.innerHTML = '<div class="ap-empty">שגיאה בטעינת המשתמשים</div>'; return; }
+  const users = d.users || [];
+  document.getElementById('usersListTotal').innerText = `סך הכל משתמשים במערכת: ${d.total}`;
+  const pages = Math.max(1, Math.ceil(d.total / d.pageSize));
+  document.getElementById('usersPageLabel').innerText = `עמוד ${d.page} מתוך ${pages}`;
+  if (!users.length) { list.innerHTML = '<div class="ap-empty">לא נמצאו משתמשים</div>'; return; }
   list.innerHTML = users.map(u => {
-    const pic = `<div style="width:36px;height:36px;border-radius:50%;background:#4a55c7;color:#fff;font-size:14px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${esc((u.name || u.email || '?')[0].toUpperCase())}</div>`;
-    const isMe = u.email === me?.email?.toLowerCase();
+    const pic = u.picture ? `<img src="${escAttr(u.picture)}" style="width:36px;height:36px;border-radius:50%;flex-shrink:0;object-fit:cover;">`
+      : `<div style="width:36px;height:36px;border-radius:50%;background:#4a55c7;color:#fff;font-size:14px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${esc((u.name || u.email || '?')[0].toUpperCase())}</div>`;
+    const isMe = u.email.toLowerCase() === me?.email?.toLowerCase();
+    const roleColor = u.role === 'admin' ? '#c7794a' : u.role === 'content_manager' ? '#4a55c7' : u.role === 'writer' ? '#5fa980' : '#a3a8b8';
     return `<div class="ap-row-card">
       ${pic}
       <div style="flex:1;min-width:0;">
-        <div style="font-size:13px;font-weight:800;color:#1f2430;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(u.name || u.email)}${isMe ? ' <span style="font-size:10px;color:#a3a8b8;">(אני)</span>' : ''}</div>
-        <div style="font-size:11px;color:#8a90a6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(u.email)}</div>
-        <div style="font-size:10px;font-weight:800;color:#5fa980;margin-top:2px;">כותב מורשה</div>
+        <div style="font-size:13px;font-weight:800;color:#1f2430;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(u.name || u.email)}${isMe ? ' <span style="font-size:10px;color:#a3a8b8;">(אני)</span>' : ''}${u.blocked ? ' <span style="font-size:10px;color:#c94b4b;">(חסום)</span>' : ''}</div>
+        <div style="font-size:11px;color:#8a90a6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;direction:ltr;text-align:right;">${esc(u.email)}</div>
+        <div style="font-size:10px;font-weight:800;color:${roleColor};margin-top:2px;">${ROLE_LABELS[u.role] || 'ללא הרשאה'}</div>
       </div>
-      ${isSuperAdmin() ? `<button onclick="removeAdmin('${escAttr(u.email)}')" title="הסר" style="background:#fdf1f1;border:1px solid #f6dede;border-radius:8px;padding:5px 10px;cursor:pointer;color:#c94b4b;font-size:11px;font-weight:700;font-family:'Heebo',sans-serif;flex-shrink:0;"><i class="fas fa-trash" style="font-size:10px;"></i></button>` : ''}
+      <button onclick='openUserEditModal(${escAttr(JSON.stringify(u))})' title="עריכה" style="background:#f4f5f9;border:none;border-radius:8px;padding:6px 11px;cursor:pointer;color:#4a4f63;font-size:11px;font-weight:700;font-family:'Heebo',sans-serif;flex-shrink:0;"><i class="fas fa-pen" style="font-size:10px;"></i> עריכה</button>
     </div>`;
   }).join('');
 }
-async function addAdmin() {
-  const email = document.getElementById('newAdminEmail')?.value.trim().toLowerCase();
-  const name = document.getElementById('newAdminName')?.value.trim();
-  if (!email || !name) { showAdminMsg('יש למלא אימייל ושם', 'red'); return; }
-  if (!email.includes('@')) { showAdminMsg('אימייל לא תקין', 'red'); return; }
-  const d = await api('allowed_add', { email: me.email, target: email, name }, 'POST');
-  if (d.status === 'ok') {
-    showAdminMsg('נוסף בהצלחה ✓', 'green');
-    document.getElementById('newAdminEmail').value = ''; document.getElementById('newAdminName').value = '';
-    await loadWritersMap(); await renderAdminsList();
-  } else { showAdminMsg('שגיאה', 'red'); }
+function openUserEditModal(u) {
+  _usersEditTarget = u.email;
+  document.getElementById('userEditName').innerText = u.name || u.email;
+  document.getElementById('userEditEmail').innerText = u.email;
+  document.querySelectorAll('input[name="userEditRole"]').forEach(r => r.checked = (r.value === (u.role || '')));
+  document.getElementById('userEditBlocked').checked = !!u.blocked;
+  document.getElementById('userEditModalOverlay').style.display = 'flex';
 }
-async function removeAdmin(targetEmail) {
-  if (!isSuperAdmin()) return;
-  if (!confirm(`להסיר את ${targetEmail} מהצוות?`)) return;
-  const d = await api('allowed_remove', { email: me.email, target: targetEmail }, 'POST');
-  if (d.status === 'ok') { await loadWritersMap(); await renderAdminsList(); showAdminMsg('הוסר בהצלחה', 'green'); }
-  else { showAdminMsg('שגיאה', 'red'); }
+function closeUserEditModal() { document.getElementById('userEditModalOverlay').style.display = 'none'; _usersEditTarget = null; }
+async function saveUserEdit() {
+  if (!_usersEditTarget || !isSuperAdmin()) return;
+  const roleInput = document.querySelector('input[name="userEditRole"]:checked');
+  const role = roleInput ? roleInput.value : '';
+  const blocked = document.getElementById('userEditBlocked').checked;
+  await api('user_set_role', { email: me.email, target: _usersEditTarget, role }, 'POST');
+  const settingsD = await api('api_settings', {});
+  let blockedList = settingsD.blockedEmails || [];
+  const targetLc = _usersEditTarget.toLowerCase();
+  const already = blockedList.includes(targetLc);
+  if (blocked && !already) blockedList.push(targetLc);
+  if (!blocked && already) blockedList = blockedList.filter(e => e !== targetLc);
+  if (blocked !== already) await api('api_settings', { admin_email: me.email, blockedEmails: blockedList }, 'POST');
+  siteBlockedEmails = blockedList;
+  closeUserEditModal();
+  await loadWritersMap();
+  await loadUsersPage();
+  showToast('הפרטים נשמרו', 'success');
 }
-function showAdminMsg(txt, color) { const el = document.getElementById('adminMsgResult'); if (!el) return; el.textContent = txt; el.style.color = color === 'green' ? '#3f9a6e' : '#c94b4b'; el.style.display = 'block'; setTimeout(() => el.style.display = 'none', 3000); }
 
 /* ================= סטטיסטיקות ================= */
-async function pingSitePresence() { if (!me || document.hidden) return; await api('presence_ping', { email: me.email, name: me.name, picture: me.picture }, 'POST'); }
+async function pingSitePresence() { if (!me) return; await api('presence_ping', { email: me.email, name: me.name, picture: me.picture }, 'POST'); }
 async function triggerStats() {
-  if (document.hidden) return;
   const d = await api('site_stats', {});
   if (d.status === 'ok') {
     const map = { publicUserCount: d.online, statOnline: d.online, statHour: d.hour, statDay: d.day, statWeek: d.week, statPeak: d.peak };
@@ -2400,6 +2673,31 @@ async function toggleNotifications() {
 function initNotifications() { if (localStorage.getItem('shaagat_notif') === '1' && Notification.permission === 'granted') { notificationsOn = true; document.getElementById('notifBtn')?.classList.add('active'); } }
 function sendNotification(title, body) { if (notificationsOn && Notification.permission === 'granted' && document.visibilityState !== 'visible') new Notification(title || SITE_TITLE, { body: body || 'הודעה חדשה', icon: LOGO }); }
 
+/* ================= סרגל צד - תפריט מובייל ================= */
+
+/* ================= רקע מונפש ================= */
+document.addEventListener('DOMContentLoaded', () => {
+  const mouseBlob = document.getElementById('mouseBlob');
+  const bgContainer = document.getElementById('bgContainer');
+  const canvas = document.getElementById('sparklesCanvas');
+  if (!mouseBlob || !canvas) return;
+  const ctx = canvas.getContext('2d');
+  let width = canvas.width = window.innerWidth, height = canvas.height = window.innerHeight;
+  let mouseX = width / 2, mouseY = height / 2, currentX = mouseX, currentY = mouseY, particles = [];
+  window.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; addParticle(mouseX, mouseY); });
+  function addParticle(x, y) { if (Math.random() > 0.2) return; particles.push({ x: x + (Math.random() * 30 - 15), y: y + (Math.random() * 30 - 15), size: Math.random() * 2 + 0.5, speedX: (Math.random() - 0.5) * 0.5, speedY: (Math.random() - 0.5) * 0.5, life: 1 }); }
+  function animate() {
+    currentX += (mouseX - currentX) * 0.08; currentY += (mouseY - currentY) * 0.08;
+    mouseBlob.style.transform = `translate(${currentX}px, ${currentY}px) translate(-50%, -50%)`;
+    let moveX = (mouseX / width - 0.5) * 40, moveY = (mouseY / height - 0.5) * 40;
+    if (bgContainer) bgContainer.style.transform = `translate(${-moveX}px, ${-moveY}px)`;
+    ctx.clearRect(0, 0, width, height);
+    for (let i = 0; i < particles.length; i++) { let p = particles[i]; p.x += p.speedX; p.y += p.speedY; p.life -= 0.01; if (p.life > 0) { ctx.fillStyle = `rgba(255, 230, 150, ${p.life * 0.6})`; ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2); ctx.fill(); } }
+    particles = particles.filter(p => p.life > 0);
+    requestAnimationFrame(animate);
+  }
+  animate();
+});
 
 </script>
 <script>
