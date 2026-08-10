@@ -10,8 +10,13 @@
 
 <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/128/6476/6476785.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&family=Assistant:wght@300;400;500;600;700;800&family=Noto+Color+Emoji&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800;900&family=Assistant:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<!-- טוענים רק את חבילת ה-solid של Font Awesome (fontawesome.min.css הבסיסי + solid.min.css) -
+     כל השימושים בקוד הזה הם באייקוני fas בלבד, אז אין צורך בחבילת all.min.css המלאה
+     (שכוללת גם brands/regular ומכבידה על הטעינה הראשונית ללא תועלת בפועל). -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/fontawesome.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/solid.min.css">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 html{height:100%;}
@@ -577,29 +582,6 @@ body, html { background: #fff !important; }
 }
 
 /* פיד היצירות שלך */
-.your-feed-container {
-    width: 100%;
-    max-width: 850px; 
-}
-
-/* 1. הגדרה לעמודת הפרסומות כשיש בה תוכן */
-.ads-sidebar {
-    width: 300px; 
-    flex-shrink: 0; 
-}
-
-/* 2. החיישן האוטומטי: אם קופסת הפרסומות ריקה מתוכן - תעלים אותה! */
-.ads-sidebar:empty {
-    display: none;
-}
-/* פריסה חכמה לאזור הפוסטים (בלי לשבור את ה-JS) */
-#prog {
-    width: 100%;
-    max-width: 850px; /* רוחב מושלם שלא נמתח מידי */
-    margin-right: 5%; /* מרחיק קצת מהתפריט הימני */
-    margin-left: auto; /* דוחף הכל שמאלה ומשאיר מקום לפרסומות בעתיד */
-}
-
 /* ================= פאנל ניהול (עדין ובהיר) ================= */
 #adminPanelModal{
   display:none; position:fixed; inset:0; z-index:850;
@@ -701,7 +683,6 @@ body, html { background: #fff !important; }
   gtag('config', 'G-Q4DQKGJ9E3');
 </script>
 </head>
-<div id="prog"></div>
 <div id="bannedScreen" style="display:none;">
   <i class="fas fa-ban" style="font-size:80px;color:#dc2626;margin-bottom:20px;"></i>
   <h1 style="font-size:32px;font-weight:900;margin-bottom:10px;">הגישה נחסמה</h1>
@@ -1211,7 +1192,7 @@ let rxnCache = {};
 const knownIds = new Set();
 let oldestTs = 0, allLoaded = false, loadingMore = false, pollPending = false;
 let _writersMap = {}; // email(lower) -> {name}
-let _isSuper = false, _isWriter = false;
+let _isSuper = false, _isWriter = false, _isContentManager = false;
 
 let composeImgUrl = '', composeVidUrl = '', composeBtns = [], composeHtmlCode = '';
 let adminMsgsLastId = null, adminMsgsUnread = 0;
@@ -1235,9 +1216,14 @@ function fmtDate(ts) {
   catch (e) { return ''; }
 }
 
-/* קריאת API מרוכזת: תמיד דרך אותו URL, action בפרמטר */
+/* קריאת API מרוכזת: תמיד דרך אותו URL, action בפרמטר.
+   מצרפת אוטומטית session (אם המשתמש מחובר) לכל קריאה - כך שאין צורך
+   לזכור להוסיף את זה ידנית בכל אחת מהעשרות קריאות ל-api() בקובץ הזה.
+   השרת מתעלם מפרמטר session בפעולות ציבוריות (כמו קריאת הגדרות אתר). */
 async function api(action, params, method) {
   method = method || 'GET';
+  params = Object.assign({}, params || {});
+  if (me && me.session && params.session === undefined) params.session = me.session;
   try {
     if (method === 'GET') {
       const qs = new URLSearchParams(Object.assign({ action }, params || {}));
@@ -1260,11 +1246,17 @@ async function api(action, params, method) {
 function getRole() {
   if (!me) return 'visitor';
   if (_isSuper) return 'super';
+  if (_isContentManager) return 'contentManager';
   if (_isWriter) return 'writer';
   return 'user';
 }
-function isAdmin() { const r = getRole(); return r === 'super' || r === 'writer'; }
+// שימו לב: isAdmin() בפועל בודק "כותב ומעלה" (יכול לגשת לבר הכתיבה), לא
+// "אדמין בלבד" - שם קצת מטעה שנשאר מהגרסה הקודמת. isSuperAdmin() הוא
+// הבדיקה ל"אדמין אמיתי בלבד". isModerator() חדש - אדמין או מנהל תוכן,
+// כלומר מי שיכול לערוך/למחוק הודעות של משתמשים אחרים (לא רק את שלו).
+function isAdmin() { const r = getRole(); return r === 'super' || r === 'contentManager' || r === 'writer'; }
 function isSuperAdmin() { return _isSuper; }
+function isModerator() { return _isSuper || _isContentManager; }
 
 function getDisplayName(email, fallback) {
   const entry = _writersMap[(email || '').toLowerCase()];
@@ -1289,6 +1281,7 @@ function showToast(msg, type) {
 /* ================= התחברות ================= */
 function doLogout() {
   clearSavedUser(); me = null;
+  _isSuper = false; _isWriter = false; _isContentManager = false;
   document.getElementById('app').style.display = 'none';
   document.getElementById('bannedScreen').style.display = 'none';
   document.getElementById('loginScreen').style.display = 'flex';
@@ -1296,16 +1289,28 @@ function doLogout() {
 }
 
 async function verifyAndLogin(user) {
-  const d = await api('auth_check', { email: user.email });
+  // שולחים את ה-session השמור, לא email גולמי - השרת מאמת אותו מקומית
+  // (חתום ב-HMAC, בלי לצאת לגוגל) ומחזיר את הזהות האמיתית + הרשאות טריות.
+  const d = await api('auth_check', { session: user.session });
+  if (d.status !== 'ok') {
+    // ה-session פג תוקף (30 יום) או לא תקין מסיבה אחרת - חוזרים למסך
+    // התחברות רגיל במקום להישאר תקועים. true = "טופל", false = "נכשל".
+    clearSavedUser(); me = null;
+    return false;
+  }
   if (d.banned) {
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('app').style.display = 'none';
     document.getElementById('bannedScreen').style.display = 'flex';
-    return false;
+    return true;
   }
   _isSuper = !!d.admin;
+  _isContentManager = !!d.contentManager;
   _isWriter = !!d.writer;
-  me = user; saveUser(user);
+  // מרעננים גם את השם/תמונה מהמקור השמור, אבל email+session תמיד מהשרת
+  // (ה-session מתחדש בכל בדיקה - כך שמשתמש פעיל לעולם לא "יתנתק" לבד)
+  me = Object.assign({}, user, { email: d.email, session: d.session });
+  saveUser(me);
   await applyLogin();
   return true;
 }
@@ -1328,7 +1333,7 @@ async function applyLogin() {
   document.getElementById('loginScreen').style.display = 'none';
   document.getElementById('app').style.display = 'flex';
 
-  api('api_log_login', { email: me.email, name: me.name, picture: me.picture }, 'POST');
+  api('api_log_login', { name: me.name, picture: me.picture }, 'POST'); // email כבר לא נשלח - השרת לוקח אותו מה-session המאומת
 
   // מציגים מיד את מה שאפשר בלי לחכות לשרת - הרשאות הכתיבה כבר ידועות מ-auth_check
   applyWritePerm();
@@ -1338,9 +1343,12 @@ async function applyLogin() {
   // רשימת הכותבים (לשמות תצוגה + פאנל יוצרים) נטענת במקביל ולא חוסמת את הפיד
   loadWritersMap().then(() => { refreshUserMenu(); applyWritePerm(); });
 
+  // לכל משתמש מחובר (לא רק אדמין!) - זה היה בטעות בתוך הבלוק "רק לאדמין"
+  // למטה, כך שמונה ה"מחוברים כרגע" בפועל שיקף רק אדמינים ולא ביקור אמיתי.
+  pingSitePresence(); setInterval(pingSitePresence, 15000);
+
   if (isAdmin()) {
     loadAdminMsgs(); setInterval(loadAdminMsgs, 8000);
-    pingSitePresence(); setInterval(pingSitePresence, 15000);
     pollUpdateMode(); setInterval(pollUpdateMode, 8000);
     document.getElementById('feedWrap').style.paddingBottom = '120px';
   }
@@ -1351,27 +1359,50 @@ async function applyLogin() {
 }
 
 async function handleGoogle(resp) {
-  let payload = {};
+  // מפענחים את ה-token בצד הלקוח רק בשביל תצוגה אופטימית מיידית (שם/תמונה) -
+  // לא סומכים על זה בשביל הזהות עצמה! את המייל האמיתי ואת ה-session
+  // מקבלים אך ורק מהשרת, אחרי שהוא מאמת את ה-token מול גוגל בעצמו
+  // (חתימה+תוקף+audience) - זה בדיוק התיקון לפרצת האבטחה שנמצאה.
+  let displayName = '', displayPicture = '';
   try {
     const base64Url = resp.credential.split('.')[1];
     const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
     const pad = base64.length % 4;
     const paddedBase64 = pad ? base64 + '='.repeat(4 - pad) : base64;
     const jsonPayload = decodeURIComponent(window.atob(paddedBase64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
-    payload = JSON.parse(jsonPayload);
-  } catch (e) { alert('חלה שגיאה טכנית בהתחברות. נסה שוב.'); return; }
+    const payload = JSON.parse(jsonPayload);
+    displayName = payload.name || ''; displayPicture = payload.picture || '';
+  } catch (e) { /* לא קריטי - זה רק לתצוגה אופטימית, האימות האמיתי קורה בשרת למטה */ }
 
-  const email = (payload.email || '').toLowerCase();
-  if (!email || !email.includes('@')) return;
-  const picture = payload.picture || '';
-  const name = payload.name || email.split('@')[0];
-  await verifyAndLogin({ email, name, picture });
+  const d = await api('auth_check', { idToken: resp.credential });
+  if (d.status !== 'ok') { alert('חלה שגיאה באימות מול גוגל. נסה/י שוב.'); return; }
+  if (d.banned) {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('app').style.display = 'none';
+    document.getElementById('bannedScreen').style.display = 'flex';
+    return;
+  }
+  _isSuper = !!d.admin;
+  _isContentManager = !!d.contentManager;
+  _isWriter = !!d.writer;
+  me = { email: d.email, name: displayName || d.email.split('@')[0], picture: displayPicture, session: d.session };
+  saveUser(me);
+  await applyLogin();
 }
 
 function initGoogle() {
   google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: handleGoogle, auto_select: true });
+  // saved.session קיים רק אצל מי שכבר התחבר אחרי השדרוג הזה - משתמש "ישן"
+  // ששמור מלפני השדרוג (עם email בלבד, בלי session) פשוט יראה כפתור
+  // התחברות רגיל וילחץ עליו פעם אחת, בדיוק כמו התחברות ראשונה.
   const saved = loadSavedUser();
-  if (saved) { verifyAndLogin(saved); return; }
+  if (saved && saved.session) {
+    verifyAndLogin(saved).then(ok => { if (!ok) showGoogleLoginUI(); });
+    return;
+  }
+  showGoogleLoginUI();
+}
+function showGoogleLoginUI() {
   google.accounts.id.renderButton(document.getElementById('googleBtn'), { theme: 'outline', size: 'large', locale: 'he', width: 240 });
   google.accounts.id.prompt();
 }
@@ -1761,7 +1792,7 @@ async function loadMore() {
 }
 
 async function pollAll() {
-  if (!me || !items.length || pollPending) return; pollPending = true;
+  if (!me || !items.length || pollPending || document.hidden) return; pollPending = true;
   const d = await api('feed_poll', { channel: CHANNEL, msgIds: items.map(e => e.id), since: lastTs }, 'POST');
   pollPending = false;
   if (d.status !== 'ok') return;
@@ -1784,6 +1815,18 @@ async function pollAll() {
   });
 }
 setInterval(pollAll, 6000);
+
+// כל הפולינגים למעלה משהים את עצמם כשהטאב ברקע (document.hidden) כדי לחסוך
+// עומס שרת וסוללה. ברגע שחוזרים לטאב מרעננים הכל מיד, כדי שלא יישאר מידע תקוע.
+let _tabWasHidden = document.hidden;
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden && _tabWasHidden) {
+    pollAll();
+    if (isAdmin()) { loadAdminMsgs(); pollUpdateMode(); triggerStats(); }
+    if (me) pingSitePresence();
+  }
+  _tabWasHidden = document.hidden;
+});
 
 document.getElementById('feedWrap')?.addEventListener('scroll', () => {
   const wrap = document.getElementById('feedWrap');
@@ -1845,7 +1888,7 @@ function updateAttachPreview() {
   prev.innerHTML = chips.join(''); prev.classList.toggle('show', chips.length > 0);
 }
 
-function clearCompose() { document.getElementById('composeEditor').innerHTML = ''; clearComposeImg(); clearComposeVid(); composeHtmlCode = ''; composeBtns = []; document.getElementById('composeEditor')._quoteData = null; updateAttachPreview(); }
+function clearCompose() { document.getElementById('composeEditor').innerHTML = ''; composeImgUrl = ''; composeVidUrl = ''; composeHtmlCode = ''; composeBtns = []; document.getElementById('composeEditor')._quoteData = null; updateAttachPreview(); }
 function onComposeChange() { const ed = document.getElementById('composeEditor'); document.getElementById('composeCharCount').textContent = editorToMarkdown(ed).length; }
 function onComposeKeyDown(e) {}
 
@@ -1975,7 +2018,7 @@ function isUntilExpired(until) {
   const now = new Date(); return (now.getHours() * 60 + now.getMinutes()) > (parseInt(m[1], 10) * 60 + parseInt(m[2], 10));
 }
 async function pollUpdateMode() {
-  if (!isAdmin()) return;
+  if (!isAdmin() || document.hidden) return;
   const d = await api('update_mode_get', {});
   if (_updateMode && isUntilExpired(_updateUntil)) { _updateMode = false; _updateUntil = ''; applyUpdateModeUI(); saveUpdateModeToServer(false, ''); }
   const sendBtn = document.getElementById('composeSendBtn');
@@ -2025,7 +2068,7 @@ async function blockUser() {
   const email = document.getElementById('settingsBlockEmail').value.trim().toLowerCase(); if (!email) return;
   if (!siteBlockedEmails.includes(email)) {
     siteBlockedEmails.push(email); document.getElementById('settingsBlockEmail').value = ''; renderBlockedUsers();
-    await api('api_settings', { admin_email: me.email, blockedEmails: siteBlockedEmails }, 'POST');
+    await api('api_settings', { blockedEmails: siteBlockedEmails }, 'POST');
     showToast('המשתמש נחסם', 'success');
   }
 }
@@ -2036,7 +2079,7 @@ function renderBlockedUsers() {
 }
 async function unblockUser(email) {
   siteBlockedEmails = siteBlockedEmails.filter(e => e !== email); renderBlockedUsers();
-  await api('api_settings', { admin_email: me.email, blockedEmails: siteBlockedEmails }, 'POST');
+  await api('api_settings', { blockedEmails: siteBlockedEmails }, 'POST');
 }
 async function exportEmailsToGroups() {
   if (!isSuperAdmin()) return;
@@ -2105,6 +2148,7 @@ function showAdMsg(txt, color) { const el = document.getElementById('adMsg'); el
 
 /* ================= הודעות צוות ================= */
 async function loadAdminMsgs() {
+  if (document.hidden) return;
   const d = await api('admin_msgs_get', {});
   if (d.status !== 'ok') return;
   const msgs = d.messages || [];
@@ -2189,8 +2233,9 @@ async function removeAdmin(targetEmail) {
 function showAdminMsg(txt, color) { const el = document.getElementById('adminMsgResult'); if (!el) return; el.textContent = txt; el.style.color = color === 'green' ? '#3f9a6e' : '#c94b4b'; el.style.display = 'block'; setTimeout(() => el.style.display = 'none', 3000); }
 
 /* ================= סטטיסטיקות ================= */
-async function pingSitePresence() { if (!me) return; await api('presence_ping', { email: me.email, name: me.name, picture: me.picture }, 'POST'); }
+async function pingSitePresence() { if (!me || document.hidden) return; await api('presence_ping', { email: me.email, name: me.name, picture: me.picture }, 'POST'); }
 async function triggerStats() {
+  if (document.hidden) return;
   const d = await api('site_stats', {});
   if (d.status === 'ok') {
     const map = { publicUserCount: d.online, statOnline: d.online, statHour: d.hour, statDay: d.day, statWeek: d.week, statPeak: d.peak };
@@ -2224,36 +2269,11 @@ async function toggleNotifications() {
 function initNotifications() { if (localStorage.getItem('shaagat_notif') === '1' && Notification.permission === 'granted') { notificationsOn = true; document.getElementById('notifBtn')?.classList.add('active'); } }
 function sendNotification(title, body) { if (notificationsOn && Notification.permission === 'granted' && document.visibilityState !== 'visible') new Notification(title || SITE_TITLE, { body: body || 'הודעה חדשה', icon: LOGO }); }
 
-/* ================= סרגל צד - תפריט מובייל ================= */
-
-/* ================= רקע מונפש ================= */
-document.addEventListener('DOMContentLoaded', () => {
-  const mouseBlob = document.getElementById('mouseBlob');
-  const bgContainer = document.getElementById('bgContainer');
-  const canvas = document.getElementById('sparklesCanvas');
-  if (!mouseBlob || !canvas) return;
-  const ctx = canvas.getContext('2d');
-  let width = canvas.width = window.innerWidth, height = canvas.height = window.innerHeight;
-  let mouseX = width / 2, mouseY = height / 2, currentX = mouseX, currentY = mouseY, particles = [];
-  window.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; addParticle(mouseX, mouseY); });
-  function addParticle(x, y) { if (Math.random() > 0.2) return; particles.push({ x: x + (Math.random() * 30 - 15), y: y + (Math.random() * 30 - 15), size: Math.random() * 2 + 0.5, speedX: (Math.random() - 0.5) * 0.5, speedY: (Math.random() - 0.5) * 0.5, life: 1 }); }
-  function animate() {
-    currentX += (mouseX - currentX) * 0.08; currentY += (mouseY - currentY) * 0.08;
-    mouseBlob.style.transform = `translate(${currentX}px, ${currentY}px) translate(-50%, -50%)`;
-    let moveX = (mouseX / width - 0.5) * 40, moveY = (mouseY / height - 0.5) * 40;
-    if (bgContainer) bgContainer.style.transform = `translate(${-moveX}px, ${-moveY}px)`;
-    ctx.clearRect(0, 0, width, height);
-    for (let i = 0; i < particles.length; i++) { let p = particles[i]; p.x += p.speedX; p.y += p.speedY; p.life -= 0.01; if (p.life > 0) { ctx.fillStyle = `rgba(255, 230, 150, ${p.life * 0.6})`; ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2); ctx.fill(); } }
-    particles = particles.filter(p => p.life > 0);
-    requestAnimationFrame(animate);
-  }
-  animate();
-});
 
 </script>
 <script>
   // שמנו את זה כאן כדי שזה יעבוד תמיד, גם אם הקובץ השני קורס
-  window.closeReportModal = window.closeReportModal || function() {
+  window.closeReportModal = function() {
     // מציאת חלון הרקע (ה-overlay) והסתרתו
     const overlay = document.querySelector('[onclick*="closeReportModal"]');
     if (overlay) overlay.style.display = 'none';
