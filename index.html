@@ -42,19 +42,27 @@ body{height:100%;font-family:'Heebo',sans-serif;-webkit-font-smoothing:antialias
   transition: transform 0.3s ease;
 }
 .channels-hdr {
-  padding: 15px; font-size: 14px; font-weight: 800; color: #111;
-  border-bottom: 1px solid #f0f0f0; background: #fafafa;
+  padding: 16px 15px; font-size: 13px; font-weight: 800; color: #fff;
+  background: linear-gradient(135deg, #7c3aed, #4f46e5 55%, #1a56db);
+  display: flex; align-items: center; gap: 8px; letter-spacing: .2px;
 }
-#channelsList { flex: 1; overflow-y: auto; padding: 10px 0; }
+.channels-hdr i { font-size: 12px; opacity: .9; }
+#channelsList { flex: 1; overflow-y: auto; padding: 10px 8px; }
 .channel-item {
-  padding: 10px 15px; cursor: pointer; display: flex; align-items: center; gap: 10px;
-  font-size: 14px; font-weight: 600; color: #4b5563;
-  border-bottom: 1px solid #f9fafb; transition: background 0.2s, color 0.2s;
+  padding: 9px 10px; cursor: pointer; display: flex; align-items: center; gap: 10px;
+  font-size: 13.5px; font-weight: 700; color: #4b5563;
+  border-radius: 12px; margin-bottom: 4px;
+  transition: background 0.15s, color 0.15s, box-shadow 0.15s, transform 0.15s;
 }
-.channel-item:hover { background: #f3f4f6; }
-.channel-item.active { background: #eff6ff; color: #1a56db; border-right: 4px solid #1a56db; }
-.channel-item i { width: 16px; text-align: center; color: #9ca3af; }
-.channel-item.active i { color: #1a56db; }
+.channel-item:hover { background: #f4f5fb; transform: translateX(-1px); }
+.channel-item.active { background: linear-gradient(135deg, rgba(124,58,237,.1), rgba(26,86,219,.1)); color: #4338ca; box-shadow: inset 0 0 0 1px rgba(79,70,229,.15); }
+.channel-item .ch-icon {
+  width: 26px; height: 26px; border-radius: 9px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: #eef0f6; color: #9199b0; font-size: 11px; transition: background 0.15s, color 0.15s;
+}
+.channel-item i { text-align: center; }
+.channel-item.active .ch-icon { background: linear-gradient(135deg, #7c3aed, #1a56db); color: #fff; }
 
 #mobileMenuBtn { display: none; background: none; border: none; font-size: 18px; color: #111; cursor: pointer; padding: 5px; }
 
@@ -65,10 +73,12 @@ body{height:100%;font-family:'Heebo',sans-serif;-webkit-font-smoothing:antialias
 }
 
 body.dark #leftSidebar { background: #1a1a2e; border-color: #2a2a40; }
-body.dark .channels-hdr { background: #1e1e30; color: #fff; border-color: #2a2a40; }
-body.dark .channel-item { color: #d1d5db; border-color: #2a2a40; }
-body.dark .channel-item:hover { background: #2a2a45; }
-body.dark .channel-item.active { background: #2a2a45; color: #a5b4fc; border-right-color: #a5b4fc; }
+body.dark .channels-hdr { background: linear-gradient(135deg, #5b21b6, #3730a3 55%, #1e3a8a); }
+body.dark .channel-item { color: #d1d5db; }
+body.dark .channel-item:hover { background: #23233a; }
+body.dark .channel-item.active { background: linear-gradient(135deg, rgba(124,58,237,.22), rgba(26,86,219,.22)); color: #c7d2fe; box-shadow: inset 0 0 0 1px rgba(165,180,252,.25); }
+body.dark .channel-item .ch-icon { background: #2a2a45; color: #9ca3af; }
+body.dark .channel-item.active .ch-icon { background: linear-gradient(135deg, #7c3aed, #4f46e5); color: #fff; }
 
 /* APP */
 #app{flex:1;min-width:0;height:100%;display:none;flex-direction:column;}
@@ -134,7 +144,7 @@ header{ background:#fff;border-bottom:1px solid rgba(0,0,0,.08); height:64px;pad
 .bubble-vid iframe{max-width:100%;border-radius:12px;}
 
 .bubble-html{margin-top:9px; border-radius:12px; overflow:hidden; width:100%; max-width:100%; background:#fff; position:relative;}
-.bubble-html iframe{width:100%; border:none; display:block; min-height:200px; resize:vertical; overflow:auto;}
+.bubble-html iframe{width:100%; border:none; display:block; min-height:200px; resize:vertical; overflow:auto; transition:height .25s ease;}
 
 .vid-btn{display:inline-flex;align-items:center;gap:6px;background:#1a56db;color:#fff;padding:7px 15px;border-radius:99px;font-size:13px;font-weight:700;text-decoration:none;}
 .bubble-btns{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px;}
@@ -723,7 +733,7 @@ body, html { background: #fff !important; }
 </div>
 
 <div id="leftSidebar">
-  <div class="channels-hdr">ערוצים</div>
+  <div class="channels-hdr"><i class="fas fa-satellite-dish"></i> ערוצים</div>
   <div id="channelsList"></div>
   <div id="channelsAdminBtnWrap" style="display:none;padding:10px;border-top:1px solid #f0f0f0;">
     <button onclick="openChannelModal()" style="width:100%;background:#f4f5f9;border:none;border-radius:10px;padding:9px;font-size:12px;font-weight:800;color:#4a4f63;cursor:pointer;font-family:'Heebo',sans-serif;"><i class="fas fa-plus"></i> ערוץ חדש</button>
@@ -1576,10 +1586,20 @@ async function handleGoogle(resp) {
 }
 
 function initGoogle() {
-  google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: handleGoogle, auto_select: true });
+  // auto_select:false בכוונה - עם true, גוגל מחברת משתמש חוזר (עם session
+  // פעיל בדפדפן) אוטומטית וללא שום פעולה נראית לעין: זו בדיוק ההתנהגות של
+  // "מחכה ונכנס לאתר בלי רישום" - אין אקט של בחירת/אישור חשבון.
+  google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: handleGoogle, auto_select: false });
+  // הכפתור תמיד מרונדר קודם - לפני-כן, כשהיה משתמש שמור ב-localStorage,
+  // היה כאן return מוקדם וה-renderButton לא נקרא בכלל באותה טעינת עמוד.
+  // זה יצר בדיוק את הבאג: או שהמשתמש נכנס לבד בלי לבחור חשבון, או שאחרי
+  // יציאה (doLogout) מסך הכניסה נשאר בלי שום כפתור לחיצה (כי מעולם לא
+  // נוצר), עד לרענון ידני של הדף. עכשיו הכפתור תמיד קיים ותקין, ומשתמש
+  // עם התחברות שמורה עדיין נכנס מיד בשורה הבאה - אבל בלי לחסום את הכניסה
+  // הרגילה למי שצריך אותה (משתמש חדש, או אחרי יציאה מהמערכת).
+  google.accounts.id.renderButton(document.getElementById('googleBtn'), { theme: 'outline', size: 'large', locale: 'he', width: 240 });
   const saved = loadSavedUser();
   if (saved) { verifyAndLogin(saved); return; }
-  google.accounts.id.renderButton(document.getElementById('googleBtn'), { theme: 'outline', size: 'large', locale: 'he', width: 240 });
   google.accounts.id.prompt();
 }
 function tryInitGoogle() { if (window.google && window.google.accounts) initGoogle(); else setTimeout(tryInitGoogle, 100); }
@@ -1731,7 +1751,7 @@ function renderChannelsList() {
   const list = document.getElementById('channelsList'); if (!list) return;
   list.innerHTML = _channels.map(c => `
     <div class="channel-item ${c.id === CHANNEL ? 'active' : ''}" onclick="switchChannel('${escAttr(c.id)}')" oncontextmenu="return handleChannelContext(event,'${escAttr(c.id)}')">
-      <i class="fas ${esc(c.icon || 'fa-hashtag')}"></i>
+      <span class="ch-icon"><i class="fas ${esc(c.icon || 'fa-hashtag')}"></i></span>
       <span style="flex:1;">${esc(c.name)}</span>
       ${_channelsUnread[c.id] ? '<span style="width:8px;height:8px;border-radius:50%;background:#dc2626;flex-shrink:0;"></span>' : ''}
       ${(isSuperAdmin() && c.id !== 'all') ? `<button onclick="event.stopPropagation();openChannelModal('${escAttr(c.id)}')" style="background:none;border:none;color:#9ca3af;cursor:pointer;padding:2px;font-size:11px;"><i class="fas fa-pen"></i></button>` : ''}
@@ -1849,6 +1869,24 @@ function rich(t) {
 
 const REACT_SVG = `<svg viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="1.65"/><circle cx="8.5" cy="9.5" r="1.1" fill="currentColor"/><circle cx="13.5" cy="9.5" r="1.1" fill="currentColor"/><path d="M8 13.2c.65 1.5 2 2.2 3 2.2s2.35-.72 3-2.2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>`;
 
+/* ================= גובה אוטומטי לדפי HTML מוטמעים =================
+   ה-iframe של דף HTML מוטמע רץ ב-sandbox בלי allow-same-origin (בכוונה,
+   מטעמי אבטחה - כדי שקוד זר בדף המוטמע לא יוכל לגעת בדף האתר האמיתי),
+   ולכן אי אפשר לגשת אליו מבחוץ עם contentDocument כדי למדוד את הגובה
+   שלו. הפתרון התקני: הדף המוטמע עצמו (ראו buildMsg, קטע htmlCode) מדווח
+   את הגובה שלו החוצה עם postMessage, וכאן תופסים את זה ומעדכנים את ה-
+   iframe הנכון - מזוהה לפי event.source (חלון ה-iframe ששלח את ההודעה),
+   לא לפי מזהה קבוע, כך שזה עובד גם אם אותה הודעה מוצגת כמה פעמים בעמוד
+   בו-זמנית (בפיד וגם בתוצאות חיפוש, למשל). */
+window.addEventListener('message', function (event) {
+  if (!event.data || event.data.__htmlEmbedResize !== true) return;
+  const h = Number(event.data.height);
+  if (!isFinite(h) || h <= 0) return;
+  document.querySelectorAll('iframe.html-embed-frame').forEach(f => {
+    if (f.contentWindow === event.source) f.style.height = Math.min(Math.max(h, 80), 3000) + 'px';
+  });
+});
+
 function buildMsg(e) {
   const id = e.id;
   const role = getRole();
@@ -1878,7 +1916,11 @@ function buildMsg(e) {
     else media += `<div class="bubble-vid" style="margin-top:9px;border-radius:12px;overflow:hidden;width:100%;background:#000;"><iframe src="${escAttr(vu)}" width="100%" height="300" frameborder="0" allowfullscreen></iframe></div>`;
   }
   let btns = ''; if (e.buttons && e.buttons.length) btns = '<div class="bubble-btns">' + e.buttons.map(b => `<a class="lnk-btn" href="${escAttr(b.url)}" target="_blank">${esc(b.text)}</a>`).join('') + '</div>';
-  if (e.htmlCode) { const safeHtml = e.htmlCode.replace(/`/g, '&#96;'); media += `<div class="bubble-html" style="margin-top:9px;border-radius:12px;overflow:hidden;width:100%;"><iframe srcdoc="${safeHtml.replace(/"/g, '&quot;')}" style="width:100%;border:none;display:block;" sandbox="allow-scripts allow-popups" scrolling="no" onload="try{this.style.height=this.contentDocument.body.scrollHeight+'px'}catch(e){}"></iframe></div>`; }
+  if (e.htmlCode) {
+    const resizeScript = '<script>(function(){function __sendH(){try{var h=Math.max(document.documentElement.scrollHeight,document.body?document.body.scrollHeight:0);parent.postMessage({__htmlEmbedResize:true,height:h},"*");}catch(err){}}if(document.readyState==="complete"){__sendH();}else{window.addEventListener("load",__sendH);}setTimeout(__sendH,300);setTimeout(__sendH,1000);if(window.ResizeObserver&&document.body){try{new ResizeObserver(__sendH).observe(document.body);}catch(err){}}})();<\/script>';
+    const safeHtml = (e.htmlCode + resizeScript).replace(/&/g, '&amp;').replace(/`/g, '&#96;').replace(/"/g, '&quot;');
+    media += `<div class="bubble-html" style="margin-top:9px;border-radius:12px;overflow:hidden;width:100%;"><iframe class="html-embed-frame" srcdoc="${safeHtml}" style="width:100%;border:none;display:block;height:220px;" sandbox="allow-scripts allow-popups"></iframe></div>`;
+  }
 
   let tagsHtml = '';
   if (e.tags && e.tags.length) tagsHtml = '<div class="post-tags-row" style="margin-top:8px;">' + e.tags.map(t => `<span class="post-tag" onclick="document.getElementById('searchInput').value='${escAttr(t)}';onSearch('${escAttr(t)}')"><i class="fas fa-tag"></i> ${esc(t)}</span>`).join('') + '</div>';
@@ -2642,7 +2684,7 @@ async function pingSitePresence() { if (!me) return; await api('presence_ping', 
 async function triggerStats() {
   const d = await api('site_stats', {});
   if (d.status === 'ok') {
-    const map = { publicUserCount: d.online, statOnline: d.online, statHour: d.hour, statDay: d.day, statWeek: d.week, statPeak: d.peak };
+    const map = { publicUserCount: d.totalUsers, statOnline: d.online, statHour: d.hour, statDay: d.day, statWeek: d.week, statPeak: d.peak };
     for (let id in map) { const el = document.getElementById(id); if (el) el.innerText = map[id]; }
   }
 }
