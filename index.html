@@ -26,59 +26,34 @@ body{height:100%;font-family:'Heebo',sans-serif;-webkit-font-smoothing:antialias
 .login-title{font-size:20px;font-weight:900;color:#111;margin-bottom:4px;}
 .login-sub{font-size:13px;color:#888;margin-bottom:24px;}
 
-#leftSidebar { order: 1; }
 #app { order: 2; }
 #rightSidebar, #adOnlySidebar { order: 3; }
 
-/* LEFT SIDEBAR FOR CHANNELS */
-#leftSidebar {
-  width: 240px; min-width: 240px;
-  background: #fff;
-  border-right: 1px solid rgba(0,0,0,.08);
-  flex-shrink: 0;
-  position: sticky; top: 64px; height: calc(100vh - 64px);
-  display: flex; flex-direction: column;
-  z-index: 100;
-  transition: transform 0.3s ease;
-}
-.channels-hdr {
-  padding: 16px 15px; font-size: 13px; font-weight: 800; color: #fff;
+/* TOP CHANNELS BAR - קטגוריות אופקיות למעלה, בשליטת פאנל הניהול (צבע/אייקון/הסתרה לכל ערוץ) */
+#channelsBar {
+  flex-shrink: 0; display: flex; align-items: center; gap: 8px;
+  padding: 10px 14px; overflow-x: auto; overflow-y: hidden;
   background: linear-gradient(135deg, #7c3aed, #4f46e5 55%, #1a56db);
-  display: flex; align-items: center; gap: 8px; letter-spacing: .2px;
+  scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.35) transparent;
 }
-.channels-hdr i { font-size: 12px; opacity: .9; }
-#channelsList { flex: 1; overflow-y: auto; padding: 10px 8px; }
+#channelsBar::-webkit-scrollbar { height: 5px; }
+#channelsBar::-webkit-scrollbar-thumb { background: rgba(255,255,255,.35); border-radius: 99px; }
+#channelsList { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 .channel-item {
-  padding: 9px 10px; cursor: pointer; display: flex; align-items: center; gap: 10px;
-  font-size: 13.5px; font-weight: 700; color: #4b5563;
-  border-radius: 12px; margin-bottom: 4px;
-  transition: background 0.15s, color 0.15s, box-shadow 0.15s, transform 0.15s;
+  display: flex; align-items: center; gap: 7px; flex-shrink: 0;
+  padding: 7px 8px 7px 14px; border-radius: 999px; cursor: pointer; border: none;
+  font-size: 13px; font-weight: 800; white-space: nowrap; font-family: 'Heebo', sans-serif;
+  transition: background 0.15s, transform 0.15s, box-shadow 0.15s;
 }
-.channel-item:hover { background: #f4f5fb; transform: translateX(-1px); }
-.channel-item.active { background: linear-gradient(135deg, rgba(124,58,237,.1), rgba(26,86,219,.1)); color: #4338ca; box-shadow: inset 0 0 0 1px rgba(79,70,229,.15); }
-.channel-item .ch-icon {
-  width: 26px; height: 26px; border-radius: 9px; flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center;
-  background: #eef0f6; color: #9199b0; font-size: 11px; transition: background 0.15s, color 0.15s;
+.channel-item:hover { transform: translateY(-1px); }
+.channel-item .ch-icon { display: flex; align-items: center; justify-content: center; font-size: 11px; }
+.channel-add-btn {
+  width: 30px; height: 30px; padding: 0; justify-content: center;
+  background: rgba(255,255,255,.14); color: #fff; font-size: 13px;
 }
-.channel-item i { text-align: center; }
-.channel-item.active .ch-icon { background: linear-gradient(135deg, #7c3aed, #1a56db); color: #fff; }
+.channel-add-btn:hover { background: rgba(255,255,255,.24); }
 
-#mobileMenuBtn { display: none; background: none; border: none; font-size: 18px; color: #111; cursor: pointer; padding: 5px; }
-
-@media(max-width: 900px) {
-  #leftSidebar { position: fixed; left: 0; transform: translateX(-100%); box-shadow: 4px 0 24px rgba(0,0,0,.12); }
-  #leftSidebar.open { transform: translateX(0); }
-  #mobileMenuBtn { display: block; }
-}
-
-body.dark #leftSidebar { background: #1a1a2e; border-color: #2a2a40; }
-body.dark .channels-hdr { background: linear-gradient(135deg, #5b21b6, #3730a3 55%, #1e3a8a); }
-body.dark .channel-item { color: #d1d5db; }
-body.dark .channel-item:hover { background: #23233a; }
-body.dark .channel-item.active { background: linear-gradient(135deg, rgba(124,58,237,.22), rgba(26,86,219,.22)); color: #c7d2fe; box-shadow: inset 0 0 0 1px rgba(165,180,252,.25); }
-body.dark .channel-item .ch-icon { background: #2a2a45; color: #9ca3af; }
-body.dark .channel-item.active .ch-icon { background: linear-gradient(135deg, #7c3aed, #4f46e5); color: #fff; }
+body.dark #channelsBar { background: linear-gradient(135deg, #5b21b6, #3730a3 55%, #1e3a8a); }
 
 /* APP */
 #app{flex:1;min-width:0;height:100%;display:none;flex-direction:column;}
@@ -145,6 +120,19 @@ header{ background:#fff;border-bottom:1px solid rgba(0,0,0,.08); height:64px;pad
 
 .bubble-html{margin-top:9px; border-radius:12px; overflow:hidden; width:100%; max-width:100%; background:#fff; position:relative;}
 .bubble-html iframe{width:100%; border:none; display:block; min-height:200px; resize:vertical; overflow:auto; transition:height .25s ease;}
+.html-expand-btn{
+  position:absolute; top:8px; left:8px; z-index:5;
+  width:28px; height:28px; border-radius:8px; border:none; cursor:pointer;
+  background:rgba(17,17,17,.55); color:#fff; font-size:11px;
+  display:flex; align-items:center; justify-content:center;
+  opacity:.85; transition:opacity .15s, background .15s;
+}
+.html-expand-btn:hover{ opacity:1; background:rgba(17,17,17,.75); }
+#htmlExpandModal{ display:none; position:fixed; inset:0; z-index:970; background:rgba(17,17,17,.92); align-items:center; justify-content:center; padding:16px; }
+#htmlExpandModal .hem-box{ background:#fff; border-radius:16px; width:100%; height:100%; max-width:900px; max-height:92vh; overflow:hidden; position:relative; box-shadow:0 24px 60px rgba(0,0,0,.35); display:flex; flex-direction:column; }
+#htmlExpandModal iframe{ flex:1; width:100%; border:none; display:block; }
+#htmlExpandClose{ position:absolute; top:10px; left:10px; z-index:5; width:34px; height:34px; border-radius:50%; border:none; cursor:pointer; background:rgba(17,17,17,.55); color:#fff; font-size:15px; display:flex; align-items:center; justify-content:center; }
+#htmlExpandClose:hover{ background:rgba(17,17,17,.75); }
 
 .vid-btn{display:inline-flex;align-items:center;gap:6px;background:#1a56db;color:#fff;padding:7px 15px;border-radius:99px;font-size:13px;font-weight:700;text-decoration:none;}
 .bubble-btns{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px;}
@@ -732,14 +720,6 @@ body, html { background: #fff !important; }
   </div>
 </div>
 
-<div id="leftSidebar">
-  <div class="channels-hdr"><i class="fas fa-satellite-dish"></i> ערוצים</div>
-  <div id="channelsList"></div>
-  <div id="channelsAdminBtnWrap" style="display:none;padding:10px;border-top:1px solid #f0f0f0;">
-    <button onclick="openChannelModal()" style="width:100%;background:#f4f5f9;border:none;border-radius:10px;padding:9px;font-size:12px;font-weight:800;color:#4a4f63;cursor:pointer;font-family:'Heebo',sans-serif;"><i class="fas fa-plus"></i> ערוץ חדש</button>
-  </div>
-</div>
-
 <div id="rightSidebar">
   <div id="adInChat" style="display:none;flex:1;overflow:hidden;">
     <iframe id="adInChatFrame" srcdoc="" style="width:100%;height:100%;border:none;display:none;"
@@ -759,7 +739,6 @@ body, html { background: #fff !important; }
 <div id="app">
   <header>
     <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;position:relative;">
-      <button id="mobileMenuBtn" onclick="toggleLeftSidebar()" title="ערוצים"><i class="fas fa-bars"></i></button>
       <img class="hdr-avatar" id="hdrAvatarImg" src="https://cdn-icons-png.flaticon.com/128/6476/6476785.png" onerror="this.style.background='#e02020'">
       <div id="hdrEmailCountBadge" style="position:absolute;top:-4px;left:-4px;background:#1a56db;color:#fff;border-radius:99px;font-size:9px;font-weight:800;padding:1px 5px;min-width:16px;text-align:center;border:1.5px solid #fff;display:none;font-family:'Heebo',sans-serif;line-height:14px;"></div>
     </div>
@@ -794,6 +773,10 @@ body, html { background: #fff !important; }
       <div id="userAvatar" style="position:relative; margin-right:5px;"></div>
     </div>
   </header>
+
+  <div id="channelsBar">
+    <div id="channelsList"></div>
+  </div>
 
   <div id="feedWrap">
     <div id="loadMoreSpinner"><div class="lm-ring"></div>טוען עוד...</div>
@@ -1149,8 +1132,19 @@ body, html { background: #fff !important; }
     <div style="padding:18px 20px;display:flex;flex-direction:column;gap:10px;">
       <div style="font-size:12px;font-weight:800;color:#5b6072;">שם הערוץ</div>
       <input id="channelNameInput" type="text" placeholder="לדוגמה: כללי, מבצעים, שאלות..." class="ap-field">
-      <div style="font-size:12px;font-weight:800;color:#5b6072;margin-top:4px;">אייקון (Font Awesome, רשות)</div>
-      <input id="channelIconInput" type="text" placeholder="fa-hashtag" class="ap-field" style="direction:ltr;">
+      <div style="display:flex;gap:10px;margin-top:4px;">
+        <div style="flex:1;">
+          <div style="font-size:12px;font-weight:800;color:#5b6072;margin-bottom:6px;">אייקון (Font Awesome, רשות)</div>
+          <input id="channelIconInput" type="text" placeholder="fa-hashtag" class="ap-field" style="direction:ltr;">
+        </div>
+        <div>
+          <div style="font-size:12px;font-weight:800;color:#5b6072;margin-bottom:6px;">צבע</div>
+          <input id="channelColorInput" type="color" value="#1a56db" style="width:44px;height:38px;border:1.5px solid #e5e7eb;border-radius:10px;padding:2px;cursor:pointer;background:#fff;">
+        </div>
+      </div>
+      <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:#374151;cursor:pointer;margin-top:4px;">
+        <input type="checkbox" id="channelHiddenInput"> מוסתר (לא יופיע בשורת הערוצים לכל המשתמשים)
+      </label>
       <div id="channelModalMsg" style="display:none;font-size:12px;font-weight:700;text-align:center;"></div>
     </div>
     <div style="padding:0 20px 18px;display:flex;gap:10px;">
@@ -1158,6 +1152,12 @@ body, html { background: #fff !important; }
       <button id="channelDeleteBtn" onclick="deleteChannelFromModal()" class="ap-btn ap-btn-danger" style="display:none;">מחיקה</button>
       <button onclick="closeChannelModal()" class="ap-btn ap-btn-soft">ביטול</button>
     </div>
+  </div>
+</div>
+<div id="htmlExpandModal" onclick="if(event.target===this)closeHtmlExpand()">
+  <div class="hem-box" onclick="event.stopPropagation()">
+    <button id="htmlExpandClose" onclick="closeHtmlExpand()" title="סגור"><i class="fas fa-times"></i></button>
+    <iframe id="htmlExpandFrame" sandbox="allow-scripts allow-popups"></iframe>
   </div>
 </div>
 <div id="adminPanelModal" onclick="if(event.target===this)closeAdminPanel()">
@@ -1239,6 +1239,35 @@ body, html { background: #fff !important; }
           <button class="ap-btn ap-btn-primary" style="width:100%;margin-top:14px;" onclick="saveSiteBranding()"><i class="fas fa-save" style="font-size:11px;"></i> שמור פרטי אתר</button>
         </div>
 
+        <div class="ap-sec" id="ap-sec-channels" style="display:none;">
+          <div style="font-size:12px;color:#a3a8b8;margin-bottom:16px;line-height:1.6;">ערוצים מאפשרים לתייג הודעות לקטגוריות. כשהתכונה פעילה, מעל הפיד מופיעה שורת ערוצים לסינון, וכל הודעה משויכת לערוץ שנבחר בעת השליחה.</div>
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:#374151;cursor:pointer;margin-bottom:14px;">
+            <input type="checkbox" id="chSettingsEnabled"> הפעל ערוצים באתר
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:#374151;cursor:pointer;margin-bottom:14px;">
+            <input type="checkbox" id="chSettingsShowMain"> הצג את הערוץ הראשי ("כללי") בשורת הסינון
+          </label>
+          <div style="font-size:11px;color:#a3a8b8;margin:-9px 0 14px 0;line-height:1.5;">כשכבוי, הערוץ הראשי לא יוצג בשורה לכל המשתמשים (אדמינים עדיין רואים אותו לצורך ניהול). הודעות בלי ערוץ עדיין יופיעו תחת "הכל".</div>
+          <div style="margin-bottom:6px;">
+            <div style="font-size:12px;font-weight:800;color:#5b6072;margin-bottom:9px;">ברירת מחדל בכניסה לאתר</div>
+            <select id="chSettingsDefault" class="ap-field"></select>
+          </div>
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:#374151;cursor:pointer;margin:14px 0 4px;">
+            <input type="checkbox" id="chSettingsResetOnLoad"> לחזור לברירת המחדל בכל כניסה לדף
+          </label>
+          <div style="font-size:11px;color:#a3a8b8;margin-bottom:14px;line-height:1.5;">כשכבוי (ברירת מחדל), כל משתמש חוזר לערוץ האחרון שבחר בדפדפן שלו. כשדולק, כל כניסה/רענון מתחילה מברירת המחדל שנבחרה למעלה.</div>
+          <div id="channelsSettingsMsg" style="display:none;margin-bottom:10px;font-size:12px;font-weight:700;text-align:center"></div>
+          <button class="ap-btn ap-btn-primary" style="width:100%;" onclick="saveChannelsSettings()"><i class="fas fa-save" style="font-size:11px;"></i> שמור הגדרות ערוצים</button>
+
+          <div style="border-top:1px solid #f1f2f6;margin-top:20px;padding-top:16px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+              <div style="font-size:12px;font-weight:800;color:#5b6072;">הערוצים הקיימים</div>
+              <button class="ap-btn ap-btn-soft" onclick="openChannelModal()"><i class="fas fa-plus" style="font-size:11px;"></i> ערוץ חדש</button>
+            </div>
+            <div id="adminChannelsList" style="display:flex;flex-direction:column;gap:8px;"></div>
+          </div>
+        </div>
+
         <div class="ap-sec" id="ap-sec-blocking" style="display:none;">
           <div style="margin-bottom:22px;">
             <div style="font-size:12px;font-weight:800;color:#5b6072;margin-bottom:9px;">חסימת משתמשים</div>
@@ -1296,6 +1325,12 @@ let LOGO = 'https://cdn-icons-png.flaticon.com/128/6476/6476785.png';
 let SITE_TITLE = 'מזג האוויר';
 let SITE_LOGIN_TEXT = 'התחברות באמצעות גוגל';
 let SITE_REACTION_EMOJIS = ['❤️','👍','😂','😭','🔥','🙏','😍','😮','💯','👎','😊','😢','🤬','💥','🥳','😕','🍿','💪','🚀','😉','🥵','🤑','🎯','🌀','😌','💔','😨','🤣','📖'];
+// הגדרות ערוצים ברמת האתר (נשלטות מפאנל הניהול, נטענות ב-loadSiteBranding)
+let SITE_CHANNELS_ENABLED = true;
+let SITE_SHOW_MAIN_CHANNEL = true;
+let SITE_DEFAULT_CHANNEL = 'all';
+let SITE_RESET_TO_DEFAULT = false;
+const LAST_CHANNEL_KEY = 'bina_last_channel';
 function renderEmojiPickerGrid() {
   const grid = document.getElementById('emojiPickerGrid'); if (!grid) return;
   grid.innerHTML = SITE_REACTION_EMOJIS.map(em => `<button class="ep-btn" onclick="pickEmoji('${escAttr(em)}')">${esc(em)}</button>`).join('');
@@ -1304,8 +1339,8 @@ const DEFAULT_LOGO = LOGO; // ליפול חזרה אליו אם אין לוגו 
 const STORAGE_KEY = 'bina_user';
 const AD_KEY = 'shaagat_ad';
 const AD_INTERVAL = 60 * 60 * 1000;
-let CHANNEL = 'all'; // ערוץ פעיל כרגע. 'all' = קטגוריית "הכל" (מציגה יחד את כל הערוצים)
-let _channels = [{ id: 'all', name: 'הכל', icon: 'fa-layer-group' }];
+let CHANNEL = 'all'; // ערוץ פעיל כרגע. 'all' = קטגוריית "הכל" (מציגה יחד את כל הערוצים) - מתעדכן ב-applyLogin לפי הגדרות ברירת המחדל
+let _channels = [{ id: 'all', name: 'הכל', icon: 'fa-layer-group', color: '#1a56db' }];
 let _channelsUnread = {};
 const CLOUDINARY_CLOUD_NAME = 'xgh73omp';
 const CLOUDINARY_UPLOAD_PRESET = 'website_upload';
@@ -1523,6 +1558,14 @@ async function verifyAndLogin(user) {
 }
 
 async function applyLogin() {
+  // מבטיח שהגדרות ברירת המחדל של הערוצים (SITE_DEFAULT_CHANNEL וכו') כבר נטענו
+  // לפני שקובעים באיזה ערוץ נפתחים - בפועל כמעט תמיד כבר פתור בשלב הזה, כי
+  // תהליך ההתחברות עצמו לוקח הרבה יותר זמן מקריאת ה-API הקלה הזו.
+  await siteBrandingPromise;
+  let savedChannel = null;
+  try { savedChannel = localStorage.getItem(LAST_CHANNEL_KEY); } catch (e) {}
+  CHANNEL = SITE_RESET_TO_DEFAULT ? (SITE_DEFAULT_CHANNEL || 'all') : (savedChannel || SITE_DEFAULT_CHANNEL || 'all');
+
   const pageTitle = document.getElementById('pageTitle'); if (pageTitle) pageTitle.innerText = SITE_TITLE;
   const hdr = document.getElementById('hdrChannelName'); if (hdr) hdr.innerText = SITE_TITLE;
   const logT = document.getElementById('loginSiteTitle'); if (logT) logT.innerText = SITE_TITLE;
@@ -1559,7 +1602,6 @@ async function applyLogin() {
 
   loadChannelsList();
   registerPolledTask(loadUnreadStatus, 20000, true);
-  document.getElementById('channelsAdminBtnWrap').style.display = isSuperAdmin() ? 'block' : 'none';
 
   setTimeout(loadAd, 3000); setInterval(loadAd, 60 * 60 * 1000);
   initDark(); initNotifications();
@@ -1627,11 +1669,15 @@ async function loadSiteBranding() {
     if (d.logoUrl) LOGO = d.logoUrl;
     if (d.loginText) SITE_LOGIN_TEXT = d.loginText;
     if (Array.isArray(d.reactionEmojis) && d.reactionEmojis.length) SITE_REACTION_EMOJIS = d.reactionEmojis;
+    if (d.channelsEnabled !== undefined) SITE_CHANNELS_ENABLED = !!d.channelsEnabled;
+    if (d.showMainChannel !== undefined) SITE_SHOW_MAIN_CHANNEL = !!d.showMainChannel;
+    if (d.defaultChannel) SITE_DEFAULT_CHANNEL = d.defaultChannel;
+    if (d.resetToDefaultOnLoad !== undefined) SITE_RESET_TO_DEFAULT = !!d.resetToDefaultOnLoad;
   }
   applySiteBrandingToDom();
   renderEmojiPickerGrid();
 }
-loadSiteBranding();
+const siteBrandingPromise = loadSiteBranding();
 
 /* ================= תפריט משתמש ================= */
 function toggleUserMenu(e) {
@@ -1675,6 +1721,7 @@ function refreshUserMenu() {
 let _adminPanelActiveSection = null;
 const AP_SECTIONS = [
   { key: 'branding', icon: 'fa-palette', title: 'פרטי אתר', minRole: 'admin' },
+  { key: 'channels', icon: 'fa-satellite-dish', title: 'ניהול ערוצים', minRole: 'admin' },
   { key: 'stats', icon: 'fa-chart-line', title: 'סטטיסטיקות קהילה', minRole: 'writer' },
   { key: 'reports', icon: 'fa-flag', title: 'דיווחי משתמשים', minRole: 'content_manager' },
   { key: 'users', icon: 'fa-users-gear', title: 'ניהול משתמשים והרשאות', minRole: 'admin' },
@@ -1716,6 +1763,7 @@ function switchAdminSection(sec) {
   const found = AP_SECTIONS.find(s => s.key === sec);
   document.getElementById('apContentTitle').innerText = found ? found.title : 'פאנל ניהול';
   if (sec === 'branding') openSiteBranding();
+  else if (sec === 'channels') openChannelsSettings();
   else if (sec === 'stats') openSiteStats();
   else if (sec === 'reports') openReportsModal();
   else if (sec === 'users') openManageUsers();
@@ -1742,33 +1790,58 @@ function applyWritePerm() {
 
 /* ================= ערוצים ================= */
 async function loadChannelsList() {
-  const d = await api('channels_list', {});
+  const d = await api('channels_list', { email: me ? me.email : '' });
   const real = (d.channels || []);
-  _channels = [{ id: 'all', name: 'הכל', icon: 'fa-layer-group' }, ...real];
+  _channels = [{ id: 'all', name: 'הכל', icon: 'fa-layer-group', color: '#1a56db' }, ...real];
+  const bar = document.getElementById('channelsBar');
+  if (bar) bar.style.display = SITE_CHANNELS_ENABLED ? 'flex' : 'none';
   renderChannelsList();
+  renderAdminChannelsList();
+}
+// ממיר צבע הקס (#rrggbb) לרקע שקוף-חלקית - כדי שכל ערוץ יקבל גוון עדין מהצבע
+// שהוגדר לו בפאנל הניהול, גם כשהוא לא פעיל כרגע (מצב "לא פעיל" בהיר יותר).
+function hexToRgba(hex, alpha) {
+  hex = (hex || '#1a56db').replace('#', '');
+  if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+  const r = parseInt(hex.substr(0, 2), 16), g = parseInt(hex.substr(2, 2), 16), b = parseInt(hex.substr(4, 2), 16);
+  if (isNaN(r) || isNaN(g) || isNaN(b)) return `rgba(255,255,255,${alpha})`;
+  return `rgba(${r},${g},${b},${alpha})`;
 }
 function renderChannelsList() {
   const list = document.getElementById('channelsList'); if (!list) return;
-  list.innerHTML = _channels.map(c => `
-    <div class="channel-item ${c.id === CHANNEL ? 'active' : ''}" onclick="switchChannel('${escAttr(c.id)}')" oncontextmenu="return handleChannelContext(event,'${escAttr(c.id)}')">
-      <span class="ch-icon"><i class="fas ${esc(c.icon || 'fa-hashtag')}"></i></span>
-      <span style="flex:1;">${esc(c.name)}</span>
-      ${_channelsUnread[c.id] ? '<span style="width:8px;height:8px;border-radius:50%;background:#dc2626;flex-shrink:0;"></span>' : ''}
-      ${(isSuperAdmin() && c.id !== 'all') ? `<button onclick="event.stopPropagation();openChannelModal('${escAttr(c.id)}')" style="background:none;border:none;color:#9ca3af;cursor:pointer;padding:2px;font-size:11px;"><i class="fas fa-pen"></i></button>` : ''}
-    </div>`).join('');
+  // ערוץ "ראשי" (general) מוסתר משורת הסינון אם כבוי בהגדרות, וערוצים שסומנו
+  // "מוסתר" בפאנל הניהול - אלא אם המשתמש הנוכחי הוא אדמין (שרואה הכל, עם תגית).
+  const visible = _channels.filter(c => {
+    if (c.id === 'general' && !SITE_SHOW_MAIN_CHANNEL && !isSuperAdmin()) return false;
+    if (c.hidden && c.id !== 'all' && !isSuperAdmin()) return false;
+    return true;
+  });
+  list.innerHTML = visible.map(c => {
+    const color = c.color || '#1a56db';
+    const active = c.id === CHANNEL;
+    const bg = active ? '#fff' : hexToRgba(color, .22);
+    const fg = active ? color : '#fff';
+    return `
+    <div class="channel-item ${active ? 'active' : ''}" style="background:${bg};color:${fg};" onclick="switchChannel('${escAttr(c.id)}')" oncontextmenu="return handleChannelContext(event)">
+      <span class="ch-icon" style="color:${fg};"><i class="fas ${esc(c.icon || 'fa-hashtag')}"></i></span>
+      <span>${esc(c.name)}</span>
+      ${(c.hidden && c.id !== 'all') ? '<i class="fas fa-eye-slash" style="font-size:9px;opacity:.75;"></i>' : ''}
+      ${_channelsUnread[c.id] ? `<span style="width:7px;height:7px;border-radius:50%;background:${active ? '#dc2626' : '#fff'};flex-shrink:0;"></span>` : ''}
+      ${(isSuperAdmin() && c.id !== 'all') ? `<span onclick="event.stopPropagation();openChannelModal('${escAttr(c.id)}')" style="opacity:.75;cursor:pointer;padding:0 0 0 2px;font-size:10px;"><i class="fas fa-pen"></i></span>` : ''}
+    </div>`;
+  }).join('') + (isSuperAdmin() ? `<div class="channel-item channel-add-btn" onclick="openChannelModal()" title="ערוץ חדש"><i class="fas fa-plus"></i></div>` : '');
 }
 function handleChannelContext(ev) { ev.preventDefault(); return false; }
-function toggleLeftSidebar() { document.getElementById('leftSidebar').classList.toggle('open'); }
 async function switchChannel(id) {
-  if (id === CHANNEL) { if (window.innerWidth <= 900) document.getElementById('leftSidebar').classList.remove('open'); return; }
+  if (id === CHANNEL) return;
   CHANNEL = id;
+  try { localStorage.setItem(LAST_CHANNEL_KEY, id); } catch (e) {}
   knownIds.clear(); items = []; oldestTs = 0; lastTs = 0; allLoaded = false; atBottom = true;
   renderChannelsList();
   applyWritePerm();
   document.getElementById('feedInner').innerHTML = '';
   await loadFeed();
   if (id !== 'all') { _channelsUnread[id] = false; renderChannelsList(); }
-  if (window.innerWidth <= 900) document.getElementById('leftSidebar').classList.remove('open');
 }
 async function loadUnreadStatus() {
   if (!me) return;
@@ -1776,7 +1849,7 @@ async function loadUnreadStatus() {
   if (d.status === 'ok') { _channelsUnread = d.unread || {}; renderChannelsList(); }
 }
 
-/* -------- ניהול ערוצים (CRUD, אדמין בלבד) -------- */
+/* -------- ניהול ערוצים (CRUD + עיצוב: צבע, הסתרה - אדמין בלבד) -------- */
 let _channelEditId = null;
 function openChannelModal(id) {
   _channelEditId = id || null;
@@ -1784,6 +1857,8 @@ function openChannelModal(id) {
   document.getElementById('channelModalTitle').innerText = ch ? 'עריכת ערוץ' : 'ערוץ חדש';
   document.getElementById('channelNameInput').value = ch ? ch.name : '';
   document.getElementById('channelIconInput').value = ch ? (ch.icon || '') : '';
+  document.getElementById('channelColorInput').value = ch ? (ch.color || '#1a56db') : '#1a56db';
+  document.getElementById('channelHiddenInput').checked = !!(ch && ch.hidden);
   document.getElementById('channelDeleteBtn').style.display = ch ? 'block' : 'none';
   document.getElementById('channelModalMsg').style.display = 'none';
   document.getElementById('channelModalOverlay').style.display = 'flex';
@@ -1793,9 +1868,11 @@ async function saveChannel() {
   if (!isSuperAdmin()) return;
   const name = document.getElementById('channelNameInput').value.trim();
   const icon = document.getElementById('channelIconInput').value.trim();
+  const color = document.getElementById('channelColorInput').value || '#1a56db';
+  const hidden = document.getElementById('channelHiddenInput').checked;
   const msgEl = document.getElementById('channelModalMsg');
   if (!name) { msgEl.style.display = 'block'; msgEl.style.color = '#c94b4b'; msgEl.textContent = 'יש להזין שם ערוץ'; return; }
-  const d = await api('channel_save', { email: me.email, id: _channelEditId, name, icon }, 'POST');
+  const d = await api('channel_save', { email: me.email, id: _channelEditId, name, icon, color, hidden }, 'POST');
   if (d.status === 'ok') { closeChannelModal(); await loadChannelsList(); showToast('הערוץ נשמר', 'success'); }
   else { msgEl.style.display = 'block'; msgEl.style.color = '#c94b4b'; msgEl.textContent = d.message || 'שגיאה בשמירה'; }
 }
@@ -1887,6 +1964,23 @@ window.addEventListener('message', function (event) {
   });
 });
 
+// הרחבה למסך מלא של דף HTML מוטמע - קוראים את התוכן המקורי (לא הגרסה
+// עם תג ה-srcdoc ה"בורח") מה-data attribute בקידוד base64 שנשמר עליו
+// ב-buildMsg, ומציבים אותו כ-property ישירות על ה-iframe (לא כמחרוזת
+// attribute ב-HTML) - כך שאין צורך (ואסור) להריץ עליו שוב את בריחת ה-
+// attribute; ה-srcdoc בתור property מקבל את התוכן הגולמי כמות שהוא.
+function expandHtmlEmbed(btn) {
+  const wrap = btn.closest('.bubble-html'); if (!wrap) return;
+  let raw = '';
+  try { raw = decodeURIComponent(escape(atob(wrap.dataset.htmlB64 || ''))); } catch (err) { raw = ''; }
+  document.getElementById('htmlExpandFrame').srcdoc = raw;
+  document.getElementById('htmlExpandModal').style.display = 'flex';
+}
+function closeHtmlExpand() {
+  document.getElementById('htmlExpandModal').style.display = 'none';
+  document.getElementById('htmlExpandFrame').srcdoc = '';
+}
+
 function buildMsg(e) {
   const id = e.id;
   const role = getRole();
@@ -1919,7 +2013,8 @@ function buildMsg(e) {
   if (e.htmlCode) {
     const resizeScript = '<script>(function(){function __sendH(){try{var h=Math.max(document.documentElement.scrollHeight,document.body?document.body.scrollHeight:0);parent.postMessage({__htmlEmbedResize:true,height:h},"*");}catch(err){}}if(document.readyState==="complete"){__sendH();}else{window.addEventListener("load",__sendH);}setTimeout(__sendH,300);setTimeout(__sendH,1000);if(window.ResizeObserver&&document.body){try{new ResizeObserver(__sendH).observe(document.body);}catch(err){}}})();<\/script>';
     const safeHtml = (e.htmlCode + resizeScript).replace(/&/g, '&amp;').replace(/`/g, '&#96;').replace(/"/g, '&quot;');
-    media += `<div class="bubble-html" style="margin-top:9px;border-radius:12px;overflow:hidden;width:100%;"><iframe class="html-embed-frame" srcdoc="${safeHtml}" style="width:100%;border:none;display:block;height:220px;" sandbox="allow-scripts allow-popups"></iframe></div>`;
+    let htmlB64 = ''; try { htmlB64 = btoa(unescape(encodeURIComponent(e.htmlCode))); } catch (err) {}
+    media += `<div class="bubble-html" style="margin-top:9px;border-radius:12px;overflow:hidden;width:100%;" data-html-b64="${htmlB64}"><button class="html-expand-btn" onclick="event.stopPropagation();expandHtmlEmbed(this)" title="הרחב למסך מלא"><i class="fas fa-expand"></i></button><iframe class="html-embed-frame" srcdoc="${safeHtml}" style="width:100%;border:none;display:block;height:220px;" sandbox="allow-scripts allow-popups"></iframe></div>`;
   }
 
   let tagsHtml = '';
@@ -2438,6 +2533,49 @@ async function saveSiteBranding() {
   if (d.status === 'ok') {
     SITE_TITLE = title; if (logoUrl) LOGO = logoUrl; SITE_LOGIN_TEXT = loginText || SITE_LOGIN_TEXT; SITE_REACTION_EMOJIS = reactionEmojis;
     applySiteBrandingToDom(); renderEmojiPickerGrid();
+    msgEl.style.display = 'block'; msgEl.style.color = '#3f9a6e'; msgEl.textContent = 'נשמר בהצלחה ✓';
+  } else { msgEl.style.display = 'block'; msgEl.style.color = '#c94b4b'; msgEl.textContent = 'שגיאה בשמירה'; }
+  setTimeout(() => { msgEl.style.display = 'none'; }, 3000);
+}
+
+/* -------- הגדרות ערוצים ברמת האתר (אדמין) -------- */
+async function openChannelsSettings() {
+  const d = _siteSettingsCache || await api('api_settings', {});
+  document.getElementById('chSettingsEnabled').checked = d.channelsEnabled !== false;
+  document.getElementById('chSettingsShowMain').checked = d.showMainChannel !== false;
+  document.getElementById('chSettingsResetOnLoad').checked = !!d.resetToDefaultOnLoad;
+  const sel = document.getElementById('chSettingsDefault');
+  sel.innerHTML = _channels.map(c => `<option value="${escAttr(c.id)}">${esc(c.name)}</option>`).join('');
+  sel.value = d.defaultChannel || 'all';
+  renderAdminChannelsList();
+}
+function renderAdminChannelsList() {
+  const wrap = document.getElementById('adminChannelsList'); if (!wrap) return;
+  const real = _channels.filter(c => c.id !== 'all');
+  if (!real.length) { wrap.innerHTML = '<div class="ap-empty">אין עדיין ערוצים</div>'; return; }
+  wrap.innerHTML = real.map(c => `
+    <div class="ap-row-card" style="cursor:pointer;" onclick="openChannelModal('${escAttr(c.id)}')">
+      <span style="width:34px;height:34px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:${esc(c.color || '#1a56db')};color:#fff;font-size:13px;"><i class="fas ${esc(c.icon || 'fa-hashtag')}"></i></span>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:13px;font-weight:800;color:#1f2430;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(c.name)}</div>
+        ${c.hidden ? '<div style="font-size:11px;color:#a3a8b8;"><i class="fas fa-eye-slash"></i> מוסתר משורת הערוצים</div>' : ''}
+      </div>
+      <i class="fas fa-chevron-left" style="color:#c7cbd8;font-size:11px;"></i>
+    </div>`).join('');
+}
+async function saveChannelsSettings() {
+  if (!isSuperAdmin()) return;
+  const channelsEnabled = document.getElementById('chSettingsEnabled').checked;
+  const showMainChannel = document.getElementById('chSettingsShowMain').checked;
+  const defaultChannel = document.getElementById('chSettingsDefault').value || 'all';
+  const resetToDefaultOnLoad = document.getElementById('chSettingsResetOnLoad').checked;
+  const msgEl = document.getElementById('channelsSettingsMsg');
+  const d = await api('api_settings', { admin_email: me.email, channelsEnabled, showMainChannel, defaultChannel, resetToDefaultOnLoad }, 'POST');
+  if (d.status === 'ok') {
+    SITE_CHANNELS_ENABLED = channelsEnabled; SITE_SHOW_MAIN_CHANNEL = showMainChannel; SITE_DEFAULT_CHANNEL = defaultChannel; SITE_RESET_TO_DEFAULT = resetToDefaultOnLoad;
+    if (_siteSettingsCache) Object.assign(_siteSettingsCache, { channelsEnabled, showMainChannel, defaultChannel, resetToDefaultOnLoad });
+    const bar = document.getElementById('channelsBar'); if (bar) bar.style.display = channelsEnabled ? 'flex' : 'none';
+    renderChannelsList();
     msgEl.style.display = 'block'; msgEl.style.color = '#3f9a6e'; msgEl.textContent = 'נשמר בהצלחה ✓';
   } else { msgEl.style.display = 'block'; msgEl.style.color = '#c94b4b'; msgEl.textContent = 'שגיאה בשמירה'; }
   setTimeout(() => { msgEl.style.display = 'none'; }, 3000);
