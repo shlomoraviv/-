@@ -24,7 +24,8 @@ body{height:100%;font-family:'Heebo',sans-serif;-webkit-font-smoothing:antialias
 .login-card{background:#fff;border-radius:18px;padding:38px 32px;text-align:center;box-shadow:0 4px 32px rgba(0,0,0,.12);max-width:320px;width:90%;}
 .login-logo-img{width:90px;height:90px;border-radius:16px;margin:0 auto 14px;display:block;object-fit:contain;}
 .login-title{font-size:20px;font-weight:900;color:#111;margin-bottom:4px;}
-.login-sub{font-size:13px;color:#888;margin-bottom:24px;}
+.login-sub{font-size:13px;color:#5b6072;margin-bottom:22px;line-height:1.7;white-space:pre-wrap;text-align:right;background:#f8f9fc;border:1px solid #eef0f5;border-radius:12px;padding:13px 15px;}
+.login-sub:empty{display:none;}
 
 #app { order: 2; }
 #rightSidebar, #adOnlySidebar { order: 3; }
@@ -1134,8 +1135,11 @@ body, html { background: #fff !important; }
       <input id="channelNameInput" type="text" placeholder="לדוגמה: כללי, מבצעים, שאלות..." class="ap-field">
       <div style="display:flex;gap:10px;margin-top:4px;">
         <div style="flex:1;">
-          <div style="font-size:12px;font-weight:800;color:#5b6072;margin-bottom:6px;">אייקון (Font Awesome, רשות)</div>
-          <input id="channelIconInput" type="text" placeholder="fa-hashtag" class="ap-field" style="direction:ltr;">
+          <div style="font-size:12px;font-weight:800;color:#5b6072;margin-bottom:6px;">אייקון - אימוג׳י (למשל 🎯) או קלאס Font Awesome (למשל fa-hashtag)</div>
+          <input id="channelIconInput" type="text" placeholder="🎯 או fa-hashtag" class="ap-field">
+          <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:7px;">
+            ${['📌','❤️','⭐','🔥','📖','💬','🎯','🏠','✉️','🔔','🎥','🎵','👁️','📚','⚡'].map(em => `<button type="button" onclick="document.getElementById('channelIconInput').value='${em}'" style="width:28px;height:28px;border-radius:8px;border:1px solid #eef0f5;background:#fbfbfd;cursor:pointer;font-size:14px;padding:0;">${em}</button>`).join('')}
+          </div>
         </div>
         <div>
           <div style="font-size:12px;font-weight:800;color:#5b6072;margin-bottom:6px;">צבע</div>
@@ -1227,8 +1231,8 @@ body, html { background: #fff !important; }
             <input id="brandingLogoUrl" type="text" placeholder="או קישור לתמונה https://..." class="ap-field" style="direction:ltr;" oninput="document.getElementById('brandingLogoPreview').src=this.value">
           </div>
           <div style="margin-bottom:6px;">
-            <div style="font-size:12px;font-weight:800;color:#5b6072;margin-bottom:9px;">טקסט מסך ההתחברות</div>
-            <input type="text" id="brandingLoginTextInput" class="ap-field" placeholder="לדוגמה: התחברות באמצעות גוגל">
+            <div style="font-size:12px;font-weight:800;color:#5b6072;margin-bottom:9px;">טקסט מסך ההתחברות (שורה קצרה או תיאור מלא של הערוץ - כרצונך)</div>
+            <textarea id="brandingLoginTextInput" class="ap-field" rows="4" style="resize:vertical;line-height:1.6;" placeholder="לדוגמה: התחברות באמצעות גוגל, או תיאור ארוך יותר על הערוץ ומטרתו..."></textarea>
           </div>
           <div style="border-top:1px solid #f1f2f6;margin-top:18px;padding-top:16px;">
             <div style="font-size:12px;font-weight:800;color:#5b6072;margin-bottom:6px;">אימוג'ים לתגובות על הודעות</div>
@@ -1801,11 +1805,20 @@ async function loadChannelsList() {
 // ממיר צבע הקס (#rrggbb) לרקע שקוף-חלקית - כדי שכל ערוץ יקבל גוון עדין מהצבע
 // שהוגדר לו בפאנל הניהול, גם כשהוא לא פעיל כרגע (מצב "לא פעיל" בהיר יותר).
 function hexToRgba(hex, alpha) {
-  hex = (hex || '#1a56db').replace('#', '');
+  hex = String(hex || '#1a56db').replace('#', '');
+  if (!/^[0-9a-fA-F]{3}$|^[0-9a-fA-F]{6}$/.test(hex)) hex = '1a56db';
   if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
   const r = parseInt(hex.substr(0, 2), 16), g = parseInt(hex.substr(2, 2), 16), b = parseInt(hex.substr(4, 2), 16);
   if (isNaN(r) || isNaN(g) || isNaN(b)) return `rgba(255,255,255,${alpha})`;
   return `rgba(${r},${g},${b},${alpha})`;
+}
+// אייקון של ערוץ יכול להיות קלאס Font Awesome ("fa-hashtag") או אימוג'י/תו
+// שהוקלד ישירות ("🎯") - מזהים אוטומטית לפי הצורה ומרנדרים בהתאם.
+function renderChannelIcon(icon) {
+  const ic = (icon || '').trim();
+  if (!ic) return '<i class="fas fa-hashtag"></i>';
+  if (/^fa-[a-z0-9-]+$/i.test(ic)) return `<i class="fas ${esc(ic)}"></i>`;
+  return esc(ic);
 }
 function renderChannelsList() {
   const list = document.getElementById('channelsList'); if (!list) return;
@@ -1823,7 +1836,7 @@ function renderChannelsList() {
     const fg = active ? color : '#fff';
     return `
     <div class="channel-item ${active ? 'active' : ''}" style="background:${bg};color:${fg};" onclick="switchChannel('${escAttr(c.id)}')" oncontextmenu="return handleChannelContext(event)">
-      <span class="ch-icon" style="color:${fg};"><i class="fas ${esc(c.icon || 'fa-hashtag')}"></i></span>
+      <span class="ch-icon" style="color:${fg};">${renderChannelIcon(c.icon)}</span>
       <span>${esc(c.name)}</span>
       ${(c.hidden && c.id !== 'all') ? '<i class="fas fa-eye-slash" style="font-size:9px;opacity:.75;"></i>' : ''}
       ${_channelsUnread[c.id] ? `<span style="width:7px;height:7px;border-radius:50%;background:${active ? '#dc2626' : '#fff'};flex-shrink:0;"></span>` : ''}
@@ -2555,7 +2568,7 @@ function renderAdminChannelsList() {
   if (!real.length) { wrap.innerHTML = '<div class="ap-empty">אין עדיין ערוצים</div>'; return; }
   wrap.innerHTML = real.map(c => `
     <div class="ap-row-card" style="cursor:pointer;" onclick="openChannelModal('${escAttr(c.id)}')">
-      <span style="width:34px;height:34px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:${esc(c.color || '#1a56db')};color:#fff;font-size:13px;"><i class="fas ${esc(c.icon || 'fa-hashtag')}"></i></span>
+      <span style="width:34px;height:34px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:${esc(c.color || '#1a56db')};color:#fff;font-size:15px;">${renderChannelIcon(c.icon)}</span>
       <div style="flex:1;min-width:0;">
         <div style="font-size:13px;font-weight:800;color:#1f2430;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(c.name)}</div>
         ${c.hidden ? '<div style="font-size:11px;color:#a3a8b8;"><i class="fas fa-eye-slash"></i> מוסתר משורת הערוצים</div>' : ''}
