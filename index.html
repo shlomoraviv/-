@@ -30,31 +30,36 @@ body{height:100%;font-family:'Heebo',sans-serif;-webkit-font-smoothing:antialias
 #app { order: 2; }
 #rightSidebar, #adOnlySidebar { order: 3; }
 
-/* TOP CHANNELS BAR - קטגוריות אופקיות למעלה, בשליטת פאנל הניהול (צבע/אייקון/הסתרה לכל ערוץ) */
+/* TOP CHANNELS BAR - קטגוריות אופקיות למעלה, משתלבות בעיצוב האתר (לא פס צבעוני) */
 #channelsBar {
   flex-shrink: 0; display: flex; align-items: center; gap: 8px;
   padding: 10px 14px; overflow-x: auto; overflow-y: hidden;
-  background: linear-gradient(135deg, #7c3aed, #4f46e5 55%, #1a56db);
-  scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.35) transparent;
+  background: #fff; border-bottom: 1px solid #eef0f5;
+  scrollbar-width: thin; scrollbar-color: #d8dbe4 transparent;
 }
 #channelsBar::-webkit-scrollbar { height: 5px; }
-#channelsBar::-webkit-scrollbar-thumb { background: rgba(255,255,255,.35); border-radius: 99px; }
+#channelsBar::-webkit-scrollbar-thumb { background: #d8dbe4; border-radius: 99px; }
 #channelsList { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 .channel-item {
   display: flex; align-items: center; gap: 7px; flex-shrink: 0;
-  padding: 7px 8px 7px 14px; border-radius: 999px; cursor: pointer; border: none;
+  padding: 7px 8px 7px 14px; border-radius: 999px; cursor: pointer;
+  border: 1.5px solid #eef0f5; background: #f8f9fb; color: #4b5563;
   font-size: 13px; font-weight: 800; white-space: nowrap; font-family: 'Heebo', sans-serif;
-  transition: background 0.15s, transform 0.15s, box-shadow 0.15s;
+  transition: background 0.15s, transform 0.15s, box-shadow 0.15s, border-color 0.15s;
 }
-.channel-item:hover { transform: translateY(-1px); }
-.channel-item .ch-icon { display: flex; align-items: center; justify-content: center; font-size: 11px; }
+.channel-item:hover { transform: translateY(-1px); border-color: #dde0ea; }
+.channel-item.active { border-color: transparent; box-shadow: 0 3px 10px rgba(0,0,0,.16); }
+.channel-item .ch-icon { display: flex; align-items: center; justify-content: center; font-size: 12px; }
 .channel-add-btn {
   width: 30px; height: 30px; padding: 0; justify-content: center;
-  background: rgba(255,255,255,.14); color: #fff; font-size: 13px;
+  background: #f8f9fb; color: #9199b0; font-size: 13px; border: 1.5px dashed #dde0ea;
 }
-.channel-add-btn:hover { background: rgba(255,255,255,.24); }
+.channel-add-btn:hover { background: #f0f1f5; color: #4b5563; }
 
-body.dark #channelsBar { background: linear-gradient(135deg, #5b21b6, #3730a3 55%, #1e3a8a); }
+body.dark #channelsBar { background: #14141e; border-color: #24243a; }
+body.dark .channel-item { border-color: #262638; background: #1c1c2c; color: #c9cbd8; }
+body.dark .channel-item:hover { border-color: #33334a; }
+body.dark .channel-add-btn { background: #1c1c2c; border-color: #33334a; color: #7a7d8f; }
 
 /* APP */
 #app{flex:1;min-width:0;height:100%;display:none;flex-direction:column;}
@@ -1149,6 +1154,10 @@ body, html { background: #fff !important; }
       <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:#374151;cursor:pointer;margin-top:4px;">
         <input type="checkbox" id="channelHiddenInput"> מוסתר (לא יופיע בשורת הערוצים לכל המשתמשים)
       </label>
+      <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:#374151;cursor:pointer;margin-top:10px;">
+        <input type="checkbox" id="channelShowInAllInput" checked> להציג הודעות מהערוץ הזה גם בתצוגת "הכל"
+      </label>
+      <div style="font-size:11px;color:#a3a8b8;margin:-4px 0 0 0;line-height:1.5;">כשכבוי, הודעות מהערוץ הזה לא יופיעו בתצוגה המאוחדת "הכל" - רק בכניסה ישירה לערוץ עצמו.</div>
       <div id="channelModalMsg" style="display:none;font-size:12px;font-weight:700;text-align:center;"></div>
     </div>
     <div style="padding:0 20px 18px;display:flex;gap:10px;">
@@ -1816,7 +1825,7 @@ function hexToRgba(hex, alpha) {
 // שהוקלד ישירות ("🎯") - מזהים אוטומטית לפי הצורה ומרנדרים בהתאם.
 function renderChannelIcon(icon) {
   const ic = (icon || '').trim();
-  if (!ic) return '<i class="fas fa-hashtag"></i>';
+  if (!ic || /^fa$/i.test(ic)) return '<i class="fas fa-hashtag"></i>';
   if (/^fa-[a-z0-9-]+$/i.test(ic)) return `<i class="fas ${esc(ic)}"></i>`;
   return esc(ic);
 }
@@ -1832,14 +1841,15 @@ function renderChannelsList() {
   list.innerHTML = visible.map(c => {
     const color = c.color || '#1a56db';
     const active = c.id === CHANNEL;
-    const bg = active ? '#fff' : hexToRgba(color, .22);
-    const fg = active ? color : '#fff';
+    const styleAttr = active ? `style="background:${color};color:#fff;"` : '';
+    const fg = active ? '#fff' : '';
     return `
-    <div class="channel-item ${active ? 'active' : ''}" style="background:${bg};color:${fg};" onclick="switchChannel('${escAttr(c.id)}')" oncontextmenu="return handleChannelContext(event)">
-      <span class="ch-icon" style="color:${fg};">${renderChannelIcon(c.icon)}</span>
+    <div class="channel-item ${active ? 'active' : ''}" ${styleAttr} onclick="switchChannel('${escAttr(c.id)}')" oncontextmenu="return handleChannelContext(event)">
+      <span class="ch-icon" ${fg ? `style="color:${fg};"` : ''}>${renderChannelIcon(c.icon)}</span>
       <span>${esc(c.name)}</span>
       ${(c.hidden && c.id !== 'all') ? '<i class="fas fa-eye-slash" style="font-size:9px;opacity:.75;"></i>' : ''}
-      ${_channelsUnread[c.id] ? `<span style="width:7px;height:7px;border-radius:50%;background:${active ? '#dc2626' : '#fff'};flex-shrink:0;"></span>` : ''}
+      ${(c.showInAll === false && c.id !== 'all') ? '<i class="fas fa-filter" style="font-size:9px;opacity:.75;" title="לא מופיע בקטגוריית הכל"></i>' : ''}
+      ${_channelsUnread[c.id] ? `<span style="width:7px;height:7px;border-radius:50%;background:${active ? '#fff' : '#dc2626'};flex-shrink:0;"></span>` : ''}
       ${(isSuperAdmin() && c.id !== 'all') ? `<span onclick="event.stopPropagation();openChannelModal('${escAttr(c.id)}')" style="opacity:.75;cursor:pointer;padding:0 0 0 2px;font-size:10px;"><i class="fas fa-pen"></i></span>` : ''}
     </div>`;
   }).join('') + (isSuperAdmin() ? `<div class="channel-item channel-add-btn" onclick="openChannelModal()" title="ערוץ חדש"><i class="fas fa-plus"></i></div>` : '');
@@ -1872,6 +1882,7 @@ function openChannelModal(id) {
   document.getElementById('channelIconInput').value = ch ? (ch.icon || '') : '';
   document.getElementById('channelColorInput').value = ch ? (ch.color || '#1a56db') : '#1a56db';
   document.getElementById('channelHiddenInput').checked = !!(ch && ch.hidden);
+  document.getElementById('channelShowInAllInput').checked = ch ? (ch.showInAll !== false) : true;
   document.getElementById('channelDeleteBtn').style.display = ch ? 'block' : 'none';
   document.getElementById('channelModalMsg').style.display = 'none';
   document.getElementById('channelModalOverlay').style.display = 'flex';
@@ -1883,9 +1894,10 @@ async function saveChannel() {
   const icon = document.getElementById('channelIconInput').value.trim();
   const color = document.getElementById('channelColorInput').value || '#1a56db';
   const hidden = document.getElementById('channelHiddenInput').checked;
+  const showInAll = document.getElementById('channelShowInAllInput').checked;
   const msgEl = document.getElementById('channelModalMsg');
   if (!name) { msgEl.style.display = 'block'; msgEl.style.color = '#c94b4b'; msgEl.textContent = 'יש להזין שם ערוץ'; return; }
-  const d = await api('channel_save', { email: me.email, id: _channelEditId, name, icon, color, hidden }, 'POST');
+  const d = await api('channel_save', { email: me.email, id: _channelEditId, name, icon, color, hidden, showInAll }, 'POST');
   if (d.status === 'ok') { closeChannelModal(); await loadChannelsList(); showToast('הערוץ נשמר', 'success'); }
   else { msgEl.style.display = 'block'; msgEl.style.color = '#c94b4b'; msgEl.textContent = d.message || 'שגיאה בשמירה'; }
 }
@@ -2572,6 +2584,7 @@ function renderAdminChannelsList() {
       <div style="flex:1;min-width:0;">
         <div style="font-size:13px;font-weight:800;color:#1f2430;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(c.name)}</div>
         ${c.hidden ? '<div style="font-size:11px;color:#a3a8b8;"><i class="fas fa-eye-slash"></i> מוסתר משורת הערוצים</div>' : ''}
+        ${c.showInAll === false ? '<div style="font-size:11px;color:#a3a8b8;"><i class="fas fa-filter"></i> לא מופיע בתצוגת "הכל"</div>' : ''}
       </div>
       <i class="fas fa-chevron-left" style="color:#c7cbd8;font-size:11px;"></i>
     </div>`).join('');
